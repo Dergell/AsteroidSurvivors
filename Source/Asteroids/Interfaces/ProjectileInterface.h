@@ -16,38 +16,31 @@
  */
 
 
-#include "ItemBase.h"
-#include "Asteroids/Game/PlayerShip.h"
-#include "Asteroids/Game/GameModeMain.h"
+#pragma once
 
-// Sets default values
-AItemBase::AItemBase()
+#include "CoreMinimal.h"
+#include "UObject/Interface.h"
+#include "ProjectileInterface.generated.h"
+
+class AItemProjectile;
+
+// This class does not need to be modified.
+UINTERFACE(MinimalAPI, Blueprintable)
+class UProjectileInterface : public UInterface
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	GENERATED_BODY()
+};
 
-	// Create Components
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
-	RootComponent = Mesh;
-}
-
-// Called when the game starts or when spawned
-void AItemBase::BeginPlay()
+/**
+ * Interface which implements the main game mode framework. Extended by blueprints.
+ */
+class ASTEROIDS_API IProjectileInterface
 {
-	Super::BeginPlay();
-}
+	GENERATED_BODY()
 
-void AItemBase::HitByProjectile_Implementation()
-{
-	Destroy();
-}
+public:
 
-void AItemBase::Collected_Implementation()
-{
-	AGameModeMain* GameMode = Cast<AGameModeMain>(GetWorld()->GetAuthGameMode());
-
-	if (GameMode) {
-		GameMode->ItemCollected();
-	}
-}
-
+	/** Called when hit by a projectile */
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Trigger Reaction")
+	void HitByProjectile();
+};
