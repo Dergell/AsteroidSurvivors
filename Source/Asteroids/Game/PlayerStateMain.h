@@ -15,38 +15,29 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/PlayerController.h"
+#include "GameFramework/PlayerState.h"
 #include "Asteroids/Interfaces/ItemInterface.h"
-#include "WidgetMain.h"
-#include "PlayerControllerMain.generated.h"
+#include "PlayerStateMain.generated.h"
 
 /**
- * Class which implements the main player controller. Extended by blueprints.
+ * Class which implements the main player state. Extended by blueprints.
  */
 UCLASS()
-class ASTEROIDS_API APlayerControllerMain : public APlayerController, public IItemInterface
+class ASTEROIDS_API APlayerStateMain : public APlayerState, public IItemInterface
 {
 	GENERATED_BODY()
 
 public:
 
-	// Main UI widget class
-	UPROPERTY(EditDefaultsOnly, Category = "Asteroid Survivors")
-	TSubclassOf<class UWidgetMain> MainWidgetClass;
-
-	// Interface called when score needs to be updated
+	// Called when the score needs to be updated
 	void UpdateScore_Implementation(int32 Points) override;
 
 private:
 
-	// Main UI widget for the player
-	UWidgetMain* MainWidget;
-
-	// Called when the controller possesses a pawn
-	void OnPossess(APawn* aPawn) override;
+	// Stores the current player score
+	int32 Score = 0;
 
 };

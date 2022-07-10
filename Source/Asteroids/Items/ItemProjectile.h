@@ -18,14 +18,15 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "ItemBase.h"
-#include "Components/SphereComponent.h"
-#include "GameFramework/ProjectileMovementComponent.h"
+#include "CoreMinimal.h"
 #include "ItemProjectile.generated.h"
 
+class USphereComponent;
+class UProjectileMovementComponent;
+
 /**
- * 
+ * Class which implements the projectile. Extended by blueprints.
  */
 UCLASS()
 class ASTEROIDS_API AItemProjectile : public AItemBase
@@ -35,24 +36,27 @@ class ASTEROIDS_API AItemProjectile : public AItemBase
 public:
 
 	AItemProjectile();
-
-	/** The collision component */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Projectile")
-	USphereComponent* CollisionComponent;
-
-	/** The projecile movement component */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
-	UProjectileMovementComponent* ProjectileMovementComponent;
-
-	/** Function that initializes the projectile's velocity in the shoot direction. */
+	
+	// Called to initialize the projectile's velocity in a direction.
 	void ShootInDirection(const FVector& Direction);
 
 protected:
 
-	/** Called when the game starts or when spawned. */
+	// The collision component
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Asteroid Survivors")
+	USphereComponent* CollisionComponent;
+
+	// The projecile movement component
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Asteroid Survivors")
+	UProjectileMovementComponent* ProjectileMovementComponent;
+
+	// Called when the game starts or when spawned.
 	virtual void BeginPlay() override;
 
-	/** Called when the collision component hits something. */
+private:
+
+	// Called when the collision component hits something.
 	UFUNCTION()
 	void OnComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
 };

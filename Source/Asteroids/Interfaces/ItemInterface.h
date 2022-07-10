@@ -15,38 +15,30 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/PlayerController.h"
-#include "Asteroids/Interfaces/ItemInterface.h"
-#include "WidgetMain.h"
-#include "PlayerControllerMain.generated.h"
+#include "UObject/Interface.h"
+#include "ItemInterface.generated.h"
+
+// This class does not need to be modified.
+UINTERFACE(MinimalAPI, Blueprintable)
+class UItemInterface : public UInterface
+{
+	GENERATED_BODY()
+};
 
 /**
- * Class which implements the main player controller. Extended by blueprints.
+ * Framework for item interactions. Extended by blueprints.
  */
-UCLASS()
-class ASTEROIDS_API APlayerControllerMain : public APlayerController, public IItemInterface
+class ASTEROIDS_API IItemInterface
 {
 	GENERATED_BODY()
 
 public:
 
-	// Main UI widget class
-	UPROPERTY(EditDefaultsOnly, Category = "Asteroid Survivors")
-	TSubclassOf<class UWidgetMain> MainWidgetClass;
-
-	// Interface called when score needs to be updated
-	void UpdateScore_Implementation(int32 Points) override;
-
-private:
-
-	// Main UI widget for the player
-	UWidgetMain* MainWidget;
-
-	// Called when the controller possesses a pawn
-	void OnPossess(APawn* aPawn) override;
+	// Called when a collectible item is collected
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Asteroid Survivors")
+	void UpdateScore(int32 Points);
 
 };

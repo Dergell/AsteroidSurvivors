@@ -22,8 +22,13 @@
 #include "GameFramework/Pawn.h"
 #include "PlayerShip.generated.h"
 
+class AItemProjectile;
+class UCameraComponent;
+class UInputComponent;
+class USpringArmComponent;
+
 /**
- * Class which implements the player ships. Extended by blueprints.
+ * Class which implements the player ships. Extended by blueprints and classes.
  */
 UCLASS()
 class ASTEROIDS_API APlayerShip : public APawn
@@ -36,61 +41,64 @@ public:
 
 protected:
 
-	/** Called when the game starts or when spawned */
-	virtual void BeginPlay() override;
-
-	/** Add lateral force */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	// Mesh of the player ship
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Asteroid Survivors")
 	UStaticMeshComponent* Mesh;
 
-	/** Add lateral force */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	class USpringArmComponent* SpringArm;
+	// SpringArm for the camera
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Asteroid Survivors")
+	USpringArmComponent* SpringArm;
 
-	/** Add lateral force */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	class UCameraComponent* Camera;
+	// Camera of the player ship
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Asteroid Survivors")
+	UCameraComponent* Camera;
 
-	/** Add lateral force */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	// How much force should be applied for movement
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Asteroid Survivors")
 	float MoveForce = 500.f;
 
-	/** Add lateral force */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	// How fast should it spin around
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Asteroid Survivors")
 	float TurnSpeed = 1.f;
 
-	/** Add lateral force */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	// Speed of the roll while turning
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Asteroid Survivors")
 	float RollSpeed = 1.f;
 
-	/** Add lateral force */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	// How many degrees the roll while turning should do
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Asteroid Survivors")
 	float RollLimit = 30.f;
 
-	/** Add lateral force */
-	UPROPERTY(EditDefaultsOnly, Category = "Projectile")
-	TSubclassOf<class AItemProjectile> ProjectileClass;
+	// Which projectile class this ship will use
+	UPROPERTY(EditDefaultsOnly, Category = "Asteroid Survivors")
+	TSubclassOf<AItemProjectile> ProjectileClass;
 
-public:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 
-	/** Called to bind functionality to input */
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 private:
 	
-	/** Add lateral force */
+	// Add lateral force
 	void MoveRight(float Value);
 
-	/** Add longitudinal force */
+	// Add longitudinal force
 	void MoveForward(float Value);
 
-	/** Process turn rotation */
+	// Rotate around yaw axis
 	void TurnRight(float Value);
 
-	/** Shoot all manual weapons */
+	// Shoot all manual weapons
 	void Shoot();
 
-	/** Process collisions */
+	// Process overlap
+	UFUNCTION()
+	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	// Process collisions
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
 };

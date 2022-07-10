@@ -17,27 +17,29 @@
 
 
 #include "PlayerShip.h"
+#include "Asteroids/Interfaces/ItemInterface.h"
 #include "Asteroids/Items/ItemProjectile.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
+#include "GameFramework/PlayerState.h"
+#include "GameFramework/SpringArmComponent.h"
 
 APlayerShip::APlayerShip()
 {
  	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	// Create Components
+	// Create components
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>("SpringArm");
 	Camera = CreateDefaultSubobject<UCameraComponent>("Camera");
 
-	// Setup Components
+	// Setup components
 	RootComponent = Mesh;
 	SpringArm->SetupAttachment(Mesh);
 	Camera->SetupAttachment(SpringArm);
 
-	// Always simulate physics
+	// Always simulate physics since we're floating
 	Mesh->SetSimulatePhysics(true);
 }
 
@@ -46,6 +48,7 @@ void APlayerShip::BeginPlay()
 	Super::BeginPlay();
 
 	// Add event listeners
+	Mesh->OnComponentBeginOverlap.AddDynamic(this, &APlayerShip::OnBeginOverlap);
 	Mesh->OnComponentHit.AddDynamic(this, &APlayerShip::OnHit);
 
 	// Account for object mass
@@ -56,12 +59,12 @@ void APlayerShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	// Custom Axis
+	// Setup axis
 	InputComponent->BindAxis("MoveForward", this, &APlayerShip::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &APlayerShip::MoveRight);
 	InputComponent->BindAxis("TurnRight", this, &APlayerShip::TurnRight);
 
-	// Custom Actions
+	// Setup actions
 	InputComponent->BindAction("Shoot", IE_Pressed, this, &APlayerShip::Shoot);
 }
 
@@ -95,7 +98,7 @@ void APlayerShip::TurnRight(float Value)
 	// Clamp roll so we don't overshoot
 	NewRotation.Roll = FMath::Clamp(NewRotation.Roll, -RollLimit, RollLimit);
 
-	// For the turn, just add the direction to the existing yaw
+	// For the actual turn, just add the direction to the existing yaw
 	NewRotation.Yaw += Value * TurnSpeed;
 
 	// Normalize and set to Mesh
@@ -125,11 +128,24 @@ void APlayerShip::Shoot()
 	}
 }
 
+void APlayerShip::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	// Make sure we overlap an item that is collectable
+	AItemBase* ItemActor = Cast<AItemBase>(OtherActor);
+	if (ItemActor && ItemActor->GetIsCollectable()) {
+		// Check if it implements an ItemInterface
+		IItemInterface* Interface = Cast<IItemInterface>(GetPlayerState());
+		if (Interface) {
+			// Tell the player state to update the score
+			Interface->Execute_UpdateScore(GetPlayerState(), ItemActor->GetPointsValue());
+		}
+
+		// Tell the item it was collected
+		ItemActor->Collected();
+	}
+}
+
 void APlayerShip::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	float HitDirection = Hit.Normal.Z;
-
-	if (Hit.Normal.Z > 0) {
-	//	JumpCount = 0;
-	}
+	// Nothing to do yet
 }

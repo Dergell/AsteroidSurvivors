@@ -16,39 +16,6 @@
  */
 
 
-#include "ItemBase.h"
+#include "ItemInterface.h"
 
-AItemBase::AItemBase()
-{
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
-
-	// Create components
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
-	RootComponent = Mesh;
-}
-
-bool AItemBase::GetIsCollectable()
-{
-	return IsCollectable;
-}
-
-int32 AItemBase::GetPointsValue()
-{
-	return PointsValue;
-}
-
-void AItemBase::Collected_Implementation()
-{
-	Destroy();
-}
-
-void AItemBase::HitByProjectile_Implementation()
-{
-	Destroy();
-}
-
-void AItemBase::BeginPlay()
-{
-	Super::BeginPlay();
-}
+// Add default functionality here for any IItemInterface functions that are not pure virtual.

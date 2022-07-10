@@ -15,14 +15,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
 #include "ProjectileInterface.generated.h"
-
-class AItemProjectile;
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI, Blueprintable)
@@ -32,7 +29,7 @@ class UProjectileInterface : public UInterface
 };
 
 /**
- * Interface which implements the main game mode framework. Extended by blueprints.
+ * Framework for projectile interactions. Extended by blueprints.
  */
 class ASTEROIDS_API IProjectileInterface
 {
@@ -40,7 +37,8 @@ class ASTEROIDS_API IProjectileInterface
 
 public:
 
-	/** Called when hit by a projectile */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Trigger Reaction")
+	// Called when hit by a projectile
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Asteroid Survivors")
 	void HitByProjectile();
+	
 };

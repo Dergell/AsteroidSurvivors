@@ -32,7 +32,8 @@ class ASTEROIDS_API UWidgetMain : public UUserWidget
 	
 public:
 
-	/** Update the displayed points */
+	// Update the displayed score
 	UFUNCTION(BlueprintImplementableEvent)
-	void UpdatePoints(int32 Points);
+	void UpdateScore(int32 Score);
+
 };

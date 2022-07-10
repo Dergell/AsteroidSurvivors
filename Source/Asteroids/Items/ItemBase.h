@@ -18,9 +18,9 @@
 
 #pragma once
 
-#include "Asteroids/Interfaces/ProjectileInterface.h"
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Asteroids/Interfaces/ProjectileInterface.h"
 #include "ItemBase.generated.h"
 
 /**
@@ -35,20 +35,34 @@ public:
 	
 	AItemBase();
 
-	/** The static mesh */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UStaticMeshComponent* Mesh;
+	// Getters
+	UFUNCTION(BlueprintCallable, Category = "Asteroid Survivors")
+	bool GetIsCollectable();
+	UFUNCTION(BlueprintCallable, Category = "Asteroid Survivors")
+	int32 GetPointsValue();
 
-	/** Called when hit by a projectile */
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Trigger Reaction")
-	void HitByProjectile(); virtual void HitByProjectile_Implementation() override;
+	// Called when the item is collected by the player
+	UFUNCTION(BlueprintNativeEvent, Category = "Asteroid Survivors")
+	void Collected();
+
+	// Called when hit by a projectile
+	void HitByProjectile_Implementation() override;
 
 protected:
 	
-	/** Called when the game starts or when spawned */
+	// The static mesh
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Asteroid Survivors")
+	UStaticMeshComponent* Mesh;
+
+	// Whether this item collectable by the player
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Asteroid Survivors")
+	bool IsCollectable;
+
+	// Points value
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Asteroid Survivors")
+	int32 PointsValue;
+
+	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	/** Called when this item is collected by the player */
-	UFUNCTION(BlueprintNativeEvent)
-	void Collected();
 };

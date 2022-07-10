@@ -16,39 +16,15 @@
  */
 
 
-#include "ItemBase.h"
+#include "PlayerStateMain.h"
 
-AItemBase::AItemBase()
+void APlayerStateMain::UpdateScore_Implementation(int32 Points)
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	// Update the score
+	Score += Points;
 
-	// Create components
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
-	RootComponent = Mesh;
-}
-
-bool AItemBase::GetIsCollectable()
-{
-	return IsCollectable;
-}
-
-int32 AItemBase::GetPointsValue()
-{
-	return PointsValue;
-}
-
-void AItemBase::Collected_Implementation()
-{
-	Destroy();
-}
-
-void AItemBase::HitByProjectile_Implementation()
-{
-	Destroy();
-}
-
-void AItemBase::BeginPlay()
-{
-	Super::BeginPlay();
+	// Tell the player controller to update everything that uses the score
+	IItemInterface* Interface = Cast<IItemInterface>(GetPlayerController());
+	if (Interface)
+		Interface->Execute_UpdateScore(GetPlayerController(), Score);
 }

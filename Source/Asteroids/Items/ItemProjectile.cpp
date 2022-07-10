@@ -17,6 +17,8 @@
 
 
 #include "ItemProjectile.h"
+#include "Components/SphereComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 
 AItemProjectile::AItemProjectile()
 {
@@ -24,22 +26,28 @@ AItemProjectile::AItemProjectile()
     PrimaryActorTick.bCanEverTick = false;
 
     // Use a sphere as a simple collision representation.
-    CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
+    CollisionComponent = CreateDefaultSubobject<USphereComponent>("CollisionComponent");
     CollisionComponent->InitSphereRadius(15.0f);
     RootComponent = CollisionComponent;
 
     // Use this component to drive this projectile's movement.
-    ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
+    ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovementComponent");
     ProjectileMovementComponent->SetUpdatedComponent(CollisionComponent);
 
     // Attach mesh
     Mesh->SetupAttachment(CollisionComponent);
 }
 
+void AItemProjectile::ShootInDirection(const FVector& Direction)
+{
+    ProjectileMovementComponent->Velocity = Direction * ProjectileMovementComponent->InitialSpeed;
+}
+
 void AItemProjectile::BeginPlay()
 {
     Super::BeginPlay();
 
+    // Add event listeners
     CollisionComponent->OnComponentHit.AddDynamic(this, &AItemProjectile::OnComponentHit);
 }
 
@@ -49,17 +57,11 @@ void AItemProjectile::OnComponentHit(UPrimitiveComponent* HitComp, AActor* Other
     if (OtherComp->IsSimulatingPhysics())
         OtherComp->AddImpulseAtLocation(ProjectileMovementComponent->Velocity * 100.0f, Hit.ImpactPoint);
 
-    // Execute the HitByProjectile on the actor
-    if (OtherActor->Implements<UProjectileInterface>()) {
-        IProjectileInterface* Interface = Cast<IProjectileInterface>(OtherActor);
+    // Tell the other actor it was hit
+    IProjectileInterface* Interface = Cast<IProjectileInterface>(OtherActor);
+    if (Interface)
         Interface->Execute_HitByProjectile(OtherActor);
-    }
 
     // Destroy the projectile
     Destroy();
-}
-
-void AItemProjectile::ShootInDirection(const FVector& Direction)
-{
-    ProjectileMovementComponent->Velocity = Direction * ProjectileMovementComponent->InitialSpeed;
 }
