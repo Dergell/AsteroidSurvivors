@@ -1,20 +1,4 @@
-/* Asteroid Survivors - Casual Rogue-Lite Indie Game
- * Copyright (C) 2022 Tony Schmich
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
+// Asteroid Survivors - Copyright (C) 2022 Tony Schmich
 
 #include "PlayerStateMain.h"
 
@@ -23,7 +7,7 @@ void APlayerStateMain::UpdateScore_Implementation(int32 Points)
 	// Update the score
 	Score += Points;
 
-	// Tell the player controller to update everything that uses the score
+	// Tell the player controller to update everything that uses the current score
 	IItemInterface* Interface = Cast<IItemInterface>(GetPlayerController());
 	if (Interface)
 		Interface->Execute_UpdateScore(GetPlayerController(), Score);

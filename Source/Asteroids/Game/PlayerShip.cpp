@@ -1,20 +1,4 @@
-/* Asteroid Survivors - Casual Rogue-Lite Indie Game
- * Copyright (C) 2022 Tony Schmich
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
+// Asteroid Survivors - Copyright (C) 2022 Tony Schmich
 
 #include "PlayerShip.h"
 #include "Asteroids/Interfaces/ItemInterface.h"
@@ -26,7 +10,7 @@
 
 APlayerShip::APlayerShip()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
 	// Create components
@@ -86,15 +70,20 @@ void APlayerShip::TurnRight(float Value)
 	FRotator NewRotation = CurrentRotation;
 
 	// Slightly roll in turn direction and roll back when the turn stops
-	if (Value == 0.f) {
+	if (Value == 0.f)
+	{
 		if (FMath::IsNearlyZero(CurrentRotation.Roll, RollSpeed))
 			NewRotation.Roll = 0;
 		else
 			NewRotation.Roll += FMath::IsNegative(CurrentRotation.Roll) ? RollSpeed : -RollSpeed;
-	} else {
+	}
+	else
+	{
 		NewRotation.Roll += Value * RollSpeed;
 	}
 
+	// Cancel any pitch
+	NewRotation.Pitch = 0;
 	// Clamp roll so we don't overshoot
 	NewRotation.Roll = FMath::Clamp(NewRotation.Roll, -RollLimit, RollLimit);
 
@@ -108,44 +97,41 @@ void APlayerShip::TurnRight(float Value)
 
 void APlayerShip::Shoot()
 {
-	// Create basic ActorSpawnParameters
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.Owner = this;
 	SpawnParams.Instigator = GetInstigator();
 
-	// Collect all arrow components tagged as "Muzzle"
 	TArray<UActorComponent*> Muzzles = GetComponentsByTag(UArrowComponent::StaticClass(), FName("Muzzle"));
-
-	for (UActorComponent* Item : Muzzles) {
+	for (UActorComponent* Item : Muzzles)
+	{
 		UArrowComponent* Muzzle = Cast<UArrowComponent>(Item);
-
 		FVector MuzzleLocation = Muzzle->GetComponentLocation();
 		FRotator MuzzleRotation = Muzzle->GetComponentRotation();
 
-		AItemProjectile* Projectile = GetWorld()->SpawnActor<AItemProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
+		AItemProjectile* Projectile = GetWorld()->SpawnActor<AItemProjectile>(
+			ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
 		if (Projectile)
 			Projectile->ShootInDirection(MuzzleRotation.Vector());
 	}
 }
 
-void APlayerShip::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void APlayerShip::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+                                 const FHitResult& SweepResult)
 {
-	// Make sure we overlap an item that is collectable
 	AItemBase* ItemActor = Cast<AItemBase>(OtherActor);
-	if (ItemActor && ItemActor->GetIsCollectable()) {
-		// Check if it implements an ItemInterface
+	if (ItemActor && ItemActor->GetIsCollectable())
+	{
 		IItemInterface* Interface = Cast<IItemInterface>(GetPlayerState());
-		if (Interface) {
-			// Tell the player state to update the score
+		if (Interface)
 			Interface->Execute_UpdateScore(GetPlayerState(), ItemActor->GetPointsValue());
-		}
 
-		// Tell the item it was collected
 		ItemActor->Collected();
 	}
 }
 
-void APlayerShip::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void APlayerShip::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+                        FVector NormalImpulse, const FHitResult& Hit)
 {
-	// Nothing to do yet
+	// TODO
 }

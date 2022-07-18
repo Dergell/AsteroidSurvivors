@@ -1,22 +1,8 @@
-/* Asteroid Survivors - Casual Rogue-Lite Indie Game
- * Copyright (C) 2022 Tony Schmich
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
- */
-
+// Asteroid Survivors - Copyright (C) 2022 Tony Schmich
 
 #include "ItemAsteroid.h"
+#include "Asteroids/Interfaces/ItemInterface.h"
+#include "GameFramework/PlayerState.h"
 
 void AItemAsteroid::BeginPlay()
 {
@@ -27,4 +13,17 @@ void AItemAsteroid::PostActorCreated()
 {
 	int32 RandomIndex = FMath::RandRange(1, AsteroidMeshes.Num()) - 1;
 	Mesh->SetStaticMesh(AsteroidMeshes[RandomIndex]);
+}
+
+void AItemAsteroid::HitByProjectile_Implementation(APawn* ProjectileInstigator)
+{
+	APlayerState* State = ProjectileInstigator->GetPlayerState();
+
+	IItemInterface* Interface = Cast<IItemInterface>(State);
+	if (Interface)
+	{
+		Interface->Execute_UpdateScore(State, PointsValue);
+	}
+
+	Destroy();
 }
