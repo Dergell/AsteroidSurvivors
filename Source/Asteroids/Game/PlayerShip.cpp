@@ -11,7 +11,7 @@
 APlayerShip::APlayerShip()
 {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	// Create components
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
@@ -25,6 +25,15 @@ APlayerShip::APlayerShip()
 
 	// Always simulate physics since we're floating
 	Mesh->SetSimulatePhysics(true);
+}
+
+void APlayerShip::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	float TargetOffet = FMath::Pow(GetVelocity().Length() * BoomExtensionSpeed, BoomExtensionPower);
+	float TargetValue = FMath::Min(BoomMaxLength, BoomMinLength + TargetOffet);
+	FMath::ExponentialSmoothingApprox(SpringArm->TargetArmLength, TargetValue, DeltaSeconds, BoomSmoothingTime);
 }
 
 void APlayerShip::BeginPlay()

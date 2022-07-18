@@ -22,6 +22,8 @@ class ASTEROIDS_API APlayerShip : public APawn
 public:
 	APlayerShip();
 
+	virtual void Tick(float DeltaSeconds) override;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -36,6 +38,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UCameraComponent* Camera;
 
+	// Movement modifiers
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MoveForce = 500.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -44,6 +47,18 @@ protected:
 	float RollSpeed = 1.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float RollLimit = 30.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+
+	// Camera modifiers
+	float BoomMinLength = 2000.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BoomMaxLength = 5000.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BoomSmoothingTime = 0.5f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BoomExtensionSpeed = 1.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float BoomExtensionPower = 1.f;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AItemProjectile> ProjectileClass;
