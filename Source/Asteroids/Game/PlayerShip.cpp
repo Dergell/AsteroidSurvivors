@@ -31,8 +31,8 @@ void APlayerShip::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	float TargetOffet = FMath::Pow(GetVelocity().Length() * BoomExtensionSpeed, BoomExtensionPower);
-	float TargetValue = FMath::Min(BoomMaxLength, BoomMinLength + TargetOffet);
+	float TargetOffset = FMath::Pow(GetVelocity().Length() * BoomExtensionSpeed, BoomExtensionPower);
+	float TargetValue = FMath::Min(BoomMaxLength, BoomMinLength + TargetOffset);
 	FMath::ExponentialSmoothingApprox(SpringArm->TargetArmLength, TargetValue, DeltaSeconds, BoomSmoothingTime);
 }
 
