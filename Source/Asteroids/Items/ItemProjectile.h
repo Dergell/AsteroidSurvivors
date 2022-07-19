@@ -20,9 +20,6 @@ class ASTEROIDS_API AItemProjectile : public AItemBase
 public:
 	AItemProjectile();
 
-	// Called to initialize the projectile's velocity in a direction.
-	void ShootInDirection(const FVector& Direction);
-
 protected:
 	// Called when the game starts or when spawned.
 	virtual void BeginPlay() override;

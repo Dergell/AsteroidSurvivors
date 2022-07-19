@@ -7,6 +7,7 @@
 #include "Components/ArrowComponent.h"
 #include "GameFramework/PlayerState.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 APlayerShip::APlayerShip()
 {
@@ -119,8 +120,6 @@ void APlayerShip::Shoot()
 
 		AItemProjectile* Projectile = GetWorld()->SpawnActor<AItemProjectile>(
 			ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
-		if (Projectile)
-			Projectile->ShootInDirection(MuzzleRotation.Vector());
 	}
 }
 

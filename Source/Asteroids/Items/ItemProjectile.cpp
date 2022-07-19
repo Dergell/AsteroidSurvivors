@@ -30,11 +30,6 @@ void AItemProjectile::BeginPlay()
 	CollisionComponent->OnComponentHit.AddDynamic(this, &AItemProjectile::OnComponentHit);
 }
 
-void AItemProjectile::ShootInDirection(const FVector& Direction)
-{
-	ProjectileMovementComponent->Velocity = Direction * ProjectileMovementComponent->InitialSpeed;
-}
-
 void AItemProjectile::OnComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                                      FVector NormalImpulse, const FHitResult& Hit)
 {
