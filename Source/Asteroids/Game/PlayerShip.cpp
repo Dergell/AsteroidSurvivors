@@ -32,9 +32,13 @@ void APlayerShip::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	float TargetOffset = FMath::Pow(GetVelocity().Length() * BoomExtensionSpeed, BoomExtensionPower);
-	float TargetValue = FMath::Min(BoomMaxLength, BoomMinLength + TargetOffset);
-	FMath::ExponentialSmoothingApprox(SpringArm->TargetArmLength, TargetValue, DeltaSeconds, BoomSmoothingTime);
+	// Clamp velocity
+	if (GetVelocity().Length() > SpeedLimit)
+		Mesh->SetPhysicsLinearVelocity(GetVelocity().GetUnsafeNormal2D() * SpeedLimit);
+
+	// Change camera zoom by velocity
+	const float TargetLength = FMath::Lerp(BoomMinLength, BoomMaxLength, GetVelocity().Length() / SpeedLimit);
+	FMath::ExponentialSmoothingApprox(SpringArm->TargetArmLength, TargetLength, DeltaSeconds, BoomSmoothingTime);
 }
 
 void APlayerShip::BeginPlay()
@@ -44,9 +48,6 @@ void APlayerShip::BeginPlay()
 	// Add event listeners
 	Mesh->OnComponentBeginOverlap.AddDynamic(this, &APlayerShip::OnBeginOverlap);
 	Mesh->OnComponentHit.AddDynamic(this, &APlayerShip::OnHit);
-
-	// Account for object mass
-	MoveForce *= Mesh->GetMass();
 }
 
 void APlayerShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -64,14 +65,14 @@ void APlayerShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void APlayerShip::MoveRight(float Value)
 {
-	const FVector Right = Mesh->GetRightVector() * MoveForce * Value;
-	Mesh->AddForce(Right);
+	const FVector Right = Mesh->GetRightVector() * Acceleration * Value;
+	Mesh->AddForce(Right, NAME_None, true);
 }
 
 void APlayerShip::MoveForward(float Value)
 {
-	const FVector Forward = Mesh->GetForwardVector() * MoveForce * Value;
-	Mesh->AddForce(Forward);
+	const FVector Forward = Mesh->GetForwardVector() * Acceleration * Value;
+	Mesh->AddForce(Forward, NAME_None, true);
 }
 
 void APlayerShip::TurnRight(float Value)
