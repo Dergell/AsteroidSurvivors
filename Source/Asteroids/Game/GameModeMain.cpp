@@ -67,7 +67,7 @@ void AGameModeMain::SpawnAsteroid()
 
 		// Get a random Rotation and Scale
 		const FRotator Rotation = UKismetMathLibrary::RandomRotator(true);
-		const FVector Scale = FVector(FMath::RandRange(0.5f, 2.f));
+		const FVector Scale = FVector(FMath::RandRange(0.8f, 2.5f));
 
 		// Spawn the asteroid and init random movement
 		const FTransform* Transform = new FTransform(Rotation, Location, Scale);

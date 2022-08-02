@@ -33,14 +33,17 @@ void AItemProjectile::BeginPlay()
 void AItemProjectile::OnComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                                      FVector NormalImpulse, const FHitResult& Hit)
 {
-	// If the component hit by this projectile is simulating physics, add an impact force
-	if (OtherComp->IsSimulatingPhysics())
-		OtherComp->AddImpulseAtLocation(ProjectileMovementComponent->Velocity * 100.0f, Hit.ImpactPoint);
+	// Ignore the actor that shot this projectile
+	if (Owner == OtherActor)
+		return;
 
-	// Tell the other actor it was hit
-	IProjectileInterface* Interface = Cast<IProjectileInterface>(OtherActor);
-	if (Interface)
-		Interface->Execute_HitByProjectile(OtherActor, GetInstigator());
+	if (OtherActor != nullptr)
+	{
+		// Tell the other actor it was hit
+		IProjectileInterface* Interface = Cast<IProjectileInterface>(OtherActor);
+		if (Interface)
+			Interface->Execute_HitByProjectile(OtherActor, GetInstigator());
+	}
 
 	// Destroy the projectile
 	Destroy();
