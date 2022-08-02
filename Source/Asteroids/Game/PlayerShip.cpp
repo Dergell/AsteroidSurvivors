@@ -39,6 +39,12 @@ void APlayerShip::Tick(float DeltaSeconds)
 	// Change camera zoom by velocity
 	const float TargetLength = FMath::Lerp(BoomMinLength, BoomMaxLength, GetVelocity().Length() / SpeedLimit);
 	FMath::ExponentialSmoothingApprox(SpringArm->TargetArmLength, TargetLength, DeltaSeconds, BoomSmoothingTime);
+
+	// Change camera rotation by velocity
+	FRotator CamRotation = Camera->GetRelativeRotation();
+	FRotator TargetRotation = FRotator(GetVelocity().X / (SpeedLimit / 4), GetVelocity().Y / (SpeedLimit / 4), 0);
+	FMath::ExponentialSmoothingApprox(CamRotation, TargetRotation, DeltaSeconds, BoomSmoothingTime);
+	Camera->SetRelativeRotation(CamRotation);
 }
 
 void APlayerShip::BeginPlay()
