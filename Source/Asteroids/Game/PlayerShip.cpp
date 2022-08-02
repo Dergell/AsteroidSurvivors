@@ -125,8 +125,7 @@ void APlayerShip::Shoot()
 		FVector MuzzleLocation = Muzzle->GetComponentLocation();
 		FRotator MuzzleRotation = Muzzle->GetComponentRotation();
 
-		AItemProjectile* Projectile = GetWorld()->SpawnActor<AItemProjectile>(
-			ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
+		GetWorld()->SpawnActor<AItemProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
 	}
 }
 

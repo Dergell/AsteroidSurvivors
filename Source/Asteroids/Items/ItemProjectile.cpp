@@ -27,11 +27,12 @@ void AItemProjectile::BeginPlay()
 	Super::BeginPlay();
 
 	// Add event listeners
-	CollisionComponent->OnComponentHit.AddDynamic(this, &AItemProjectile::OnComponentHit);
+	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AItemProjectile::OnComponentBeginOverlap);
 }
 
-void AItemProjectile::OnComponentHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-                                     FVector NormalImpulse, const FHitResult& Hit)
+void AItemProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+                                              UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
+                                              const FHitResult& SweepResult)
 {
 	// Ignore the actor that shot this projectile
 	if (Owner == OtherActor)
