@@ -9,10 +9,10 @@ Asteroid Survivos is a casual rogue-lite indie game where you must survive attac
 * 
 
 ## How to play
+* <kbd>Mouse</kbd> - Turn towards cursor
 * <kbd>W / S</kbd> - Move forward / backward
-* <kbd>A / D</kbd> - Turn left / right
 * <kbd>Q / E</kbd> - Move left / right
-* <kbd>Space</kbd> - Fire manual weapons
+* <kbd>Space / Left Click</kbd> - Fire manual weapons
 
 ## Thanks to
 The corona skybox was made by Ulukai (jonathan.denil@gmail.com), licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License.

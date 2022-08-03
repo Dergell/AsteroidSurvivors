@@ -17,15 +17,18 @@ class ASTEROIDS_API APlayerControllerMain : public APlayerController, public IIt
 	GENERATED_BODY()
 
 public:
+	virtual void Tick(float DeltaSeconds) override;
+
 	// Interface called when score needs to be updated
-	void UpdateScore_Implementation(int32 Points) override;
+	virtual void UpdateScore_Implementation(int32 Points) override;
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<class UWidgetMain> MainWidgetClass;
+	TSubclassOf<UWidgetMain> MainWidgetClass;
 
 private:
 	// Called when the controller possesses a pawn
-	void OnPossess(APawn* aPawn) override;
+	virtual void OnPossess(APawn* aPawn) override;
 
+	UPROPERTY()
 	UWidgetMain* MainWidget;
 };

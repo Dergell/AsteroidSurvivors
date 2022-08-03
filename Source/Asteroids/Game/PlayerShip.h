@@ -24,6 +24,9 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
+	UFUNCTION(BlueprintCallable)
+	void Turn(FVector TargetLocation, float DeltaTime);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -46,8 +49,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float TurnSpeed = 1.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float RollSpeed = 1.f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float RollLimit = 30.f;
 
 	// Camera modifiers
@@ -64,7 +65,6 @@ protected:
 private:
 	void MoveRight(float Value);
 	void MoveForward(float Value);
-	void TurnRight(float Value);
 	void Shoot();
 
 	UFUNCTION()

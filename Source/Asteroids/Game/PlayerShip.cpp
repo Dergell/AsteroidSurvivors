@@ -47,6 +47,26 @@ void APlayerShip::Tick(float DeltaSeconds)
 	Camera->SetRelativeRotation(CamRotation);
 }
 
+void APlayerShip::Turn(FVector TargetLocation, float DeltaTime)
+{
+	const FRotator CurrentRotation = Mesh->GetComponentRotation();
+	const FVector TargetVector = TargetLocation - Mesh->GetComponentLocation();
+	FRotator TargetRotation = TargetVector.Rotation();
+
+	// Add some roll to the turn
+	TargetRotation.Roll = FMath::FindDeltaAngleDegrees(CurrentRotation.Yaw, TargetRotation.Yaw);
+
+	// For the actual turn, just add the direction to the existing yaw
+	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, TurnSpeed);
+	// Clamp roll so we don't overshoot
+	NewRotation.Roll = FMath::Clamp(NewRotation.Roll, -RollLimit, RollLimit);
+	// Cancel any pitch by physics
+	NewRotation.Pitch = 0;
+
+	// Normalize and set to Mesh
+	Mesh->SetRelativeRotation(NewRotation);
+}
+
 void APlayerShip::BeginPlay()
 {
 	Super::BeginPlay();
@@ -63,7 +83,6 @@ void APlayerShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	// Setup axis
 	InputComponent->BindAxis("MoveForward", this, &APlayerShip::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &APlayerShip::MoveRight);
-	InputComponent->BindAxis("TurnRight", this, &APlayerShip::TurnRight);
 
 	// Setup actions
 	InputComponent->BindAction("Shoot", IE_Pressed, this, &APlayerShip::Shoot);
@@ -79,37 +98,6 @@ void APlayerShip::MoveForward(float Value)
 {
 	const FVector Forward = Mesh->GetForwardVector() * Acceleration * Value;
 	Mesh->AddForce(Forward, NAME_None, true);
-}
-
-void APlayerShip::TurnRight(float Value)
-{
-	const FRotator CurrentRotation = Mesh->GetComponentRotation();
-	FRotator NewRotation = CurrentRotation;
-
-	// Slightly roll in turn direction and roll back when the turn stops
-	if (Value == 0.f)
-	{
-		if (FMath::IsNearlyZero(CurrentRotation.Roll, RollSpeed))
-			NewRotation.Roll = 0;
-		else
-			NewRotation.Roll += FMath::IsNegative(CurrentRotation.Roll) ? RollSpeed : -RollSpeed;
-	}
-	else
-	{
-		NewRotation.Roll += Value * RollSpeed;
-	}
-
-	// Cancel any pitch
-	NewRotation.Pitch = 0;
-	// Clamp roll so we don't overshoot
-	NewRotation.Roll = FMath::Clamp(NewRotation.Roll, -RollLimit, RollLimit);
-
-	// For the actual turn, just add the direction to the existing yaw
-	NewRotation.Yaw += Value * TurnSpeed;
-
-	// Normalize and set to Mesh
-	NewRotation.Normalize();
-	Mesh->SetRelativeRotation(NewRotation);
 }
 
 void APlayerShip::Shoot()
