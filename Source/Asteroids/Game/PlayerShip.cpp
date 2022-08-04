@@ -135,5 +135,6 @@ void APlayerShip::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 void APlayerShip::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
                         FVector NormalImpulse, const FHitResult& Hit)
 {
-	// TODO
+	if (CameraShakeClass)
+		UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraShakeClass, Camera->GetComponentLocation(), 0, 1, 0);
 }

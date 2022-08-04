@@ -61,6 +61,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AItemProjectile> ProjectileClass;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UCameraShakeBase> CameraShakeClass;
 
 private:
 	void MoveRight(float Value);
