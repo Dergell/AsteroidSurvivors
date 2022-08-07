@@ -2,14 +2,25 @@
 
 #include "ItemBase.h"
 
+#include "Kismet/GameplayStatics.h"
+
 AItemBase::AItemBase()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	// Create components
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	RootComponent = Mesh;
+}
+
+void AItemBase::Tick(float DeltaSeconds)
+{
+	const AActor* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	if (GetDistanceTo(PlayerPawn) > KillDistance)
+	{
+		Destroy();
+	}
 }
 
 void AItemBase::BeginPlay()

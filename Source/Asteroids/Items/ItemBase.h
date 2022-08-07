@@ -18,6 +18,8 @@ class ASTEROIDS_API AItemBase : public AActor, public IProjectileInterface
 public:
 	AItemBase();
 
+	virtual void Tick(float DeltaSeconds) override;
+
 	// Getters
 	UFUNCTION(BlueprintPure)
 	bool GetIsCollectable() const;
@@ -39,7 +41,10 @@ protected:
 	UStaticMeshComponent* Mesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool IsCollectable;
+	bool IsCollectable = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 PointsValue;
+	int32 PointsValue = 100;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int64 KillDistance = 10000;
 };
