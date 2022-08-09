@@ -7,8 +7,7 @@
 #include "ItemAsteroid.generated.h"
 
 class URotatingMovementComponent;
-class UParticleSystemComponent;
-class UParticleSystem;
+class UNiagaraComponent;
 
 /**
  * Class which implements the asteroid actors. Extended by blueprints.
@@ -37,12 +36,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	URotatingMovementComponent* RotatingMovement;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UParticleSystemComponent* ExplosionComponent;
+	UNiagaraComponent* ExplosionComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TArray<UStaticMesh*> AsteroidMeshes;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	UParticleSystem* ExplosionParticleSystem;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float InitVelocityMin = 0.f;
@@ -57,5 +54,5 @@ protected:
 
 private:
 	UFUNCTION()
-	void OnExplosionFinished(UParticleSystemComponent* FinishedComponent);
+	void OnExplosionFinished(UNiagaraComponent* PSystem);
 };

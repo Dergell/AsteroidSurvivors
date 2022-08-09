@@ -7,15 +7,13 @@
 #include "GameFramework/PlayerState.h"
 #include "GameFramework/RotatingMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Particles/ParticleSystemComponent.h"
+#include "NiagaraComponent.h"
 
 AItemAsteroid::AItemAsteroid()
 {
 	RotatingMovement = CreateDefaultSubobject<URotatingMovementComponent>(TEXT("RotatingMovement"));
-	ExplosionComponent = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("ExplosionEffect"));
+	ExplosionComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ExplosionEffect"));
 	ExplosionComponent->SetupAttachment(Mesh);
-	ExplosionComponent->SetAutoActivate(false);
-	ExplosionComponent->SetTemplate(ExplosionParticleSystem);
 }
 
 void AItemAsteroid::InitRandomMovement() const
@@ -42,10 +40,12 @@ void AItemAsteroid::BeginPlay()
 void AItemAsteroid::PostActorCreated()
 {
 	const int32 RandomIndex = FMath::RandRange(1, AsteroidMeshes.Num()) - 1;
-	Mesh->SetStaticMesh(AsteroidMeshes[RandomIndex]);
+
+	if (AsteroidMeshes.IsValidIndex(RandomIndex))
+		Mesh->SetStaticMesh(AsteroidMeshes[RandomIndex]);
 }
 
-void AItemAsteroid::OnExplosionFinished(UParticleSystemComponent* FinishedComponent)
+void AItemAsteroid::OnExplosionFinished(UNiagaraComponent* PSystem)
 {
 	Destroy();
 }
@@ -66,5 +66,5 @@ void AItemAsteroid::HitByProjectile_Implementation(APawn* ProjectileInstigator)
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	Mesh->SetVisibility(false);
 
-	ExplosionComponent->Activate();
+	ExplosionComponent->ActivateSystem();
 }
