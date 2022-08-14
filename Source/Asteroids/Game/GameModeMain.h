@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "GameModeMain.generated.h"
 
+class AEnemyBase;
 class AItemAsteroid;
 
 /**
@@ -22,6 +23,11 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void SpawnAsteroid();
+	UFUNCTION(BlueprintCallable)
+	void SpawnEnemy();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float SpawnScreenMargin = 200.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool ShouldSpawnAsteroid = false;
@@ -29,11 +35,21 @@ protected:
 	float AsteroidSpawnIntervalMin = 0.2f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float AsteroidSpawnIntervalMax = 2.f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float AsteroidSpawnScreenMargin = 200.f;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<AItemAsteroid> AsteroidSpawnClass;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool ShouldSpawnEnemies = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float EnemySpawnIntervalMin = 1.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float EnemySpawnIntervalMax = 2.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TSubclassOf<AEnemyBase> EnemySpawnClass;
+
 private:
+	FVector GetRandomSpawnLocation() const;
+
 	FTimerHandle SpawnAsteroidTimer;
+	FTimerHandle SpawnEnemyTimer;
 };

@@ -23,6 +23,7 @@ public:
 	APlayerShip();
 
 	virtual void Tick(float DeltaSeconds) override;
+	virtual FVector GetTargetLocation(AActor* RequestedBy) const override;
 
 	UFUNCTION(BlueprintCallable)
 	void Turn(FVector TargetLocation, float DeltaTime);

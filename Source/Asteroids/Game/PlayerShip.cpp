@@ -47,6 +47,23 @@ void APlayerShip::Tick(float DeltaSeconds)
 	Camera->SetRelativeRotation(CamRotation);
 }
 
+FVector APlayerShip::GetTargetLocation(AActor* RequestedBy) const
+{
+	// Current distance to target
+	float Distance = FVector::Dist(GetActorLocation(), RequestedBy->GetActorLocation());
+
+	// First estimate, using current distance
+	FVector Position = GetActorLocation() + ((GetVelocity() * 1.15) * (Distance / 5000));
+	Distance = FVector::Dist(Position, RequestedBy->GetActorLocation());
+
+	// Second estimate, using distance from first estimate
+	Position = GetActorLocation() + ((GetVelocity() * 1.15) * (Distance / 5000));
+	Distance = FVector::Dist(Position, RequestedBy->GetActorLocation());
+
+	// Third estimate, using distance from second estimate
+	return GetActorLocation() + ((GetVelocity() * 1.15) * (Distance / 5000));
+}
+
 void APlayerShip::Turn(FVector TargetLocation, float DeltaTime)
 {
 	const FRotator CurrentRotation = Mesh->GetComponentRotation();

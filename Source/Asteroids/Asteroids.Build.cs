@@ -9,7 +9,7 @@ public class Asteroids : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
 		PublicDependencyModuleNames.AddRange(new string[]
-			{ "Core", "CoreUObject", "Engine", "InputCore", "Niagara" });
+			{ "Core", "CoreUObject", "Engine", "InputCore", "Niagara", "AIModule", "GameplayTasks" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
 
