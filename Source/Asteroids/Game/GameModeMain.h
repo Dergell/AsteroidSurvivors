@@ -29,6 +29,8 @@ protected:
 	float AsteroidSpawnIntervalMin = 0.2f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float AsteroidSpawnIntervalMax = 2.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float AsteroidSpawnScreenMargin = 200.f;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<AItemAsteroid> AsteroidSpawnClass;
 

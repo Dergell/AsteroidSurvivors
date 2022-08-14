@@ -17,7 +17,7 @@ void AGameModeMain::BeginPlay()
 
 void AGameModeMain::SpawnAsteroid()
 {
-	if (ShouldSpawnAsteroid)
+	if (ShouldSpawnAsteroid && AsteroidSpawnClass)
 	{
 		const APlayerController* PlayerController = Cast<APlayerController>(
 			UGameplayStatics::GetPlayerController(GetWorld(), 0));
@@ -48,10 +48,10 @@ void AGameModeMain::SpawnAsteroid()
 		                                                       FPlane(0, 0, 1, 0));
 
 		// Add some safety margin
-		UpperLeftCorner += FVector(100, -100, 0);
-		UpperRightCorner += FVector(100, 100, 0);
-		LowerRightCorner += FVector(-100, 100, 0);
-		LowerLeftCorner += FVector(-100, -100, 0);
+		UpperLeftCorner += FVector(AsteroidSpawnScreenMargin, -AsteroidSpawnScreenMargin, 0);
+		UpperRightCorner += FVector(AsteroidSpawnScreenMargin, AsteroidSpawnScreenMargin, 0);
+		LowerRightCorner += FVector(-AsteroidSpawnScreenMargin, AsteroidSpawnScreenMargin, 0);
+		LowerLeftCorner += FVector(-AsteroidSpawnScreenMargin, -AsteroidSpawnScreenMargin, 0);
 
 		// Get a random point on an random edge
 		FVector Location;
