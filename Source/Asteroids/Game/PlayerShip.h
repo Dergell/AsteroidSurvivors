@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "AbilitySystemInterface.h"
 #include "PlayerShip.generated.h"
 
 class AItemProjectile;
@@ -15,7 +16,7 @@ class USpringArmComponent;
  * Class which implements the player ships. Extended by blueprints and classes.
  */
 UCLASS()
-class ASTEROIDS_API APlayerShip : public APawn
+class ASTEROIDS_API APlayerShip : public APawn, public IAbilitySystemInterface 
 {
 	GENERATED_BODY()
 
@@ -24,6 +25,7 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 	virtual FVector GetTargetLocation(AActor* RequestedBy) const override;
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	UFUNCTION(BlueprintCallable)
 	void Turn(FVector TargetLocation, float DeltaTime);
@@ -34,6 +36,8 @@ protected:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void OnRep_PlayerState() override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* Mesh;
@@ -68,7 +72,6 @@ protected:
 private:
 	void MoveRight(float Value);
 	void MoveForward(float Value);
-	void Shoot();
 
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,

@@ -1,6 +1,11 @@
 // Asteroid Survivors - Copyright (C) 2022 Tony Schmich
 
 #include "PlayerShip.h"
+
+#include "AbilitySystemComponent.h"
+#include "GameplayTask.h"
+#include "PlayerStateMain.h"
+#include "Asteroids/Asteroids.h"
 #include "Asteroids/Interfaces/ItemInterface.h"
 #include "Asteroids/Items/ItemProjectile.h"
 #include "Camera/CameraComponent.h"
@@ -64,6 +69,12 @@ FVector APlayerShip::GetTargetLocation(AActor* RequestedBy) const
 	return GetActorLocation() + ((GetVelocity() * 1.15) * (Distance / 5000));
 }
 
+UAbilitySystemComponent* APlayerShip::GetAbilitySystemComponent() const
+{
+	const APlayerStateMain* State = GetPlayerState<APlayerStateMain>();
+	return State->GetAbilitySystemComponent();
+}
+
 void APlayerShip::Turn(FVector TargetLocation, float DeltaTime)
 {
 	const FRotator CurrentRotation = Mesh->GetComponentRotation();
@@ -101,8 +112,55 @@ void APlayerShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	InputComponent->BindAxis("MoveForward", this, &APlayerShip::MoveForward);
 	InputComponent->BindAxis("MoveRight", this, &APlayerShip::MoveRight);
 
-	// Setup actions
-	InputComponent->BindAction("Shoot", IE_Pressed, this, &APlayerShip::Shoot);
+	// Setup abilities
+	UAbilitySystemComponent* AbilitySystemComponent = GetAbilitySystemComponent();
+	if (AbilitySystemComponent && InputComponent)
+	{
+		const FGameplayAbilityInputBinds Binds(
+			FString("Confirm"), FString("Cancel"),
+			FString("EAbilityInputID"),
+			static_cast<int32>(EAbilityInputID::Confirm),
+			static_cast<int32>(EAbilityInputID::Cancel)
+		);
+		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, Binds);
+	}
+}
+
+void APlayerShip::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	if (APlayerStateMain* State = GetPlayerState<APlayerStateMain>())
+	{
+		UAbilitySystemComponent* AbilitySystemComponent = State->GetAbilitySystemComponent();
+		AbilitySystemComponent->InitAbilityActorInfo(State, this);
+
+		State->InitializeAttributes();
+		State->GiveAbilities();
+	}
+}
+
+void APlayerShip::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	if (APlayerStateMain* State = GetPlayerState<APlayerStateMain>())
+	{
+		UAbilitySystemComponent* AbilitySystemComponent = State->GetAbilitySystemComponent();
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
+		State->InitializeAttributes();
+
+		if (AbilitySystemComponent && InputComponent)
+		{
+			const FGameplayAbilityInputBinds Binds(
+				FString("Confirm"), FString("Cancel"),
+				FString("EAbilityInputID"),
+				static_cast<int32>(EAbilityInputID::Confirm),
+				static_cast<int32>(EAbilityInputID::Cancel)
+			);
+			AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, Binds);
+		}
+	}
 }
 
 void APlayerShip::MoveRight(float Value)
@@ -115,23 +173,6 @@ void APlayerShip::MoveForward(float Value)
 {
 	const FVector Forward = Mesh->GetForwardVector() * Acceleration * Value;
 	Mesh->AddForce(Forward, NAME_None, true);
-}
-
-void APlayerShip::Shoot()
-{
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = this;
-	SpawnParams.Instigator = GetInstigator();
-
-	TArray<UActorComponent*> Muzzles = GetComponentsByTag(UArrowComponent::StaticClass(), FName("Muzzle"));
-	for (UActorComponent* Item : Muzzles)
-	{
-		UArrowComponent* Muzzle = Cast<UArrowComponent>(Item);
-		FVector MuzzleLocation = Muzzle->GetComponentLocation();
-		FRotator MuzzleRotation = Muzzle->GetComponentRotation();
-
-		GetWorld()->SpawnActor<AItemProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
-	}
 }
 
 void APlayerShip::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
