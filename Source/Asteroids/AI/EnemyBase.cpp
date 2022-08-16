@@ -3,6 +3,7 @@
 
 #include "EnemyBase.h"
 
+#include "NiagaraComponent.h"
 #include "Asteroids/Components/AIMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -15,6 +16,9 @@ AEnemyBase::AEnemyBase()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	RootComponent = Mesh;
 	Mesh->SetSimulatePhysics(true);
+
+	ExplosionComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ExplosionEffect"));
+	ExplosionComponent->SetupAttachment(Mesh);
 
 	MovementComp = CreateDefaultSubobject<UAIMovementComponent>(TEXT("MovementComp"));
 }
@@ -29,7 +33,15 @@ void AEnemyBase::Tick(float DeltaTime)
 
 void AEnemyBase::HitByProjectile_Implementation(APawn* ProjectileInstigator)
 {
-	Destroy();
+	MovementComp->Deactivate();
+	Mesh->SetPhysicsLinearVelocity(FVector::ZeroVector);
+	Mesh->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+	Mesh->SetSimulatePhysics(false);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Mesh->SetVisibility(false, true);
+
+	ExplosionComponent->SetVisibility(true);
+	ExplosionComponent->ActivateSystem();
 }
 
 // Called when the game starts or when spawned
@@ -38,6 +50,8 @@ void AEnemyBase::BeginPlay()
 	Super::BeginPlay();
 
 	Target = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+
+	ExplosionComponent->OnSystemFinished.AddDynamic(this, &AEnemyBase::OnExplosionFinished);
 }
 
 void AEnemyBase::FaceTargetDirection(float DeltaTime)
@@ -58,4 +72,9 @@ void AEnemyBase::FaceTargetDirection(float DeltaTime)
 
 	// Normalize and set to Mesh
 	SetActorRotation(NewRotation);
+}
+
+void AEnemyBase::OnExplosionFinished(UNiagaraComponent* PSystem)
+{
+	Destroy();
 }

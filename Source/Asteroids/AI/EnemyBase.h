@@ -7,6 +7,7 @@
 #include "GameFramework/Pawn.h"
 #include "EnemyBase.generated.h"
 
+class UNiagaraComponent;
 class AItemProjectile;
 class UAIMovementComponent;
 class UBehaviorTree;
@@ -36,6 +37,8 @@ protected:
 	UStaticMeshComponent* Mesh;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UAIMovementComponent* MovementComp;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UNiagaraComponent* ExplosionComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UBehaviorTree* BehaviorTree;
@@ -52,4 +55,7 @@ protected:
 
 private:
 	void FaceTargetDirection(float DeltaTime);
+	
+	UFUNCTION()
+	void OnExplosionFinished(UNiagaraComponent* PSystem);
 };
