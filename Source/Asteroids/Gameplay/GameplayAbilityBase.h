@@ -18,6 +18,14 @@ class ASTEROIDS_API UGameplayAbilityBase : public UGameplayAbility
 public:
 	UGameplayAbilityBase();
 
+	virtual const FGameplayTagContainer* GetCooldownTags() const override;
+	virtual void ApplyCooldown(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
+	                           const FGameplayAbilityActivationInfo ActivationInfo) const override;
+
+	// If an ability is marked as 'ActivateAbilityOnGranted', activate them immediately when given here
+	// Epic's comment: Projects may want to initiate passives or do other "BeginPlay" type of logic here.
+	virtual void OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
+	
 	// Abilities with this set will automatically activate when the input is pressed
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Ability")
 	EAbilityInputID AbilityInputID = EAbilityInputID::None;
@@ -31,7 +39,11 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Ability")
 	bool ActivateAbilityOnGranted = false;
 
-	// If an ability is marked as 'ActivateAbilityOnGranted', activate them immediately when given here
-	// Epic's comment: Projects may want to initiate passives or do other "BeginPlay" type of logic here.
-	virtual void OnAvatarSet(const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilitySpec& Spec) override;
+protected:
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Ability")
+	float CooldownDuration;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Ability")
+	FGameplayTagContainer CooldownTags;
+	UPROPERTY(Transient)
+	FGameplayTagContainer TempCooldownTags;
 };

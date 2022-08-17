@@ -65,8 +65,6 @@ protected:
 	float BoomSmoothingTime = 0.5f;
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<AItemProjectile> ProjectileClass;
-	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UCameraShakeBase> CameraShakeClass;
 
 private:
