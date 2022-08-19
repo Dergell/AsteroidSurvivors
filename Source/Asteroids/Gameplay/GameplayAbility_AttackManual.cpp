@@ -3,6 +3,8 @@
 
 #include "GameplayAbility_AttackManual.h"
 
+#include "AbilitySystemComponent.h"
+#include "Abilities/Tasks/AbilityTask_Repeat.h"
 #include "Asteroids/Items/ItemProjectile.h"
 #include "Components/ArrowComponent.h"
 
@@ -11,38 +13,56 @@ UGameplayAbility_AttackManual::UGameplayAbility_AttackManual()
 	AbilityInputID = EAbilityInputID::AttackManual;
 }
 
+void UGameplayAbility_AttackManual::InputReleased(const FGameplayAbilitySpecHandle Handle,
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
+{
+	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+}
+
 void UGameplayAbility_AttackManual::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
-                                                    const FGameplayAbilityActorInfo* ActorInfo,
-                                                    const FGameplayAbilityActivationInfo ActivationInfo,
-                                                    const FGameplayEventData* TriggerEventData)
+	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo,
+	const FGameplayEventData* TriggerEventData)
 {
 	if (HasAuthorityOrPredictionKey(ActorInfo, &ActivationInfo))
 	{
-		if (!CommitAbility(Handle, ActorInfo, ActivationInfo))
+		if (!CommitAbility(Handle, ActorInfo, ActivationInfo) || !IsValid(ProjectileClass))
 		{
+			EndAbility(Handle, ActorInfo, ActivationInfo, true, true);
 			return;
 		}
 
-		APawn* Pawn = CastChecked<APawn>(ActorInfo->AvatarActor.Get());
-		if (Pawn == nullptr)
-		{
-			return;
-		}
+		RepeatTask = UAbilityTask_Repeat::RepeatAction(this, TimeBetweenShots, ShotsPerActivation);
+		RepeatTask->OnPerformAction.AddDynamic(this, &UGameplayAbility_AttackManual::OnPerformAction);
+		RepeatTask->OnFinished.AddDynamic(this, &UGameplayAbility_AttackManual::OnFinished);
+		RepeatTask->ReadyForActivation();
+	}
+}
 
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = Pawn;
-		SpawnParams.Instigator = Pawn->GetInstigator();
+void UGameplayAbility_AttackManual::OnFinished(int32 ActionNumber)
+{
+	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, false);
+}
 
-		TArray<UActorComponent*> Muzzles = Pawn->GetComponentsByTag(UArrowComponent::StaticClass(), FName("Muzzle"));
-		for (UActorComponent* Item : Muzzles)
-		{
-			UArrowComponent* Muzzle = Cast<UArrowComponent>(Item);
-			FVector MuzzleLocation = Muzzle->GetComponentLocation();
-			FRotator MuzzleRotation = Muzzle->GetComponentRotation();
-
-			GetWorld()->SpawnActor<AItemProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
-		}
+void UGameplayAbility_AttackManual::OnPerformAction(int32 ActionNumber)
+{
+	APawn* Pawn = CastChecked<APawn>(GetAvatarActorFromActorInfo());
+	if (Pawn == nullptr)
+	{
+		EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true, true);
+		return;
 	}
 
-	EndAbility(Handle, ActorInfo, ActivationInfo, true, false);
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = Pawn;
+	SpawnParams.Instigator = Pawn->GetInstigator();
+
+	TArray<UActorComponent*> Muzzles = Pawn->GetComponentsByTag(UArrowComponent::StaticClass(), FName("Muzzle"));
+	for (UActorComponent* Item : Muzzles)
+	{
+		UArrowComponent* Muzzle = Cast<UArrowComponent>(Item);
+		FVector MuzzleLocation = Muzzle->GetComponentLocation();
+		FRotator MuzzleRotation = Muzzle->GetComponentRotation();
+
+		GetWorld()->SpawnActor<AItemProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
+	}
 }
