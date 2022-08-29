@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "AbilitySystemInterface.h"
+#include "Camera/CameraComponent.h"
 #include "PlayerShip.generated.h"
 
 class AItemProjectile;
@@ -16,7 +17,7 @@ class USpringArmComponent;
  * Class which implements the player ships. Extended by blueprints and classes.
  */
 UCLASS()
-class ASTEROIDS_API APlayerShip : public APawn, public IAbilitySystemInterface 
+class ASTEROIDS_API APlayerShip : public APawn, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -27,8 +28,8 @@ public:
 	virtual FVector GetTargetLocation(AActor* RequestedBy) const override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
-	UFUNCTION(BlueprintCallable)
-	void Turn(FVector TargetLocation, float DeltaTime);
+	UFUNCTION(BlueprintGetter)
+	FORCEINLINE FVector GetCameraLocation() const { return Camera->GetComponentLocation(); }
 
 protected:
 	// Called when the game starts or when spawned
@@ -68,13 +69,14 @@ protected:
 	TSubclassOf<UCameraShakeBase> CameraShakeClass;
 
 private:
-	void MoveRight(float Value);
-	void MoveForward(float Value);
+	void MoveHorizontal(float Value);
+	void MoveVertical(float Value);
+	void RotatePawn();
 
 	UFUNCTION()
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	                    int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-	           FVector NormalImpulse, const FHitResult& Hit);
+		FVector NormalImpulse, const FHitResult& Hit);
 };

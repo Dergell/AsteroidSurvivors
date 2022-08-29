@@ -4,6 +4,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "GameplayTask.h"
+#include "PlayerControllerMain.h"
 #include "PlayerStateMain.h"
 #include "Asteroids/Asteroids.h"
 #include "Asteroids/Interfaces/ItemInterface.h"
@@ -50,6 +51,9 @@ void APlayerShip::Tick(float DeltaSeconds)
 	FRotator TargetRotation = FRotator(GetVelocity().X / (SpeedLimit / 4), GetVelocity().Y / (SpeedLimit / 4), 0);
 	FMath::ExponentialSmoothingApprox(CamRotation, TargetRotation, DeltaSeconds, BoomSmoothingTime);
 	Camera->SetRelativeRotation(CamRotation);
+
+	// Rotate pawn towards cursor
+	RotatePawn();
 }
 
 FVector APlayerShip::GetTargetLocation(AActor* RequestedBy) const
@@ -75,26 +79,6 @@ UAbilitySystemComponent* APlayerShip::GetAbilitySystemComponent() const
 	return State->GetAbilitySystemComponent();
 }
 
-void APlayerShip::Turn(FVector TargetLocation, float DeltaTime)
-{
-	const FRotator CurrentRotation = Mesh->GetComponentRotation();
-	const FVector TargetVector = TargetLocation - Mesh->GetComponentLocation();
-	FRotator TargetRotation = TargetVector.Rotation();
-
-	// Add some roll to the turn
-	TargetRotation.Roll = FMath::FindDeltaAngleDegrees(CurrentRotation.Yaw, TargetRotation.Yaw);
-
-	// For the actual turn, just add the direction to the existing yaw
-	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, TurnSpeed);
-	// Clamp roll so we don't overshoot
-	NewRotation.Roll = FMath::Clamp(NewRotation.Roll, -RollLimit, RollLimit);
-	// Cancel any pitch by physics
-	NewRotation.Pitch = 0;
-
-	// Normalize and set to Mesh
-	Mesh->SetRelativeRotation(NewRotation);
-}
-
 void APlayerShip::BeginPlay()
 {
 	Super::BeginPlay();
@@ -109,13 +93,12 @@ void APlayerShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	// Setup axis
-	InputComponent->BindAxis("MoveForward", this, &APlayerShip::MoveForward);
-	InputComponent->BindAxis("MoveRight", this, &APlayerShip::MoveRight);
+	InputComponent->BindAxis("MoveVertical", this, &APlayerShip::MoveVertical);
+	InputComponent->BindAxis("MoveHorizontal", this, &APlayerShip::MoveHorizontal);
 
 	// Setup abilities
 	UAbilitySystemComponent* AbilitySystemComponent = GetAbilitySystemComponent();
-	if (AbilitySystemComponent && InputComponent)
-	{
+	if (AbilitySystemComponent && InputComponent) {
 		const FGameplayAbilityInputBinds Binds(
 			FString("Confirm"), FString("Cancel"),
 			FString("EAbilityInputID"),
@@ -130,8 +113,7 @@ void APlayerShip::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	if (APlayerStateMain* State = GetPlayerState<APlayerStateMain>())
-	{
+	if (APlayerStateMain* State = GetPlayerState<APlayerStateMain>()) {
 		UAbilitySystemComponent* AbilitySystemComponent = State->GetAbilitySystemComponent();
 		AbilitySystemComponent->InitAbilityActorInfo(State, this);
 
@@ -144,14 +126,12 @@ void APlayerShip::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 
-	if (APlayerStateMain* State = GetPlayerState<APlayerStateMain>())
-	{
+	if (APlayerStateMain* State = GetPlayerState<APlayerStateMain>()) {
 		UAbilitySystemComponent* AbilitySystemComponent = State->GetAbilitySystemComponent();
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 		State->InitializeAttributes();
 
-		if (AbilitySystemComponent && InputComponent)
-		{
+		if (AbilitySystemComponent && InputComponent) {
 			const FGameplayAbilityInputBinds Binds(
 				FString("Confirm"), FString("Cancel"),
 				FString("EAbilityInputID"),
@@ -163,25 +143,43 @@ void APlayerShip::OnRep_PlayerState()
 	}
 }
 
-void APlayerShip::MoveRight(float Value)
+void APlayerShip::MoveHorizontal(float Value)
 {
-	const FVector Right = Mesh->GetRightVector() * Acceleration * Value;
-	Mesh->AddForce(Right, NAME_None, true);
+	const FVector Horizontal = FVector::RightVector * Acceleration * Value;
+	Mesh->AddForce(Horizontal, NAME_None, true);
 }
 
-void APlayerShip::MoveForward(float Value)
+void APlayerShip::MoveVertical(float Value)
 {
-	const FVector Forward = Mesh->GetForwardVector() * Acceleration * Value;
-	Mesh->AddForce(Forward, NAME_None, true);
+	const FVector Vertical = FVector::ForwardVector * Acceleration * Value;
+	Mesh->AddForce(Vertical, NAME_None, true);
+}
+
+void APlayerShip::RotatePawn()
+{
+	const FRotator CurrentRotation = Mesh->GetComponentRotation();
+	FRotator TargetRotation = GetController<APlayerControllerMain>()->GetCursorVector().Rotation();
+
+	// Add some roll to the turn
+	TargetRotation.Roll = FMath::FindDeltaAngleDegrees(CurrentRotation.Yaw, TargetRotation.Yaw);
+
+	// For the actual turn, just add the direction to the existing yaw
+	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation,
+		UGameplayStatics::GetWorldDeltaSeconds(GetWorld()), TurnSpeed);
+	// Clamp roll so we don't overshoot
+	NewRotation.Roll = FMath::Clamp(NewRotation.Roll, -RollLimit, RollLimit);
+	// Cancel any pitch by physics
+	NewRotation.Pitch = 0;
+
+	// Normalize and set to Mesh
+	Mesh->SetRelativeRotation(NewRotation);
 }
 
 void APlayerShip::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                 UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
-                                 const FHitResult& SweepResult)
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	AItemBase* ItemActor = Cast<AItemBase>(OtherActor);
-	if (ItemActor && ItemActor->GetIsCollectable())
-	{
+	if (ItemActor && ItemActor->GetIsCollectable()) {
 		IItemInterface* Interface = Cast<IItemInterface>(GetPlayerState());
 		if (Interface)
 			Interface->Execute_UpdateScore(GetPlayerState(), ItemActor->GetPointsValue());
@@ -191,7 +189,7 @@ void APlayerShip::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 }
 
 void APlayerShip::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-                        FVector NormalImpulse, const FHitResult& Hit)
+	FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (CameraShakeClass)
 		UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraShakeClass, Camera->GetComponentLocation(), 0, 1, 0);

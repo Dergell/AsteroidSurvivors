@@ -25,19 +25,30 @@ public:
 	// Interface called when score needs to be updated
 	virtual void UpdateScore_Implementation(int32 Points) override;
 
+	UFUNCTION(BlueprintGetter)
+	FVector GetCursorVector() const;
+
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UWidgetMain> MainWidgetClass;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+	virtual void SetupInputComponent() override;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AStaticMeshActor> CursorClass;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool GamepadActive = false;
+
 private:
 	// Called when the controller possesses a pawn
 	virtual void OnPossess(APawn* aPawn) override;
+
+	void UpdateGamepad(FKey Key);
+	void MoveCursorMouse();
+	void MoveCursorGamepad(FVector AxisValue);
 
 	UPROPERTY()
 	UWidgetMain* MainWidget;
