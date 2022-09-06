@@ -3,8 +3,11 @@
 
 #include "EnemyBase.h"
 
+#include "AbilitySystemComponent.h"
 #include "NiagaraComponent.h"
 #include "Asteroids/Components/AIMovementComponent.h"
+#include "Asteroids/Gameplay/AttributeSetBase.h"
+#include "Asteroids/Gameplay/GameplayAbilityBase.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -21,6 +24,11 @@ AEnemyBase::AEnemyBase()
 	ExplosionComponent->SetupAttachment(Mesh);
 
 	MovementComp = CreateDefaultSubobject<UAIMovementComponent>(TEXT("MovementComp"));
+
+	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	AbilitySystemComponent->SetIsReplicated(true);
+	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Full);
+	Attributes = CreateDefaultSubobject<UAttributeSetBase>(TEXT("Attributes"));
 }
 
 // Called every frame
@@ -44,6 +52,36 @@ void AEnemyBase::HitByProjectile_Implementation(APawn* ProjectileInstigator)
 	ExplosionComponent->ActivateSystem();
 }
 
+UAbilitySystemComponent* AEnemyBase::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+void AEnemyBase::InitializeAttributes()
+{
+	if (AbilitySystemComponent && DefaultAttributeEffect) {
+		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+		EffectContext.AddSourceObject(this);
+
+		const FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(
+			DefaultAttributeEffect, 1, EffectContext);
+
+		if (SpecHandle.IsValid()) {
+			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+		}
+	}
+}
+
+void AEnemyBase::GiveAbilities()
+{
+	if (HasAuthority() && AbilitySystemComponent) {
+		for (TSubclassOf<UGameplayAbilityBase>& StartupAbility : DefaultAbilities) {
+			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, 1,
+				static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
+		}
+	}
+}
+
 // Called when the game starts or when spawned
 void AEnemyBase::BeginPlay()
 {
@@ -52,6 +90,10 @@ void AEnemyBase::BeginPlay()
 	Target = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 
 	ExplosionComponent->OnSystemFinished.AddDynamic(this, &AEnemyBase::OnExplosionFinished);
+
+	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	InitializeAttributes();
+	GiveAbilities();
 }
 
 void AEnemyBase::FaceTargetDirection(float DeltaTime)

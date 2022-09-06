@@ -22,12 +22,12 @@ class ASTEROIDS_API APlayerStateMain : public APlayerState, public IItemInterfac
 
 public:
 	APlayerStateMain();
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	// Called when the score needs to be updated
 	void UpdateScore_Implementation(int32 Points) override;
 
 	// Gameplay Ability System
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	virtual void InitializeAttributes();
 	virtual void GiveAbilities();
 

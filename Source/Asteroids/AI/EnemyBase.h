@@ -3,17 +3,22 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemInterface.h"
 #include "Asteroids/Interfaces/ProjectileInterface.h"
 #include "GameFramework/Pawn.h"
 #include "EnemyBase.generated.h"
 
+class UGameplayEffect;
+class UAttributeSetBase;
+class UGameplayAbilityBase;
+class UAbilitySystemComponent;
 class UNiagaraComponent;
 class AItemProjectile;
 class UAIMovementComponent;
 class UBehaviorTree;
 
 UCLASS()
-class ASTEROIDS_API AEnemyBase : public APawn, public IProjectileInterface
+class ASTEROIDS_API AEnemyBase : public APawn, public IProjectileInterface, public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -28,6 +33,11 @@ public:
 	virtual void HitByProjectile_Implementation(APawn* ProjectileInstigator) override;
 
 	FORCEINLINE UBehaviorTree* GetBehaviorTree() const { return BehaviorTree; }
+
+	// Gameplay Ability System
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	virtual void InitializeAttributes();
+	virtual void GiveAbilities();
 
 protected:
 	// Called when the game starts or when spawned
@@ -52,6 +62,16 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AItemProjectile> ProjectileClass;
+
+	// Gameplay Ability System
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
+	UAbilitySystemComponent* AbilitySystemComponent;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
+	TArray<TSubclassOf<UGameplayAbilityBase>> DefaultAbilities;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	UAttributeSetBase* Attributes;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	TSubclassOf<UGameplayEffect> DefaultAttributeEffect;
 
 private:
 	void FaceTargetDirection(float DeltaTime);
