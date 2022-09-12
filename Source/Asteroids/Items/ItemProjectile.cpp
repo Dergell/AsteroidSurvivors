@@ -43,7 +43,7 @@ void AItemProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedCom
 		// Tell the other actor it was hit
 		IProjectileInterface* Interface = Cast<IProjectileInterface>(OtherActor);
 		if (Interface)
-			Interface->Execute_HitByProjectile(OtherActor, GetInstigator());
+			Interface->Execute_HitByProjectile(OtherActor, GetInstigator(), GameplayEffect);
 	}
 
 	// Destroy the projectile

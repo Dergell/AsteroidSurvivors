@@ -6,6 +6,7 @@
 #include "AbilitySystemInterface.h"
 #include "Asteroids/Interfaces/ProjectileInterface.h"
 #include "GameFramework/Pawn.h"
+#include "GameplayEffectTypes.h"
 #include "EnemyBase.generated.h"
 
 class UGameplayEffect;
@@ -30,7 +31,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Called when hit by a projectile
-	virtual void HitByProjectile_Implementation(APawn* ProjectileInstigator) override;
+	virtual void HitByProjectile_Implementation(APawn* ProjectileInstigator,
+		TSubclassOf<UGameplayEffect> ProjectileEffect) override;
 
 	FORCEINLINE UBehaviorTree* GetBehaviorTree() const { return BehaviorTree; }
 
@@ -48,7 +50,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UAIMovementComponent* MovementComp;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UNiagaraComponent* ExplosionComponent;
+	UNiagaraComponent* ExplosionNiagaraComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UAudioComponent* ExplosionAudioComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UBehaviorTree* BehaviorTree;
@@ -64,6 +68,8 @@ protected:
 	TSubclassOf<AItemProjectile> ProjectileClass;
 
 	// Gameplay Ability System
+	void HealthChanged(const FOnAttributeChangeData& Data);
+
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
 	UAbilitySystemComponent* AbilitySystemComponent;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
@@ -75,7 +81,8 @@ protected:
 
 private:
 	void FaceTargetDirection(float DeltaTime);
-	
+	void Die();
+
 	UFUNCTION()
 	void OnExplosionFinished(UNiagaraComponent* PSystem);
 };

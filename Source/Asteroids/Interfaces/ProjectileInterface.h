@@ -6,6 +6,8 @@
 #include "UObject/Interface.h"
 #include "ProjectileInterface.generated.h"
 
+class UGameplayEffect;
+
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI, Blueprintable)
 class UProjectileInterface : public UInterface
@@ -23,5 +25,5 @@ class ASTEROIDS_API IProjectileInterface
 public:
 	// Called when hit by a projectile
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void HitByProjectile(APawn* ProjectileInstigator);
+	void HitByProjectile(APawn* ProjectileInstigator, TSubclassOf<UGameplayEffect> ProjectileEffect);
 };

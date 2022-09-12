@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "ItemProjectile.generated.h"
 
+class UGameplayEffect;
 class USphereComponent;
 class UProjectileMovementComponent;
 
@@ -28,6 +29,9 @@ protected:
 	USphereComponent* CollisionComponent;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UProjectileMovementComponent* ProjectileMovementComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UGameplayEffect> GameplayEffect;
 
 private:
 	UFUNCTION()

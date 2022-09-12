@@ -8,6 +8,7 @@
 #include "Asteroids/Components/AIMovementComponent.h"
 #include "Asteroids/Gameplay/AttributeSetBase.h"
 #include "Asteroids/Gameplay/GameplayAbilityBase.h"
+#include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -20,8 +21,10 @@ AEnemyBase::AEnemyBase()
 	RootComponent = Mesh;
 	Mesh->SetSimulatePhysics(true);
 
-	ExplosionComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ExplosionEffect"));
-	ExplosionComponent->SetupAttachment(Mesh);
+	ExplosionNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ExplosionEffect"));
+	ExplosionNiagaraComponent->SetupAttachment(Mesh);
+	ExplosionAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("ExplosionSound"));
+	ExplosionAudioComponent->SetupAttachment(ExplosionNiagaraComponent);
 
 	MovementComp = CreateDefaultSubobject<UAIMovementComponent>(TEXT("MovementComp"));
 
@@ -39,17 +42,18 @@ void AEnemyBase::Tick(float DeltaTime)
 	FaceTargetDirection(DeltaTime);
 }
 
-void AEnemyBase::HitByProjectile_Implementation(APawn* ProjectileInstigator)
+void AEnemyBase::HitByProjectile_Implementation(APawn* ProjectileInstigator,
+	TSubclassOf<UGameplayEffect> ProjectileEffect)
 {
-	MovementComp->Deactivate();
-	Mesh->SetPhysicsLinearVelocity(FVector::ZeroVector);
-	Mesh->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
-	Mesh->SetSimulatePhysics(false);
-	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	Mesh->SetVisibility(false, true);
-
-	ExplosionComponent->SetVisibility(true);
-	ExplosionComponent->ActivateSystem();
+	if (ProjectileEffect) {
+		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+		EffectContext.AddSourceObject(ProjectileInstigator);
+		const FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(
+			ProjectileEffect, 1, EffectContext);
+		if (SpecHandle.IsValid()) {
+			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+		}
+	}
 }
 
 UAbilitySystemComponent* AEnemyBase::GetAbilitySystemComponent() const
@@ -85,15 +89,25 @@ void AEnemyBase::GiveAbilities()
 // Called when the game starts or when spawned
 void AEnemyBase::BeginPlay()
 {
-	Super::BeginPlay();
-
 	Target = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 
-	ExplosionComponent->OnSystemFinished.AddDynamic(this, &AEnemyBase::OnExplosionFinished);
+	ExplosionNiagaraComponent->OnSystemFinished.AddDynamic(this, &AEnemyBase::OnExplosionFinished);
 
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetHealthAttribute()).AddUObject(this,
+		&AEnemyBase::HealthChanged);
+
 	InitializeAttributes();
 	GiveAbilities();
+
+	Super::BeginPlay();
+}
+
+void AEnemyBase::HealthChanged(const FOnAttributeChangeData& Data)
+{
+	if (Data.NewValue <= 0) {
+		Die();
+	}
 }
 
 void AEnemyBase::FaceTargetDirection(float DeltaTime)
@@ -114,6 +128,22 @@ void AEnemyBase::FaceTargetDirection(float DeltaTime)
 
 	// Normalize and set to Mesh
 	SetActorRotation(NewRotation);
+}
+
+void AEnemyBase::Die()
+{
+	AbilitySystemComponent->AddLooseGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Dead")));
+
+	MovementComp->Deactivate();
+	Mesh->SetPhysicsLinearVelocity(FVector::ZeroVector);
+	Mesh->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
+	Mesh->SetSimulatePhysics(false);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Mesh->SetVisibility(false, true);
+
+	ExplosionNiagaraComponent->SetVisibility(true);
+	ExplosionNiagaraComponent->ActivateSystem();
+	ExplosionAudioComponent->Play();
 }
 
 void AEnemyBase::OnExplosionFinished(UNiagaraComponent* PSystem)

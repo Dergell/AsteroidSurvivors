@@ -50,7 +50,7 @@ void AItemAsteroid::OnExplosionFinished(UNiagaraComponent* PSystem)
 	Destroy();
 }
 
-void AItemAsteroid::HitByProjectile_Implementation(APawn* ProjectileInstigator)
+void AItemAsteroid::HitByProjectile_Implementation(APawn* ProjectileInstigator, TSubclassOf<UGameplayEffect> ProjectileEffect)
 {
 	APlayerState* State = ProjectileInstigator->GetPlayerState();
 
