@@ -79,6 +79,20 @@ UAbilitySystemComponent* APlayerShip::GetAbilitySystemComponent() const
 	return State->GetAbilitySystemComponent();
 }
 
+void APlayerShip::HitByProjectile_Implementation(APawn* ProjectileInstigator,
+	TSubclassOf<UGameplayEffect> ProjectileEffect)
+{
+	if (ProjectileEffect) {
+		FGameplayEffectContextHandle EffectContext = GetAbilitySystemComponent()->MakeEffectContext();
+		EffectContext.AddSourceObject(ProjectileInstigator);
+		const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(
+			ProjectileEffect, 1, EffectContext);
+		if (SpecHandle.IsValid()) {
+			GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+		}
+	}
+}
+
 void APlayerShip::BeginPlay()
 {
 	Super::BeginPlay();

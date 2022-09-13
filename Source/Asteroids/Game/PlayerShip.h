@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "AbilitySystemInterface.h"
+#include "Asteroids/Interfaces/ProjectileInterface.h"
 #include "Camera/CameraComponent.h"
 #include "PlayerShip.generated.h"
 
@@ -17,7 +18,7 @@ class USpringArmComponent;
  * Class which implements the player ships. Extended by blueprints and classes.
  */
 UCLASS()
-class ASTEROIDS_API APlayerShip : public APawn, public IAbilitySystemInterface
+class ASTEROIDS_API APlayerShip : public APawn, public IAbilitySystemInterface, public IProjectileInterface
 {
 	GENERATED_BODY()
 
@@ -30,6 +31,9 @@ public:
 
 	UFUNCTION(BlueprintGetter)
 	FORCEINLINE FVector GetCameraLocation() const { return Camera->GetComponentLocation(); }
+
+	virtual void HitByProjectile_Implementation(APawn* ProjectileInstigator,
+		TSubclassOf<UGameplayEffect> ProjectileEffect) override;
 
 protected:
 	// Called when the game starts or when spawned

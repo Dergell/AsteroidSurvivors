@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
 #include "AbilitySystemInterface.h"
+#include "GameplayEffectTypes.h"
 #include "Asteroids/Interfaces/ItemInterface.h"
 #include "PlayerStateMain.generated.h"
 
@@ -32,7 +33,12 @@ public:
 	virtual void GiveAbilities();
 
 protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
 	// Gameplay Ability System
+	void HealthChanged(const FOnAttributeChangeData& Data);
+
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
 	UAbilitySystemComponent* AbilitySystemComponent;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
