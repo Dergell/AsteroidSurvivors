@@ -21,12 +21,14 @@ EBTNodeResult::Type UBTTask_AttackTarget::ExecuteTask(UBehaviorTreeComponent& Ow
 {
 	EBTNodeResult::Type Result = EBTNodeResult::Failed;
 
-	if (const AEnemyBase* Owner = OwnerComp.GetAIOwner()->GetPawn<AEnemyBase>()) {
+	if (const AEnemyBase* Owner = OwnerComp.GetAIOwner()->GetPawn<AEnemyBase>())
+	{
 		UAbilitySystemComponent* AbilitySystemComponent = Owner->GetAbilitySystemComponent();
 		UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
 
 		APlayerShip* Target = Cast<APlayerShip>(Blackboard->GetValueAsObject(TargetKey.SelectedKeyName));
-		if (Target) {
+		if (Target)
+		{
 			FHitResult Hit;
 			FCollisionQueryParams Params;
 			Params.AddIgnoredActor(Target);
@@ -35,18 +37,20 @@ EBTNodeResult::Type UBTTask_AttackTarget::ExecuteTask(UBehaviorTreeComponent& Ow
 			bool TraceResult = GetWorld()->LineTraceSingleByChannel(Hit, Owner->GetActorLocation(),
 				Target->GetActorLocation(), ECC_PhysicsBody, Params);
 
-			if (TraceResult) {
+			if (TraceResult)
+			{
 				return Result;
 			}
 		}
 
-		const FGameplayTagContainer Tags = FGameplayTagContainer(
-			FGameplayTag::RequestGameplayTag(FName("Ability.Attack")));
+		const FGameplayTagContainer Tags = FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Ability.Attack")));
 		TArray<FGameplayAbilitySpec*> Abilities;
 		AbilitySystemComponent->GetActivatableGameplayAbilitySpecsByAllMatchingTags(Tags, Abilities);
 
-		for (const FGameplayAbilitySpec* Ability : Abilities) {
-			if (AbilitySystemComponent->TryActivateAbility(Ability->Handle)) {
+		for (const FGameplayAbilitySpec* Ability : Abilities)
+		{
+			if (AbilitySystemComponent->TryActivateAbility(Ability->Handle))
+			{
 				Result = EBTNodeResult::Succeeded;
 			}
 		}

@@ -33,12 +33,15 @@ void APlayerControllerMain::BeginPlay()
 	Super::BeginPlay();
 
 	// Spawn an actor to represent the cursor/crosshair
-	if (CursorClass != nullptr) {
+	if (CursorClass != nullptr)
+	{
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;
 		CursorActor = GetWorld()->SpawnActor<AStaticMeshActor>(CursorClass, FVector::ZeroVector,
 			FRotator::ZeroRotator, SpawnParams);
-	} else {
+	}
+	else
+	{
 		UE_LOG(LogBlueprint, Warning, TEXT("Could not spawn CursorActor. Make sure to select a CursorClass."));
 	}
 }
@@ -67,18 +70,16 @@ void APlayerControllerMain::OnPossess(APawn* aPawn)
 
 void APlayerControllerMain::UpdateGamepad(FKey Key)
 {
-	if (Key.IsGamepadKey()) {
-		GamepadActive = true;
-	} else {
-		GamepadActive = false;
-	}
+	GamepadActive = Key.IsGamepadKey() ? true : false;
 }
 
 void APlayerControllerMain::MoveCursorMouse()
 {
-	if (!GamepadActive) {
+	if (!GamepadActive)
+	{
 		float MousePosX, MousePosY;
-		if (GetMousePosition(MousePosX, MousePosY)) {
+		if (GetMousePosition(MousePosX, MousePosY))
+		{
 			FVector TraceLocation, TraceDirection;
 			DeprojectScreenPositionToWorld(MousePosX, MousePosY, TraceLocation, TraceDirection);
 			const FVector MousePosPlane = FMath::LinePlaneIntersection(TraceLocation,
@@ -94,10 +95,14 @@ void APlayerControllerMain::MoveCursorMouse()
 
 void APlayerControllerMain::MoveCursorGamepad(FVector AxisValue)
 {
-	if (GamepadActive) {
-		if (AxisValue.IsNearlyZero(.20f)) {
+	if (GamepadActive)
+	{
+		if (AxisValue.IsNearlyZero(.20f))
+		{
 			CursorActor->GetStaticMeshComponent()->SetVisibility(false);
-		} else {
+		}
+		else
+		{
 			CursorActor->GetStaticMeshComponent()->SetVisibility(true);
 			AxisValue = AxisValue.RotateAngleAxis(90, FVector::UpVector) * 1000;
 		}

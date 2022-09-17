@@ -43,7 +43,8 @@ void AItemBase::Collected_Implementation()
 	Destroy();
 }
 
-void AItemBase::HitByProjectile_Implementation(APawn* ProjectileInstigator, TSubclassOf<UGameplayEffect> ProjectileEffect)
+void AItemBase::HitByProjectile_Implementation(APawn* ProjectileInstigator,
+	TSubclassOf<UGameplayEffect> ProjectileEffect)
 {
 	Destroy();
 }

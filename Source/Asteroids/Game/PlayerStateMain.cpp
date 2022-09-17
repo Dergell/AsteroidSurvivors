@@ -28,19 +28,23 @@ void APlayerStateMain::UpdateScore_Implementation(int32 Points)
 	// Tell the player controller to update everything that uses the current score
 	IItemInterface* Interface = Cast<IItemInterface>(GetPlayerController());
 	if (Interface)
+	{
 		Interface->Execute_UpdateScore(GetPlayerController(), Score);
+	}
 }
 
 void APlayerStateMain::InitializeAttributes()
 {
-	if (AbilitySystemComponent && DefaultAttributeEffect) {
+	if (AbilitySystemComponent && DefaultAttributeEffect)
+	{
 		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
 		EffectContext.AddSourceObject(this);
 
 		const FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(
 			DefaultAttributeEffect, 1, EffectContext);
 
-		if (SpecHandle.IsValid()) {
+		if (SpecHandle.IsValid())
+		{
 			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 		}
 	}
@@ -48,8 +52,10 @@ void APlayerStateMain::InitializeAttributes()
 
 void APlayerStateMain::GiveAbilities()
 {
-	if (HasAuthority() && AbilitySystemComponent) {
-		for (TSubclassOf<UGameplayAbilityBase>& StartupAbility : DefaultAbilities) {
+	if (HasAuthority() && AbilitySystemComponent)
+	{
+		for (TSubclassOf<UGameplayAbilityBase>& StartupAbility : DefaultAbilities)
+		{
 			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, 1,
 				static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
 		}
@@ -66,7 +72,8 @@ void APlayerStateMain::BeginPlay()
 
 void APlayerStateMain::HealthChanged(const FOnAttributeChangeData& Data)
 {
-	if (Data.NewValue <= 0) {
+	if (Data.NewValue <= 0)
+	{
 		// TODO: Game over man, game over!
 	}
 }

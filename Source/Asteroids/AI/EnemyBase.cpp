@@ -47,12 +47,14 @@ void AEnemyBase::Tick(float DeltaTime)
 void AEnemyBase::HitByProjectile_Implementation(APawn* ProjectileInstigator,
 	TSubclassOf<UGameplayEffect> ProjectileEffect)
 {
-	if (ProjectileEffect) {
+	if (ProjectileEffect)
+	{
 		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
 		EffectContext.AddSourceObject(ProjectileInstigator);
-		const FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(
-			ProjectileEffect, 1, EffectContext);
-		if (SpecHandle.IsValid()) {
+		const FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(ProjectileEffect, 1,
+			EffectContext);
+		if (SpecHandle.IsValid())
+		{
 			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 		}
 	}
@@ -65,14 +67,16 @@ UAbilitySystemComponent* AEnemyBase::GetAbilitySystemComponent() const
 
 void AEnemyBase::InitializeAttributes()
 {
-	if (AbilitySystemComponent && DefaultAttributeEffect) {
+	if (AbilitySystemComponent && DefaultAttributeEffect)
+	{
 		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
 		EffectContext.AddSourceObject(this);
 
-		const FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(
-			DefaultAttributeEffect, 1, EffectContext);
+		const FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributeEffect, 1,
+			EffectContext);
 
-		if (SpecHandle.IsValid()) {
+		if (SpecHandle.IsValid())
+		{
 			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 		}
 	}
@@ -80,8 +84,10 @@ void AEnemyBase::InitializeAttributes()
 
 void AEnemyBase::GiveAbilities()
 {
-	if (HasAuthority() && AbilitySystemComponent) {
-		for (TSubclassOf<UGameplayAbilityBase>& StartupAbility : DefaultAbilities) {
+	if (HasAuthority() && AbilitySystemComponent)
+	{
+		for (TSubclassOf<UGameplayAbilityBase>& StartupAbility : DefaultAbilities)
+		{
 			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, 1,
 				static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
 		}
@@ -107,7 +113,8 @@ void AEnemyBase::BeginPlay()
 
 void AEnemyBase::HealthChanged(const FOnAttributeChangeData& Data)
 {
-	if (Data.NewValue <= 0) {
+	if (Data.NewValue <= 0)
+	{
 		Die();
 	}
 }
@@ -122,19 +129,23 @@ void AEnemyBase::FaceTargetDirection(float DeltaTime)
 
 	// Loop over them, get the first one as a subclass of UGameplayAbility_AttackManual
 	const UGameplayAbility_AttackManual* AttackAbility = nullptr;
-	for (const FGameplayAbilitySpec* Ability : AttackAbilities) {
+	for (const FGameplayAbilitySpec* Ability : AttackAbilities)
+	{
 		AttackAbility = Cast<UGameplayAbility_AttackManual>(Ability->Ability);
-		if (AttackAbility) {
+		if (AttackAbility)
+		{
 			break;
 		}
 	}
 
 	// Calculate where we have to aim
 	FVector TargetLocation = Target->GetActorLocation();
-	if (AttackAbility != nullptr) {
-		const float ProjectileSpeed = AttackAbility->GetProjectileClass()->GetDefaultObject<AItemProjectile>()->GetInitialSpeed();
+	if (AttackAbility != nullptr)
+	{
+		const float ProjectileSpeed = AttackAbility->GetProjectileClass()->GetDefaultObject<AItemProjectile>()->
+		                                             GetInitialSpeed();
 		TargetLocation = CalculateLeadLocation(GetActorLocation(), Target->GetActorLocation(),
-		Target->GetVelocity(), ProjectileSpeed);
+			Target->GetVelocity(), ProjectileSpeed);
 	}
 
 	// Now we have our base values

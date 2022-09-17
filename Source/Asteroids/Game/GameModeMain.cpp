@@ -32,7 +32,9 @@ void AGameModeMain::SpawnAsteroid()
 		// Spawn the asteroid and init random movement
 		const FTransform* Transform = new FTransform(Rotation, Location, Scale);
 		if (const AItemAsteroid* Asteroid = Cast<AItemAsteroid>(GetWorld()->SpawnActor(AsteroidSpawnClass, Transform)))
+		{
 			Asteroid->InitRandomMovement();
+		}
 	}
 
 	// Reschedule next spawn
@@ -65,23 +67,19 @@ FVector AGameModeMain::GetRandomSpawnLocation() const
 	FVector TraceLocation, TraceDirection;
 	PlayerController->DeprojectScreenPositionToWorld(0, 0, TraceLocation, TraceDirection);
 	FVector UpperLeftCorner = FMath::LinePlaneIntersection(TraceLocation,
-	                                                       TraceLocation + TraceDirection * 10000,
-	                                                       FPlane(0, 0, 1, 0));
+		TraceLocation + TraceDirection * 10000, FPlane(0, 0, 1, 0));
 
 	PlayerController->DeprojectScreenPositionToWorld(SizeX, 0, TraceLocation, TraceDirection);
 	FVector UpperRightCorner = FMath::LinePlaneIntersection(TraceLocation,
-	                                                        TraceLocation + TraceDirection * 10000,
-	                                                        FPlane(0, 0, 1, 0));
+		TraceLocation + TraceDirection * 10000, FPlane(0, 0, 1, 0));
 
 	PlayerController->DeprojectScreenPositionToWorld(SizeX, SizeY, TraceLocation, TraceDirection);
 	FVector LowerRightCorner = FMath::LinePlaneIntersection(TraceLocation,
-	                                                        TraceLocation + TraceDirection * 10000,
-	                                                        FPlane(0, 0, 1, 0));
+		TraceLocation + TraceDirection * 10000, FPlane(0, 0, 1, 0));
 
 	PlayerController->DeprojectScreenPositionToWorld(0, SizeY, TraceLocation, TraceDirection);
 	FVector LowerLeftCorner = FMath::LinePlaneIntersection(TraceLocation,
-	                                                       TraceLocation + TraceDirection * 10000,
-	                                                       FPlane(0, 0, 1, 0));
+		TraceLocation + TraceDirection * 10000, FPlane(0, 0, 1, 0));
 
 	// Add some safety margin
 	UpperLeftCorner += FVector(SpawnScreenMargin, -SpawnScreenMargin, 0);
@@ -93,13 +91,21 @@ FVector AGameModeMain::GetRandomSpawnLocation() const
 	FVector Location;
 	const int Edge = FMath::RandRange(1, 4);
 	if (Edge == 1)
+	{
 		Location = FMath::Lerp(UpperLeftCorner, UpperRightCorner, FMath::FRand());
+	}
 	else if (Edge == 2)
+	{
 		Location = FMath::Lerp(UpperRightCorner, LowerRightCorner, FMath::FRand());
+	}
 	else if (Edge == 3)
+	{
 		Location = FMath::Lerp(LowerRightCorner, LowerLeftCorner, FMath::FRand());
+	}
 	else
+	{
 		Location = FMath::Lerp(LowerLeftCorner, UpperLeftCorner, FMath::FRand());
+	}
 
 	return Location;
 }

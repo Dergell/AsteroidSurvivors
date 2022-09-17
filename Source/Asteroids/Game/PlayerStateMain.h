@@ -25,7 +25,7 @@ public:
 	APlayerStateMain();
 
 	// Called when the score needs to be updated
-	void UpdateScore_Implementation(int32 Points) override;
+	virtual void UpdateScore_Implementation(int32 Points) override;
 
 	// Gameplay Ability System
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;

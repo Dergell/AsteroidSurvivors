@@ -34,7 +34,11 @@ public:
 	virtual void HitByProjectile_Implementation(APawn* ProjectileInstigator,
 		TSubclassOf<UGameplayEffect> ProjectileEffect) override;
 
-	FORCEINLINE UBehaviorTree* GetBehaviorTree() const { return BehaviorTree; }
+	UFUNCTION(BlueprintGetter)
+	UBehaviorTree* GetBehaviorTree() const
+	{
+		return BehaviorTree;
+	}
 
 	// Gameplay Ability System
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;

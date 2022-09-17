@@ -28,8 +28,8 @@ const FGameplayTagContainer* UGameplayAbilityBase::GetCooldownTags() const
 }
 
 void UGameplayAbilityBase::ApplyCooldown(const FGameplayAbilitySpecHandle Handle,
-                                         const FGameplayAbilityActorInfo* ActorInfo,
-                                         const FGameplayAbilityActivationInfo ActivationInfo) const
+	const FGameplayAbilityActorInfo* ActorInfo,
+	const FGameplayAbilityActivationInfo ActivationInfo) const
 {
 	const UGameplayEffect* CooldownGE = GetCooldownGameplayEffect();
 	if (CooldownGE)
@@ -38,7 +38,7 @@ void UGameplayAbilityBase::ApplyCooldown(const FGameplayAbilitySpecHandle Handle
 			CooldownGE->GetClass(), 1);
 		SpecHandle.Data.Get()->DynamicGrantedTags.AppendTags(CooldownTags);
 		SpecHandle.Data.Get()->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Cooldown.Duration")),
-		                                               CooldownDuration);
+			CooldownDuration);
 		ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, SpecHandle);
 	}
 }

@@ -30,7 +30,7 @@ public:
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData Health;
 	ATTRIBUTE_ACCESSORS(UAttributeSetBase, Health);
-	
+
 	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UAttributeSetBase, MaxHealth);
@@ -38,7 +38,7 @@ public:
 protected:
 	UFUNCTION()
 	virtual void OnRep_Health(const FGameplayAttributeData& OldHealth);
-	
+
 	UFUNCTION()
 	virtual void OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth);
 };

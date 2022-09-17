@@ -10,7 +10,8 @@ UAsyncTaskAttributeChanged* UAsyncTaskAttributeChanged::ListenForAttributeChange
 	WaitForAttributeChangedTask->ASC = AbilitySystemComponent;
 	WaitForAttributeChangedTask->AttributeToListenFor = Attribute;
 
-	if (!IsValid(AbilitySystemComponent) || !Attribute.IsValid()) {
+	if (!IsValid(AbilitySystemComponent) || !Attribute.IsValid())
+	{
 		WaitForAttributeChangedTask->RemoveFromRoot();
 		return nullptr;
 	}
@@ -28,12 +29,14 @@ UAsyncTaskAttributeChanged* UAsyncTaskAttributeChanged::ListenForAttributesChang
 	WaitForAttributeChangedTask->ASC = AbilitySystemComponent;
 	WaitForAttributeChangedTask->AttributesToListenFor = Attributes;
 
-	if (!IsValid(AbilitySystemComponent) || Attributes.Num() < 1) {
+	if (!IsValid(AbilitySystemComponent) || Attributes.Num() < 1)
+	{
 		WaitForAttributeChangedTask->RemoveFromRoot();
 		return nullptr;
 	}
 
-	for (FGameplayAttribute Attribute : Attributes) {
+	for (FGameplayAttribute Attribute : Attributes)
+	{
 		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attribute).AddUObject(
 			WaitForAttributeChangedTask, &UAsyncTaskAttributeChanged::AttributeChanged);
 	}
@@ -43,10 +46,12 @@ UAsyncTaskAttributeChanged* UAsyncTaskAttributeChanged::ListenForAttributesChang
 
 void UAsyncTaskAttributeChanged::EndTask()
 {
-	if (IsValid(ASC)) {
+	if (IsValid(ASC))
+	{
 		ASC->GetGameplayAttributeValueChangeDelegate(AttributeToListenFor).RemoveAll(this);
 
-		for (FGameplayAttribute Attribute : AttributesToListenFor) {
+		for (FGameplayAttribute Attribute : AttributesToListenFor)
+		{
 			ASC->GetGameplayAttributeValueChangeDelegate(Attribute).RemoveAll(this);
 		}
 	}

@@ -15,6 +15,5 @@ class ASTEROIDS_API UAIMovementComponent : public UFloatingPawnMovement
 	GENERATED_BODY()
 
 public:
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 };

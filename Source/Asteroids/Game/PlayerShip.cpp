@@ -40,7 +40,9 @@ void APlayerShip::Tick(float DeltaSeconds)
 
 	// Clamp velocity
 	if (GetVelocity().Length() > SpeedLimit)
+	{
 		Mesh->SetPhysicsLinearVelocity(GetVelocity().GetUnsafeNormal2D() * SpeedLimit);
+	}
 
 	// Change camera zoom by velocity
 	const float TargetLength = FMath::Lerp(BoomMinLength, BoomMaxLength, GetVelocity().Length() / SpeedLimit);
@@ -65,12 +67,14 @@ UAbilitySystemComponent* APlayerShip::GetAbilitySystemComponent() const
 void APlayerShip::HitByProjectile_Implementation(APawn* ProjectileInstigator,
 	TSubclassOf<UGameplayEffect> ProjectileEffect)
 {
-	if (ProjectileEffect) {
+	if (ProjectileEffect)
+	{
 		FGameplayEffectContextHandle EffectContext = GetAbilitySystemComponent()->MakeEffectContext();
 		EffectContext.AddSourceObject(ProjectileInstigator);
 		const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(
 			ProjectileEffect, 1, EffectContext);
-		if (SpecHandle.IsValid()) {
+		if (SpecHandle.IsValid())
+		{
 			GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 		}
 	}
@@ -95,7 +99,8 @@ void APlayerShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	// Setup abilities
 	UAbilitySystemComponent* AbilitySystemComponent = GetAbilitySystemComponent();
-	if (AbilitySystemComponent && InputComponent) {
+	if (AbilitySystemComponent && InputComponent)
+	{
 		const FGameplayAbilityInputBinds Binds(
 			FString("Confirm"), FString("Cancel"),
 			FString("EAbilityInputID"),
@@ -110,7 +115,8 @@ void APlayerShip::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	if (APlayerStateMain* State = GetPlayerState<APlayerStateMain>()) {
+	if (APlayerStateMain* State = GetPlayerState<APlayerStateMain>())
+	{
 		UAbilitySystemComponent* AbilitySystemComponent = State->GetAbilitySystemComponent();
 		AbilitySystemComponent->InitAbilityActorInfo(State, this);
 
@@ -123,12 +129,14 @@ void APlayerShip::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 
-	if (APlayerStateMain* State = GetPlayerState<APlayerStateMain>()) {
+	if (APlayerStateMain* State = GetPlayerState<APlayerStateMain>())
+	{
 		UAbilitySystemComponent* AbilitySystemComponent = State->GetAbilitySystemComponent();
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 		State->InitializeAttributes();
 
-		if (AbilitySystemComponent && InputComponent) {
+		if (AbilitySystemComponent && InputComponent)
+		{
 			const FGameplayAbilityInputBinds Binds(
 				FString("Confirm"), FString("Cancel"),
 				FString("EAbilityInputID"),
@@ -176,10 +184,13 @@ void APlayerShip::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	AItemBase* ItemActor = Cast<AItemBase>(OtherActor);
-	if (ItemActor && ItemActor->GetIsCollectable()) {
+	if (ItemActor && ItemActor->GetIsCollectable())
+	{
 		IItemInterface* Interface = Cast<IItemInterface>(GetPlayerState());
 		if (Interface)
+		{
 			Interface->Execute_UpdateScore(GetPlayerState(), ItemActor->GetPointsValue());
+		}
 
 		ItemActor->Collected();
 	}
@@ -189,5 +200,7 @@ void APlayerShip::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 	FVector NormalImpulse, const FHitResult& Hit)
 {
 	if (CameraShakeClass)
+	{
 		UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraShakeClass, Camera->GetComponentLocation(), 0, 1, 0);
+	}
 }

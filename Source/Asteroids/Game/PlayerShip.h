@@ -29,7 +29,10 @@ public:
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	UFUNCTION(BlueprintGetter)
-	FORCEINLINE FVector GetCameraLocation() const { return Camera->GetComponentLocation(); }
+	FVector GetCameraLocation() const
+	{
+		return Camera->GetComponentLocation();
+	}
 
 	virtual void HitByProjectile_Implementation(APawn* ProjectileInstigator,
 		TSubclassOf<UGameplayEffect> ProjectileEffect) override;

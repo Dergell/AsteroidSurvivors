@@ -24,7 +24,8 @@ public:
 	void InitRandomMovement() const;
 
 	// Called when hit by a projectile
-	virtual void HitByProjectile_Implementation(APawn* ProjectileInstigator, TSubclassOf<UGameplayEffect> ProjectileEffect) override;
+	virtual void HitByProjectile_Implementation(APawn* ProjectileInstigator,
+		TSubclassOf<UGameplayEffect> ProjectileEffect) override;
 
 protected:
 	// Called when the game starts or when spawned

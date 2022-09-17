@@ -26,8 +26,8 @@ void AItemAsteroid::InitRandomMovement() const
 
 	Mesh->AddImpulse(Direction * FMath::RandRange(InitVelocityMin, InitVelocityMax), NAME_None, true);
 	RotatingMovement->RotationRate = FRotator(FMath::RandRange(InitRotationRateMin, InitRotationRateMax),
-	                                          FMath::RandRange(InitRotationRateMin, InitRotationRateMax),
-	                                          FMath::RandRange(InitRotationRateMin, InitRotationRateMax));
+		FMath::RandRange(InitRotationRateMin, InitRotationRateMax),
+		FMath::RandRange(InitRotationRateMin, InitRotationRateMax));
 }
 
 void AItemAsteroid::BeginPlay()
@@ -42,7 +42,9 @@ void AItemAsteroid::PostActorCreated()
 	const int32 RandomIndex = FMath::RandRange(1, AsteroidMeshes.Num()) - 1;
 
 	if (AsteroidMeshes.IsValidIndex(RandomIndex))
+	{
 		Mesh->SetStaticMesh(AsteroidMeshes[RandomIndex]);
+	}
 }
 
 void AItemAsteroid::OnExplosionFinished(UNiagaraComponent* PSystem)
@@ -50,7 +52,8 @@ void AItemAsteroid::OnExplosionFinished(UNiagaraComponent* PSystem)
 	Destroy();
 }
 
-void AItemAsteroid::HitByProjectile_Implementation(APawn* ProjectileInstigator, TSubclassOf<UGameplayEffect> ProjectileEffect)
+void AItemAsteroid::HitByProjectile_Implementation(APawn* ProjectileInstigator,
+	TSubclassOf<UGameplayEffect> ProjectileEffect)
 {
 	APlayerState* State = ProjectileInstigator->GetPlayerState();
 

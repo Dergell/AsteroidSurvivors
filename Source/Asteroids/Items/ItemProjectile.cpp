@@ -31,19 +31,22 @@ void AItemProjectile::BeginPlay()
 }
 
 void AItemProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-                                              UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
-                                              const FHitResult& SweepResult)
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	// Ignore the actor that shot this projectile
 	if (Owner == OtherActor)
+	{
 		return;
+	}
 
 	if (OtherActor != nullptr)
 	{
 		// Tell the other actor it was hit
 		IProjectileInterface* Interface = Cast<IProjectileInterface>(OtherActor);
 		if (Interface)
+		{
 			Interface->Execute_HitByProjectile(OtherActor, GetInstigator(), GameplayEffect);
+		}
 	}
 
 	// Destroy the projectile
