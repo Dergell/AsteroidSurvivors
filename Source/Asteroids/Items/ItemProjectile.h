@@ -4,6 +4,7 @@
 
 #include "ItemBase.h"
 #include "CoreMinimal.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "ItemProjectile.generated.h"
 
 class UGameplayEffect;
@@ -20,6 +21,8 @@ class ASTEROIDS_API AItemProjectile : public AItemBase
 
 public:
 	AItemProjectile();
+
+	FORCEINLINE float GetInitialSpeed() const { return ProjectileMovementComponent->InitialSpeed; } 
 
 protected:
 	// Called when the game starts or when spawned.

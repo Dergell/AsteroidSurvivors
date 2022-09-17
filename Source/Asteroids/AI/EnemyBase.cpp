@@ -8,6 +8,8 @@
 #include "Asteroids/Components/AIMovementComponent.h"
 #include "Asteroids/Gameplay/AttributeSetBase.h"
 #include "Asteroids/Gameplay/GameplayAbilityBase.h"
+#include "Asteroids/Gameplay/GameplayAbility_AttackManual.h"
+#include "Asteroids/Items/ItemProjectile.h"
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -112,9 +114,32 @@ void AEnemyBase::HealthChanged(const FOnAttributeChangeData& Data)
 
 void AEnemyBase::FaceTargetDirection(float DeltaTime)
 {
+	// Get the manual attack abilities used by this enemy
+	const FGameplayTagContainer AttackTags = FGameplayTagContainer(
+		FGameplayTag::RequestGameplayTag(FName("Ability.Attack.Manual")));
+	TArray<FGameplayAbilitySpec*> AttackAbilities;
+	AbilitySystemComponent->GetActivatableGameplayAbilitySpecsByAllMatchingTags(AttackTags, AttackAbilities);
+
+	// Loop over them, get the first one as a subclass of UGameplayAbility_AttackManual
+	const UGameplayAbility_AttackManual* AttackAbility = nullptr;
+	for (const FGameplayAbilitySpec* Ability : AttackAbilities) {
+		AttackAbility = Cast<UGameplayAbility_AttackManual>(Ability->Ability);
+		if (AttackAbility) {
+			break;
+		}
+	}
+
+	// Calculate where we have to aim
+	FVector TargetLocation = Target->GetActorLocation();
+	if (AttackAbility != nullptr) {
+		const float ProjectileSpeed = AttackAbility->GetProjectileClass()->GetDefaultObject<AItemProjectile>()->GetInitialSpeed();
+		TargetLocation = CalculateLeadLocation(GetActorLocation(), Target->GetActorLocation(),
+		Target->GetVelocity(), ProjectileSpeed);
+	}
+
+	// Now we have our base values
 	const FRotator CurrentRotation = GetActorRotation();
-	const FVector TargetVector = Target->GetTargetLocation(this) - GetActorLocation();
-	FRotator TargetRotation = TargetVector.Rotation();
+	FRotator TargetRotation = (TargetLocation - GetActorLocation()).Rotation();
 
 	// Add some roll to the turn
 	TargetRotation.Roll = FMath::FindDeltaAngleDegrees(CurrentRotation.Yaw, TargetRotation.Yaw);
@@ -123,7 +148,7 @@ void AEnemyBase::FaceTargetDirection(float DeltaTime)
 	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, DeltaTime, TurnSpeed);
 	// Clamp roll so we don't overshoot
 	NewRotation.Roll = FMath::Clamp(NewRotation.Roll, -RollLimit, RollLimit);
-	// Cancel any pitch by physics
+	// Cancel any pitch caused by physics
 	NewRotation.Pitch = 0;
 
 	// Normalize and set to Mesh

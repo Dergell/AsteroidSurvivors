@@ -26,4 +26,8 @@ public:
 	// Called when hit by a projectile
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void HitByProjectile(APawn* ProjectileInstigator, TSubclassOf<UGameplayEffect> ProjectileEffect);
+
+	// Calculates the lead location to aim at in order to hit a moving target
+	virtual FVector CalculateLeadLocation(FVector OriginLocation, FVector TargetLocation, FVector TargetVelocity,
+		float ProjectileSpeed);
 };

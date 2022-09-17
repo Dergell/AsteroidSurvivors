@@ -26,7 +26,6 @@ public:
 	APlayerShip();
 
 	virtual void Tick(float DeltaSeconds) override;
-	virtual FVector GetTargetLocation(AActor* RequestedBy) const override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	UFUNCTION(BlueprintGetter)
