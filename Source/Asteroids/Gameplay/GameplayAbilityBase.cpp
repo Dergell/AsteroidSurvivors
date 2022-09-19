@@ -37,7 +37,7 @@ void UGameplayAbilityBase::ApplyCooldown(const FGameplayAbilitySpecHandle Handle
 		const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(
 			CooldownGE->GetClass(), 1);
 		SpecHandle.Data.Get()->DynamicGrantedTags.AppendTags(CooldownTags);
-		SpecHandle.Data.Get()->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Cooldown.Duration")),
+		SpecHandle.Data.Get()->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Effect.Cooldown")),
 			CooldownDuration);
 		ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, SpecHandle);
 	}
