@@ -78,6 +78,11 @@ void APlayerShip::HitByProjectile_Implementation(APawn* ProjectileInstigator,
 			GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 		}
 	}
+
+	if (CameraShakeClass)
+	{
+		UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraShakeClass, Camera->GetComponentLocation(), 0, 1, 0);
+	}
 }
 
 void APlayerShip::BeginPlay()
