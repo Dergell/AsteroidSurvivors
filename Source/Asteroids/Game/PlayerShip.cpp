@@ -3,6 +3,7 @@
 #include "PlayerShip.h"
 
 #include "AbilitySystemComponent.h"
+#include "GameModeMain.h"
 #include "GameplayTask.h"
 #include "PlayerControllerMain.h"
 #include "PlayerStateMain.h"
@@ -204,8 +205,23 @@ void APlayerShip::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 void APlayerShip::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	FVector NormalImpulse, const FHitResult& Hit)
 {
+	AGameModeMain* GameMode = Cast<AGameModeMain>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (NormalImpulse.Size() < GameMode->GetCollisionThreshold())
+	{
+		return;
+	}
+
 	if (CameraShakeClass)
 	{
 		UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraShakeClass, Camera->GetComponentLocation(), 0, 1, 0);
+	}
+
+	FGameplayEffectContextHandle EffectContext = GetAbilitySystemComponent()->MakeEffectContext();
+	EffectContext.AddSourceObject(OtherActor);
+	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(
+		GameMode->GetCollisionGameplayEffectClass(), 1, EffectContext);
+	if (SpecHandle.IsValid())
+	{
+		GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 	}
 }

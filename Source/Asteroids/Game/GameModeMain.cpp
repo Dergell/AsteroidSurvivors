@@ -2,10 +2,26 @@
 
 #include "GameModeMain.h"
 
+#include "GameplayEffect.h"
 #include "Asteroids/AI/EnemyBase.h"
 #include "Asteroids/Items/ItemAsteroid.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+
+TSubclassOf<UGameplayEffect> AGameModeMain::GetCollisionGameplayEffectClass() const
+{
+	if (UClass* Class = CollisionGameplayEffectClass.Get())
+	{
+		return Class;
+	}
+
+	return UGameplayEffect::StaticClass();
+}
+
+float AGameModeMain::GetCollisionThreshold() const
+{
+	return CollisionThreshold;
+}
 
 void AGameModeMain::BeginPlay()
 {

@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "GameModeMain.generated.h"
 
+class UGameplayEffect;
 class AEnemyBase;
 class AItemAsteroid;
 
@@ -16,6 +17,10 @@ UCLASS()
 class ASTEROIDS_API AGameModeMain : public AGameModeBase
 {
 	GENERATED_BODY()
+
+public:
+	TSubclassOf<UGameplayEffect> GetCollisionGameplayEffectClass() const;
+	float GetCollisionThreshold() const;
 
 protected:
 	// Called when the game starts or when spawned
@@ -28,7 +33,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float SpawnScreenMargin = 200.f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TSubclassOf<UGameplayEffect> CollisionGameplayEffectClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float CollisionThreshold = 50000.f;
 
+	// Asteroid Settings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool ShouldSpawnAsteroid = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -38,6 +48,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<AItemAsteroid> AsteroidSpawnClass;
 
+	// Enemy Settings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool ShouldSpawnEnemies = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
