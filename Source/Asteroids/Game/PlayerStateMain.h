@@ -36,6 +36,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION(BlueprintNativeEvent)
+	void Die();
+	
 	// Gameplay Ability System
 	void HealthChanged(const FOnAttributeChangeData& Data);
 

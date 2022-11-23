@@ -70,10 +70,17 @@ void APlayerStateMain::BeginPlay()
 	Super::BeginPlay();
 }
 
+void APlayerStateMain::Die_Implementation()
+{
+	AbilitySystemComponent->AddLooseGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Dead")));
+
+	DisableInput(GetPlayerController());
+}
+
 void APlayerStateMain::HealthChanged(const FOnAttributeChangeData& Data)
 {
 	if (Data.NewValue <= 0)
 	{
-		// TODO: Game over man, game over!
+		Die();
 	}
 }

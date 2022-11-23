@@ -28,6 +28,9 @@ public:
 	UFUNCTION(BlueprintGetter)
 	FVector GetCursorVector() const;
 
+	UFUNCTION(BlueprintCallable)
+	void SetCursorHidden(bool NewValue) const;
+	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UWidgetMain> MainWidgetClass;
 
