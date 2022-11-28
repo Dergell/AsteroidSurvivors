@@ -28,9 +28,10 @@ FVector APlayerControllerMain::GetCursorVector() const
 	return CursorActor->GetActorLocation() - GetPawn()->GetActorLocation();
 }
 
-void APlayerControllerMain::SetCursorHidden(bool NewValue) const
+void APlayerControllerMain::GameOver(bool NewValue) const
 {
 	CursorActor->SetActorHiddenInGame(NewValue);
+	MainWidget->GameOver();
 }
 
 void APlayerControllerMain::BeginPlay()

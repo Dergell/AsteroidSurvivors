@@ -17,4 +17,6 @@ class ASTEROIDS_API UWidgetMain : public UUserWidget
 public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void UpdateScore(int32 Score);
+	UFUNCTION(BlueprintImplementableEvent)
+	void GameOver();
 };
