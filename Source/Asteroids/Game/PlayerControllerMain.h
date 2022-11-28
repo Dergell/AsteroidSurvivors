@@ -29,7 +29,7 @@ public:
 	FVector GetCursorVector() const;
 
 	UFUNCTION(BlueprintCallable)
-	void GameOver(bool NewValue) const;
+	void GameOver() const;
 	
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UWidgetMain> MainWidgetClass;
