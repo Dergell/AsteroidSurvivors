@@ -9,6 +9,7 @@
 #include "GameplayEffectTypes.h"
 #include "EnemyBase.generated.h"
 
+class UFXSystemComponent;
 class UGameplayEffect;
 class UAttributeSetBase;
 class UGameplayAbilityBase;
@@ -62,6 +63,9 @@ protected:
 	UBehaviorTree* BehaviorTree;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	AActor* Target;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TArray<UFXSystemComponent*> Engines;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float TurnSpeed = 1.f;

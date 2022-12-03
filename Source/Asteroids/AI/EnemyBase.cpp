@@ -34,6 +34,11 @@ AEnemyBase::AEnemyBase()
 	AbilitySystemComponent->SetIsReplicated(true);
 	AbilitySystemComponent->SetReplicationMode(EGameplayEffectReplicationMode::Full);
 	Attributes = CreateDefaultSubobject<UAttributeSetBase>(TEXT("Attributes"));
+
+	for (UActorComponent* Component : GetComponentsByTag(UFXSystemComponent::StaticClass(), TEXT("Engine")))
+	{
+		Engines.Add(Cast<UFXSystemComponent>(Component));
+	}
 }
 
 // Called every frame
