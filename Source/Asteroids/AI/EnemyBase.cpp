@@ -10,6 +10,7 @@
 #include "Asteroids/Gameplay/GameplayAbilityBase.h"
 #include "Asteroids/Gameplay/GameplayAbility_AttackManual.h"
 #include "Asteroids/Items/ItemProjectile.h"
+#include "Asteroids/Items/ItemWeightedSpawn.h"
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -185,6 +186,9 @@ void AEnemyBase::Die()
 	ExplosionNiagaraComponent->SetVisibility(true);
 	ExplosionNiagaraComponent->ActivateSystem();
 	ExplosionAudioComponent->Play();
+
+	const FVector Location = GetActorLocation();
+	GetWorld()->SpawnActor(LootItemClass, &Location);
 }
 
 void AEnemyBase::OnExplosionFinished(UNiagaraComponent* PSystem)

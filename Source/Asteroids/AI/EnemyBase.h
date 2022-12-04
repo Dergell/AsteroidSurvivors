@@ -9,6 +9,7 @@
 #include "GameplayEffectTypes.h"
 #include "EnemyBase.generated.h"
 
+class AItemWeightedSpawn;
 class UFXSystemComponent;
 class UGameplayEffect;
 class UAttributeSetBase;
@@ -74,6 +75,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AItemProjectile> ProjectileClass;
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AItemWeightedSpawn> LootItemClass;
 
 	// Gameplay Ability System
 	void HealthChanged(const FOnAttributeChangeData& Data);
