@@ -65,6 +65,13 @@ UAbilitySystemComponent* APlayerShip::GetAbilitySystemComponent() const
 	return State->GetAbilitySystemComponent();
 }
 
+void APlayerShip::Explode_Implementation()
+{
+	Mesh->SetVisibility(false, true);
+	Mesh->SetSimulatePhysics(false);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
 void APlayerShip::HitByProjectile_Implementation(APawn* ProjectileInstigator,
 	TSubclassOf<UGameplayEffect> ProjectileEffect)
 {

@@ -28,6 +28,9 @@ public:
 	virtual void Tick(float DeltaSeconds) override;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void Explode();
+	
 	UFUNCTION(BlueprintGetter)
 	FVector GetCameraLocation() const
 	{
