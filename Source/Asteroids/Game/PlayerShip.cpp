@@ -156,12 +156,22 @@ void APlayerShip::OnRep_PlayerState()
 
 void APlayerShip::MoveHorizontal(float Value)
 {
+	if (Mesh->GetCollisionEnabled() != ECollisionEnabled::QueryAndPhysics && Mesh->GetCollisionEnabled() != ECollisionEnabled::PhysicsOnly)
+	{
+		return;
+	}
+
 	const FVector Horizontal = FVector::RightVector * Acceleration * Value;
 	Mesh->AddForce(Horizontal, NAME_None, true);
 }
 
 void APlayerShip::MoveVertical(float Value)
 {
+	if (Mesh->GetCollisionEnabled() != ECollisionEnabled::QueryAndPhysics && Mesh->GetCollisionEnabled() != ECollisionEnabled::PhysicsOnly)
+	{
+		return;
+	}
+
 	const FVector Vertical = FVector::ForwardVector * Acceleration * Value;
 	Mesh->AddForce(Vertical, NAME_None, true);
 }
