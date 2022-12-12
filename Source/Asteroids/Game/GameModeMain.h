@@ -19,18 +19,21 @@ class ASTEROIDS_API AGameModeMain : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+	// Getter & Setter
 	TSubclassOf<UGameplayEffect> GetCollisionGameplayEffectClass() const;
-	float GetCollisionThreshold() const;
+	float GetCollisionThreshold() const { return CollisionThreshold; }
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// Spawn Handling
 	UFUNCTION(BlueprintCallable)
 	void SpawnAsteroid();
 	UFUNCTION(BlueprintCallable)
 	void SpawnEnemy();
 
+protected:
+	// Basic Settings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float SpawnScreenMargin = 200.f;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)

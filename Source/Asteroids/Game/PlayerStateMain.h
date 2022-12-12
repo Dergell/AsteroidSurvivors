@@ -24,7 +24,7 @@ class ASTEROIDS_API APlayerStateMain : public APlayerState, public IItemInterfac
 public:
 	APlayerStateMain();
 
-	// Called when the score needs to be updated
+	// Interfaces
 	virtual void UpdateScore_Implementation(int32 Points) override;
 
 	// Gameplay Ability System
@@ -33,15 +33,17 @@ public:
 	virtual void GiveAbilities();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// Actions
 	UFUNCTION(BlueprintNativeEvent)
 	void Die();
-	
+
 	// Gameplay Ability System
 	void HealthChanged(const FOnAttributeChangeData& Data);
 
+protected:
+	// Gameplay Ability System
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
 	UAbilitySystemComponent* AbilitySystemComponent;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Abilities")

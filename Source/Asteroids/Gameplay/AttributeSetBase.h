@@ -22,8 +22,6 @@ class ASTEROIDS_API UAttributeSetBase : public UAttributeSet
 {
 	GENERATED_BODY()
 
-	UAttributeSetBase();
-
 public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 

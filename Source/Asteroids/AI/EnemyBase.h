@@ -26,21 +26,15 @@ class ASTEROIDS_API AEnemyBase : public APawn, public IProjectileInterface, publ
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this pawn's properties
 	AEnemyBase();
-
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called when hit by a projectile
-	virtual void HitByProjectile_Implementation(APawn* ProjectileInstigator,
-		TSubclassOf<UGameplayEffect> ProjectileEffect) override;
+	// Interfaces
+	virtual void HitByProjectile_Implementation(APawn* ProjectileInstigator, TSubclassOf<UGameplayEffect> ProjectileEffect) override;
 
+	// Getter & Setter
 	UFUNCTION(BlueprintGetter)
-	UBehaviorTree* GetBehaviorTree() const
-	{
-		return BehaviorTree;
-	}
+	UBehaviorTree* GetBehaviorTree() const { return BehaviorTree; }
 
 	// Gameplay Ability System
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
@@ -48,9 +42,13 @@ public:
 	virtual void GiveAbilities();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// Gameplay Ability System
+	void HealthChanged(const FOnAttributeChangeData& Data);
+
+protected:
+	// Components
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* Mesh;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -59,28 +57,26 @@ protected:
 	UNiagaraComponent* ExplosionNiagaraComponent;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UAudioComponent* ExplosionAudioComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	TArray<UFXSystemComponent*> Engines;
 
+	// AI
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UBehaviorTree* BehaviorTree;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	AActor* Target;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	TArray<UFXSystemComponent*> Engines;
-
+	// Settings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float TurnSpeed = 1.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float RollLimit = 30.f;
-
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AItemProjectile> ProjectileClass;
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AItemWeightedSpawn> LootItemClass;
 
 	// Gameplay Ability System
-	void HealthChanged(const FOnAttributeChangeData& Data);
-
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
 	UAbilitySystemComponent* AbilitySystemComponent;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Abilities")

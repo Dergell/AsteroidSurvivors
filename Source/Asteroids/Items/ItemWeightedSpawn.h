@@ -23,20 +23,15 @@ UCLASS()
 class ASTEROIDS_API AItemWeightedSpawn : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
+
+public:
 	AItemWeightedSpawn();
-
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FItemSpawnProbability> SpawnProbability;
-
-public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+protected:
+	virtual void BeginPlay() override;
+
+	// Settings
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FItemSpawnProbability> SpawnProbability;
 };

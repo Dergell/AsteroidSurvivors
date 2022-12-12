@@ -4,10 +4,6 @@
 
 #include "Net/UnrealNetwork.h"
 
-UAttributeSetBase::UAttributeSetBase()
-{
-}
-
 void UAttributeSetBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);

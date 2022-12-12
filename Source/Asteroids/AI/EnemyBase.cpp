@@ -51,15 +51,13 @@ void AEnemyBase::Tick(float DeltaTime)
 	FaceTargetDirection(DeltaTime);
 }
 
-void AEnemyBase::HitByProjectile_Implementation(APawn* ProjectileInstigator,
-	TSubclassOf<UGameplayEffect> ProjectileEffect)
+void AEnemyBase::HitByProjectile_Implementation(APawn* ProjectileInstigator, TSubclassOf<UGameplayEffect> ProjectileEffect)
 {
 	if (ProjectileEffect)
 	{
 		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
 		EffectContext.AddSourceObject(ProjectileInstigator);
-		const FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(ProjectileEffect, 1,
-			EffectContext);
+		const FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(ProjectileEffect, 1, EffectContext);
 		if (SpecHandle.IsValid())
 		{
 			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
@@ -79,8 +77,7 @@ void AEnemyBase::InitializeAttributes()
 		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
 		EffectContext.AddSourceObject(this);
 
-		const FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributeEffect, 1,
-			EffectContext);
+		const FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(DefaultAttributeEffect, 1, EffectContext);
 
 		if (SpecHandle.IsValid())
 		{
@@ -108,8 +105,7 @@ void AEnemyBase::BeginPlay()
 	ExplosionNiagaraComponent->OnSystemFinished.AddDynamic(this, &AEnemyBase::OnExplosionFinished);
 
 	AbilitySystemComponent->InitAbilityActorInfo(this, this);
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetHealthAttribute()).AddUObject(this,
-		&AEnemyBase::HealthChanged);
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetHealthAttribute()).AddUObject(this, &AEnemyBase::HealthChanged);
 
 	InitializeAttributes();
 	GiveAbilities();
@@ -147,10 +143,8 @@ void AEnemyBase::FaceTargetDirection(float DeltaTime)
 	FVector TargetLocation = Target->GetActorLocation();
 	if (AttackAbility != nullptr)
 	{
-		const float ProjectileSpeed = AttackAbility->GetProjectileClass()->GetDefaultObject<AItemProjectile>()->
-		                                             GetInitialSpeed();
-		TargetLocation = CalculateLeadLocation(GetActorLocation(), Target->GetActorLocation(),
-			Target->GetVelocity(), ProjectileSpeed);
+		const float ProjectileSpeed = AttackAbility->GetProjectileClass()->GetDefaultObject<AItemProjectile>()->GetInitialSpeed();
+		TargetLocation = CalculateLeadLocation(GetActorLocation(), Target->GetActorLocation(), Target->GetVelocity(), ProjectileSpeed);
 	}
 
 	// Now we have our base values

@@ -22,25 +22,24 @@ class ASTEROIDS_API AItemProjectile : public AItemBase
 public:
 	AItemProjectile();
 
-	FORCEINLINE float GetInitialSpeed() const
-	{
-		return ProjectileMovementComponent->InitialSpeed;
-	}
+	// Getter & Setter
+	FORCEINLINE float GetInitialSpeed() const { return ProjectileMovementComponent->InitialSpeed; }
 
 protected:
-	// Called when the game starts or when spawned.
 	virtual void BeginPlay() override;
 
+protected:
+	// Components
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	USphereComponent* CollisionComponent;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UProjectileMovementComponent* ProjectileMovementComponent;
 
+	// Gameplay Ability System
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UGameplayEffect> GameplayEffect;
 
 private:
 	UFUNCTION()
-	void OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

@@ -75,8 +75,7 @@ void APlayerShip::HitByProjectile_Implementation(APawn* ProjectileInstigator,
 	{
 		FGameplayEffectContextHandle EffectContext = GetAbilitySystemComponent()->MakeEffectContext();
 		EffectContext.AddSourceObject(ProjectileInstigator);
-		const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(
-			ProjectileEffect, 1, EffectContext);
+		const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(ProjectileEffect, 1, EffectContext);
 		if (SpecHandle.IsValid())
 		{
 			GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
@@ -194,8 +193,7 @@ void APlayerShip::RotatePawn()
 	TargetRotation.Roll = FMath::FindDeltaAngleDegrees(CurrentRotation.Yaw, TargetRotation.Yaw);
 
 	// For the actual turn, just add the direction to the existing yaw
-	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation,
-		UGameplayStatics::GetWorldDeltaSeconds(GetWorld()), TurnSpeed);
+	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, TargetRotation, UGameplayStatics::GetWorldDeltaSeconds(GetWorld()), TurnSpeed);
 	// Clamp roll so we don't overshoot
 	NewRotation.Roll = FMath::Clamp(NewRotation.Roll, -RollLimit, RollLimit);
 	// Cancel any pitch by physics
@@ -237,8 +235,7 @@ void APlayerShip::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, U
 
 	FGameplayEffectContextHandle EffectContext = GetAbilitySystemComponent()->MakeEffectContext();
 	EffectContext.AddSourceObject(OtherActor);
-	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(
-		GameMode->GetCollisionGameplayEffectClass(), 1, EffectContext);
+	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(GameMode->GetCollisionGameplayEffectClass(), 1, EffectContext);
 	if (SpecHandle.IsValid())
 	{
 		GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());

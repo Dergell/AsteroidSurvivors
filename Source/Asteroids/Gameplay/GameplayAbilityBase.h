@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbility.h"
-#include "Asteroids/Asteroids.h"
 #include "GameplayAbilityBase.generated.h"
 
 /**

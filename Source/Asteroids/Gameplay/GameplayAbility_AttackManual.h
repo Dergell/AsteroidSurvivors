@@ -18,17 +18,12 @@ class ASTEROIDS_API UGameplayAbility_AttackManual : public UGameplayAbilityBase
 	GENERATED_BODY()
 
 public:
-	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo) override;
+	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 
-	FORCEINLINE TSubclassOf<AItemProjectile> GetProjectileClass() const
-	{
-		return ProjectileClass;
-	}
+	FORCEINLINE TSubclassOf<AItemProjectile> GetProjectileClass() const { return ProjectileClass; }
 
 protected:
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
-		const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 	UFUNCTION(BlueprintCallable)
 	void OnPerformAction(int32 ActionNumber);

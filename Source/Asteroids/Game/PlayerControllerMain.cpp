@@ -16,11 +16,6 @@ void APlayerControllerMain::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 }
 
-void APlayerControllerMain::UpdateScore_Implementation(int32 Points)
-{
-	MainWidget->UpdateScore(Points);
-}
-
 FVector APlayerControllerMain::GetCursorVector() const
 {
 	const UWidget* Crosshair = MainWidget->WidgetTree->FindWidget(FName("Crosshair"));
@@ -31,6 +26,11 @@ FVector APlayerControllerMain::GetCursorVector() const
 	const FVector PlanePosition = FMath::LinePlaneIntersection(TraceLocation, TraceLocation + TraceDirection * 10000, FPlane(0, 0, 1, 0));
 
 	return PlanePosition - GetPawn()->GetActorLocation();
+}
+
+void APlayerControllerMain::UpdateScore_Implementation(int32 Points)
+{
+	MainWidget->UpdateScore(Points);
 }
 
 void APlayerControllerMain::GameOver() const

@@ -21,35 +21,41 @@ public:
 	APlayerControllerMain();
 	virtual void Tick(float DeltaSeconds) override;
 
-	// Interface called when score needs to be updated
-	virtual void UpdateScore_Implementation(int32 Points) override;
-
+	// Getter & Setter
 	UFUNCTION(BlueprintGetter)
 	FVector GetCursorVector() const;
 
+	// Interfaces
+	virtual void UpdateScore_Implementation(int32 Points) override;
+
+	// Actions
 	UFUNCTION(BlueprintCallable)
 	void GameOver() const;
 	UFUNCTION(BlueprintCallable)
 	void MoveCursor() const;
 
+public:
+	// Settings
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UWidgetMain> MainWidgetClass;
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// Settings
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool GamepadActive = false;
 
 private:
-	// Called when the controller possesses a pawn
 	virtual void OnPossess(APawn* aPawn) override;
 
+	// Actions
 	void UpdateGamepad(FKey Key);
 	void MoveCursorMouse() const;
 	void MoveCursorGamepad(FVector2d AxisValue) const;
 
+private:
+	// Members
 	UPROPERTY()
 	UWidgetMain* MainWidget;
 };

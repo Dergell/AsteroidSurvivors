@@ -2,8 +2,7 @@
 
 #include "ProjectileInterface.h"
 
-FVector IProjectileInterface::CalculateLeadLocation(FVector OriginLocation, FVector TargetLocation,
-	FVector TargetVelocity, float ProjectileSpeed)
+FVector IProjectileInterface::CalculateLeadLocation(FVector OriginLocation, FVector TargetLocation, FVector TargetVelocity, float ProjectileSpeed)
 {
 	// Current distance to target
 	float Distance = FVector::Dist(TargetLocation, OriginLocation);

@@ -30,8 +30,7 @@ void AItemProjectile::BeginPlay()
 	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AItemProjectile::OnComponentBeginOverlap);
 }
 
-void AItemProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AItemProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	// Ignore the actor that shot this projectile
 	if (Owner == OtherActor)

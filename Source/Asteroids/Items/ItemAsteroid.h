@@ -20,28 +20,29 @@ class ASTEROIDS_API AItemAsteroid : public AItemBase
 public:
 	AItemAsteroid();
 
+	// Actions
 	UFUNCTION(BlueprintCallable)
 	void InitRandomMovement() const;
 
-	// Called when hit by a projectile
-	virtual void HitByProjectile_Implementation(APawn* ProjectileInstigator,
-		TSubclassOf<UGameplayEffect> ProjectileEffect) override;
+	// Interfaces
+	virtual void HitByProjectile_Implementation(APawn* ProjectileInstigator, TSubclassOf<UGameplayEffect> ProjectileEffect) override;
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	// Called when an instance of this class is placed (in editor) or spawned
 	virtual void PostActorCreated() override;
 
+protected:
+	// Components
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	URotatingMovementComponent* RotatingMovement;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UNiagaraComponent* ExplosionComponent;
 
+	// Members
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TArray<UStaticMesh*> AsteroidMeshes;
 
+	// Settings
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float InitVelocityMin = 0.f;
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)

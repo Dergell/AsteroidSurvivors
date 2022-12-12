@@ -4,7 +4,6 @@
 #include "AIControllerBase.h"
 
 #include "Asteroids/AI/EnemyBase.h"
-#include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/GameplayStatics.h"
 

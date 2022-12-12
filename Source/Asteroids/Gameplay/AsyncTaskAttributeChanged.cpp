@@ -3,8 +3,7 @@
 
 #include "AsyncTaskAttributeChanged.h"
 
-UAsyncTaskAttributeChanged* UAsyncTaskAttributeChanged::ListenForAttributeChange(
-	UAbilitySystemComponent* AbilitySystemComponent, FGameplayAttribute Attribute)
+UAsyncTaskAttributeChanged* UAsyncTaskAttributeChanged::ListenForAttributeChange(UAbilitySystemComponent* AbilitySystemComponent, FGameplayAttribute Attribute)
 {
 	UAsyncTaskAttributeChanged* WaitForAttributeChangedTask = NewObject<UAsyncTaskAttributeChanged>();
 	WaitForAttributeChangedTask->ASC = AbilitySystemComponent;
@@ -16,14 +15,12 @@ UAsyncTaskAttributeChanged* UAsyncTaskAttributeChanged::ListenForAttributeChange
 		return nullptr;
 	}
 
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attribute).AddUObject(WaitForAttributeChangedTask,
-		&UAsyncTaskAttributeChanged::AttributeChanged);
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attribute).AddUObject(WaitForAttributeChangedTask, &UAsyncTaskAttributeChanged::AttributeChanged);
 
 	return WaitForAttributeChangedTask;
 }
 
-UAsyncTaskAttributeChanged* UAsyncTaskAttributeChanged::ListenForAttributesChange(
-	UAbilitySystemComponent* AbilitySystemComponent, TArray<FGameplayAttribute> Attributes)
+UAsyncTaskAttributeChanged* UAsyncTaskAttributeChanged::ListenForAttributesChange(UAbilitySystemComponent* AbilitySystemComponent, TArray<FGameplayAttribute> Attributes)
 {
 	UAsyncTaskAttributeChanged* WaitForAttributeChangedTask = NewObject<UAsyncTaskAttributeChanged>();
 	WaitForAttributeChangedTask->ASC = AbilitySystemComponent;
@@ -37,8 +34,7 @@ UAsyncTaskAttributeChanged* UAsyncTaskAttributeChanged::ListenForAttributesChang
 
 	for (FGameplayAttribute Attribute : Attributes)
 	{
-		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attribute).AddUObject(
-			WaitForAttributeChangedTask, &UAsyncTaskAttributeChanged::AttributeChanged);
+		AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attribute).AddUObject(WaitForAttributeChangedTask, &UAsyncTaskAttributeChanged::AttributeChanged);
 	}
 
 	return WaitForAttributeChangedTask;

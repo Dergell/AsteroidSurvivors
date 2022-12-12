@@ -17,35 +17,34 @@ class ASTEROIDS_API AItemBase : public AActor, public IProjectileInterface
 
 public:
 	AItemBase();
-
 	virtual void Tick(float DeltaSeconds) override;
 
-	// Getters
+	// Getters & Setters
 	UFUNCTION(BlueprintPure)
 	bool GetIsCollectable() const;
 	UFUNCTION(BlueprintPure)
 	int32 GetPointsValue() const;
 
-	// Called when the item is collected by the player
+	// Actions
 	UFUNCTION(BlueprintNativeEvent)
 	void Collected();
 
-	// Called when hit by a projectile
-	virtual void HitByProjectile_Implementation(APawn* ProjectileInstigator,
-		TSubclassOf<UGameplayEffect> ProjectileEffect) override;
+	// Interfaces
+	virtual void HitByProjectile_Implementation(APawn* ProjectileInstigator, TSubclassOf<UGameplayEffect> ProjectileEffect) override;
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+protected:
+	// Components
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* Mesh;
 
+	// Settings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool IsCollectable = false;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 PointsValue = 100;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int64 KillDistance = 10000;
 };

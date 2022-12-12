@@ -18,11 +18,6 @@ TSubclassOf<UGameplayEffect> AGameModeMain::GetCollisionGameplayEffectClass() co
 	return UGameplayEffect::StaticClass();
 }
 
-float AGameModeMain::GetCollisionThreshold() const
-{
-	return CollisionThreshold;
-}
-
 void AGameModeMain::BeginPlay()
 {
 	Super::BeginPlay();
@@ -82,20 +77,16 @@ FVector AGameModeMain::GetRandomSpawnLocation() const
 	// Trace from the camera edges to the games plane
 	FVector TraceLocation, TraceDirection;
 	PlayerController->DeprojectScreenPositionToWorld(0, 0, TraceLocation, TraceDirection);
-	FVector UpperLeftCorner = FMath::LinePlaneIntersection(TraceLocation,
-		TraceLocation + TraceDirection * 10000, FPlane(0, 0, 1, 0));
+	FVector UpperLeftCorner = FMath::LinePlaneIntersection(TraceLocation, TraceLocation + TraceDirection * 10000, FPlane(0, 0, 1, 0));
 
 	PlayerController->DeprojectScreenPositionToWorld(SizeX, 0, TraceLocation, TraceDirection);
-	FVector UpperRightCorner = FMath::LinePlaneIntersection(TraceLocation,
-		TraceLocation + TraceDirection * 10000, FPlane(0, 0, 1, 0));
+	FVector UpperRightCorner = FMath::LinePlaneIntersection(TraceLocation, TraceLocation + TraceDirection * 10000, FPlane(0, 0, 1, 0));
 
 	PlayerController->DeprojectScreenPositionToWorld(SizeX, SizeY, TraceLocation, TraceDirection);
-	FVector LowerRightCorner = FMath::LinePlaneIntersection(TraceLocation,
-		TraceLocation + TraceDirection * 10000, FPlane(0, 0, 1, 0));
+	FVector LowerRightCorner = FMath::LinePlaneIntersection(TraceLocation, TraceLocation + TraceDirection * 10000, FPlane(0, 0, 1, 0));
 
 	PlayerController->DeprojectScreenPositionToWorld(0, SizeY, TraceLocation, TraceDirection);
-	FVector LowerLeftCorner = FMath::LinePlaneIntersection(TraceLocation,
-		TraceLocation + TraceDirection * 10000, FPlane(0, 0, 1, 0));
+	FVector LowerLeftCorner = FMath::LinePlaneIntersection(TraceLocation, TraceLocation + TraceDirection * 10000, FPlane(0, 0, 1, 0));
 
 	// Add some safety margin
 	UpperLeftCorner += FVector(SpawnScreenMargin, -SpawnScreenMargin, 0);

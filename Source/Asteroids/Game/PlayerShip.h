@@ -28,29 +28,26 @@ class ASTEROIDS_API APlayerShip : public APawn, public IAbilitySystemInterface, 
 
 public:
 	APlayerShip();
-
 	virtual void Tick(float DeltaSeconds) override;
 
-	// Ability System
+	// Getter & Setter
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-
-	// Input Handling
-	UPROPERTY(EditDefaultsOnly, Category = "Input")
-	UInputConfig* InputConfig;
+	UFUNCTION(BlueprintGetter)
+	FVector GetCameraLocation() const { return Camera->GetComponentLocation(); }
 
 	// Actions
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void Explode();
 
-	// Getter
-	UFUNCTION(BlueprintGetter)
-	FVector GetCameraLocation() const { return Camera->GetComponentLocation(); }
-
 	// Interfaces
 	virtual void HitByProjectile_Implementation(APawn* ProjectileInstigator, TSubclassOf<UGameplayEffect> ProjectileEffect) override;
 
+public:
+	// Input Handling
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputConfig* InputConfig;
+
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual void PossessedBy(AController* NewController) override;
 
@@ -62,6 +59,8 @@ protected:
 	void Input_AimMouse(const FInputActionValue& InputActionValue);
 	void Input_AimStick(const FInputActionValue& InputActionValue);
 
+protected:
+	// Components
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* Mesh;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -71,20 +70,19 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UFloatingPawnMovement* MovementComponent;
 
-	// Movement modifiers
+	// Movement Settings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float TurnSpeed = 1.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float RollLimit = 30.f;
 
-	// Camera modifiers
+	// Camera Settings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float BoomMinLength = 2000.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float BoomMaxLength = 5000.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float BoomSmoothingTime = 0.5f;
-
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UCameraShakeBase> CameraShakeClass;
 

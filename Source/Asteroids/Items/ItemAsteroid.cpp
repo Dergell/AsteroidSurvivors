@@ -2,8 +2,7 @@
 
 #include "ItemAsteroid.h"
 
-#include "AI/NavigationSystemBase.h"
-#include "Asteroids/Interfaces/ItemInterface.h"
+#include "Interfaces/ItemInterface.h"
 #include "GameFramework/PlayerState.h"
 #include "GameFramework/RotatingMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -25,9 +24,7 @@ void AItemAsteroid::InitRandomMovement() const
 	Direction = FMath::VRandCone(Direction, FMath::DegreesToRadians(InitConeRadius));
 
 	Mesh->AddImpulse(Direction * FMath::RandRange(InitVelocityMin, InitVelocityMax), NAME_None, true);
-	RotatingMovement->RotationRate = FRotator(FMath::RandRange(InitRotationRateMin, InitRotationRateMax),
-		FMath::RandRange(InitRotationRateMin, InitRotationRateMax),
-		FMath::RandRange(InitRotationRateMin, InitRotationRateMax));
+	RotatingMovement->RotationRate = FRotator(FMath::RandRange(InitRotationRateMin, InitRotationRateMax), FMath::RandRange(InitRotationRateMin, InitRotationRateMax), FMath::RandRange(InitRotationRateMin, InitRotationRateMax));
 }
 
 void AItemAsteroid::BeginPlay()
