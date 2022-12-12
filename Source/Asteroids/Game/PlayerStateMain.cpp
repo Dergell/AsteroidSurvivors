@@ -3,9 +3,9 @@
 #include "PlayerStateMain.h"
 
 #include "AbilitySystemComponent.h"
+#include "AsteroidsGameplayTags.h"
 #include "Asteroids/Gameplay/AttributeSetBase.h"
 #include "Asteroids/Gameplay/GameplayAbilityBase.h"
-#include "Kismet/GameplayStatics.h"
 
 APlayerStateMain::APlayerStateMain()
 {
@@ -56,8 +56,7 @@ void APlayerStateMain::GiveAbilities()
 	{
 		for (TSubclassOf<UGameplayAbilityBase>& StartupAbility : DefaultAbilities)
 		{
-			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, 1,
-				static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
+			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, 1, INDEX_NONE, this));
 		}
 	}
 }
@@ -72,7 +71,7 @@ void APlayerStateMain::BeginPlay()
 
 void APlayerStateMain::Die_Implementation()
 {
-	AbilitySystemComponent->AddLooseGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Dead")));
+	AbilitySystemComponent->AddLooseGameplayTag(FAsteroidsGameplayTags::Get().State_Dead);
 
 	DisableInput(GetPlayerController());
 }

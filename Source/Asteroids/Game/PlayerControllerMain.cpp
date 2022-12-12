@@ -2,8 +2,8 @@
 
 #include "PlayerControllerMain.h"
 
-#include "PlayerShip.h"
-#include "Engine/StaticMeshActor.h"
+#include "Blueprint/WidgetTree.h"
+#include "Components/CanvasPanelSlot.h"
 
 APlayerControllerMain::APlayerControllerMain()
 {
@@ -14,8 +14,6 @@ APlayerControllerMain::APlayerControllerMain()
 void APlayerControllerMain::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
-
-	MoveCursorMouse();
 }
 
 void APlayerControllerMain::UpdateScore_Implementation(int32 Points)
@@ -25,44 +23,36 @@ void APlayerControllerMain::UpdateScore_Implementation(int32 Points)
 
 FVector APlayerControllerMain::GetCursorVector() const
 {
-	return CursorActor->GetActorLocation() - GetPawn()->GetActorLocation();
+	const UWidget* Crosshair = MainWidget->WidgetTree->FindWidget(FName("Crosshair"));
+	const UCanvasPanelSlot* Slot = Cast<UCanvasPanelSlot>(Crosshair->Slot);
+
+	FVector TraceLocation, TraceDirection;
+	DeprojectScreenPositionToWorld(Slot->GetPosition().X, Slot->GetPosition().Y, TraceLocation, TraceDirection);
+	const FVector PlanePosition = FMath::LinePlaneIntersection(TraceLocation, TraceLocation + TraceDirection * 10000, FPlane(0, 0, 1, 0));
+
+	return PlanePosition - GetPawn()->GetActorLocation();
 }
 
 void APlayerControllerMain::GameOver() const
 {
-	CursorActor->SetActorHiddenInGame(true);
 	MainWidget->GameOver();
+}
+
+void APlayerControllerMain::MoveCursor() const
+{
+	if (!GamepadActive)
+	{
+		MoveCursorMouse();
+	}
+	else
+	{
+		//MoveCursorGamepad();
+	}
 }
 
 void APlayerControllerMain::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// Spawn an actor to represent the cursor/crosshair
-	if (CursorClass != nullptr)
-	{
-		FActorSpawnParameters SpawnParams;
-		SpawnParams.Owner = this;
-		CursorActor = GetWorld()->SpawnActor<AStaticMeshActor>(CursorClass, FVector::ZeroVector,
-			FRotator::ZeroRotator, SpawnParams);
-	}
-	else
-	{
-		UE_LOG(LogBlueprint, Warning, TEXT("Could not spawn CursorActor. Make sure to select a CursorClass."));
-	}
-}
-
-void APlayerControllerMain::SetupInputComponent()
-{
-	Super::SetupInputComponent();
-
-	FInputKeyBinding& AnyKey = InputComponent->BindKey(EKeys::AnyKey, IE_Pressed, this,
-		&APlayerControllerMain::UpdateGamepad);
-	FInputVectorAxisBinding& GamepadRight2D = InputComponent->BindVectorAxis(EKeys::Gamepad_Right2D, this,
-		&APlayerControllerMain::MoveCursorGamepad);
-
-	AnyKey.bConsumeInput = false;
-	GamepadRight2D.bConsumeInput = false;
 }
 
 void APlayerControllerMain::OnPossess(APawn* aPawn)
@@ -79,41 +69,25 @@ void APlayerControllerMain::UpdateGamepad(FKey Key)
 	GamepadActive = Key.IsGamepadKey() ? true : false;
 }
 
-void APlayerControllerMain::MoveCursorMouse()
+void APlayerControllerMain::MoveCursorMouse() const
 {
-	if (!GamepadActive)
+	float MousePosX, MousePosY;
+	if (GetMousePosition(MousePosX, MousePosY))
 	{
-		float MousePosX, MousePosY;
-		if (GetMousePosition(MousePosX, MousePosY))
-		{
-			FVector TraceLocation, TraceDirection;
-			DeprojectScreenPositionToWorld(MousePosX, MousePosY, TraceLocation, TraceDirection);
-			const FVector MousePosPlane = FMath::LinePlaneIntersection(TraceLocation,
-				TraceLocation + TraceDirection * 10000,
-				FPlane(0, 0, 1, 0));
-
-			const FVector CursorVector = MousePosPlane - GetPawn()->GetActorLocation();
-			CursorActor->SetActorRotation(CursorVector.Rotation() + FRotator(0, 90, 0));
-			CursorActor->SetActorLocation(MousePosPlane);
-		}
+		const UWidget* Crosshair = MainWidget->WidgetTree->FindWidget(FName("Crosshair"));
+		UCanvasPanelSlot* Slot = Cast<UCanvasPanelSlot>(Crosshair->Slot);
+		Slot->SetPosition(FVector2d(MousePosX, MousePosY));
 	}
 }
 
-void APlayerControllerMain::MoveCursorGamepad(FVector AxisValue)
+void APlayerControllerMain::MoveCursorGamepad(FVector2d AxisValue) const
 {
-	if (GamepadActive)
+	if (AxisValue.IsNearlyZero(.20f))
 	{
-		if (AxisValue.IsNearlyZero(.20f))
-		{
-			CursorActor->GetStaticMeshComponent()->SetVisibility(false);
-		}
-		else
-		{
-			CursorActor->GetStaticMeshComponent()->SetVisibility(true);
-			AxisValue = AxisValue.RotateAngleAxis(90, FVector::UpVector) * 1000;
-		}
-		const FVector CursorLocation = AxisValue.GetClampedToSize2D(300, 800) + GetPawn()->GetActorLocation();
-		CursorActor->SetActorLocation(CursorLocation);
-		CursorActor->SetActorRotation(AxisValue.Rotation() + FRotator(0, 90, 0));
+		return;
 	}
+
+	const UWidget* Crosshair = MainWidget->WidgetTree->FindWidget(FName("Crosshair"));
+	UCanvasPanelSlot* Slot = Cast<UCanvasPanelSlot>(Crosshair->Slot);
+	Slot->SetPosition(AxisValue.ClampAxes(300, 800));
 }

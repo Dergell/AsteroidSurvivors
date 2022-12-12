@@ -8,19 +8,36 @@ public class Asteroids : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
+		PublicIncludePaths.AddRange(new string[]
+		{
+			"Asteroids"
+		});
 
 		PublicDependencyModuleNames.AddRange(new string[]
-			{ "Niagara", "AIModule", "GameplayAbilities", "GameplayTags", "GameplayTasks" });
+		{
+			"Core",
+			"CoreUObject",
+			"ApplicationCore",
+			"Engine",
+			"PhysicsCore",
+			"GameplayTags",
+			"GameplayTasks",
+			"GameplayAbilities",
+			"AIModule",
+			"Niagara"
+		});
 
-		PrivateDependencyModuleNames.AddRange(new string[] { });
+		PrivateDependencyModuleNames.AddRange(new string[]
+		{
+			"InputCore",
+			"Slate",
+			"SlateCore",
+			"RenderCore",
+			"EnhancedInput",
+			"UMG"
+		});
 
-		// Uncomment if you are using Slate UI
-		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
-
-		// Uncomment if you are using online features
-		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
-
-		// To include OnlineSubsystemSteam, add it to the plugins section in your uproject file with the Enabled attribute set to true
+		// Generate compile errors if using DrawDebug functions in test/shipping builds.
+		PublicDefinitions.Add("SHIPPING_DRAW_DEBUG_ERROR=1");
 	}
 }

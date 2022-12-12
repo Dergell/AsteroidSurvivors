@@ -18,8 +18,6 @@ class ASTEROIDS_API UGameplayAbility_AttackManual : public UGameplayAbilityBase
 	GENERATED_BODY()
 
 public:
-	UGameplayAbility_AttackManual();
-
 	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo,
 		const FGameplayAbilityActivationInfo ActivationInfo) override;
 

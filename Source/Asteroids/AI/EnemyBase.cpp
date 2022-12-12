@@ -4,14 +4,15 @@
 #include "EnemyBase.h"
 
 #include "AbilitySystemComponent.h"
+#include "AsteroidsGameplayTags.h"
 #include "NiagaraComponent.h"
-#include "Asteroids/Components/AIMovementComponent.h"
 #include "Asteroids/Gameplay/AttributeSetBase.h"
 #include "Asteroids/Gameplay/GameplayAbilityBase.h"
 #include "Asteroids/Gameplay/GameplayAbility_AttackManual.h"
 #include "Asteroids/Items/ItemProjectile.h"
 #include "Asteroids/Items/ItemWeightedSpawn.h"
 #include "Components/AudioComponent.h"
+#include "GameFramework/FloatingPawnMovement.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -29,7 +30,7 @@ AEnemyBase::AEnemyBase()
 	ExplosionAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("ExplosionSound"));
 	ExplosionAudioComponent->SetupAttachment(ExplosionNiagaraComponent);
 
-	MovementComp = CreateDefaultSubobject<UAIMovementComponent>(TEXT("MovementComp"));
+	MovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("MovementComponent"));
 
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(true);
@@ -94,8 +95,7 @@ void AEnemyBase::GiveAbilities()
 	{
 		for (TSubclassOf<UGameplayAbilityBase>& StartupAbility : DefaultAbilities)
 		{
-			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, 1,
-				static_cast<int32>(StartupAbility.GetDefaultObject()->AbilityInputID), this));
+			AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility, 1, INDEX_NONE, this));
 		}
 	}
 }
@@ -128,8 +128,7 @@ void AEnemyBase::HealthChanged(const FOnAttributeChangeData& Data)
 void AEnemyBase::FaceTargetDirection(float DeltaTime)
 {
 	// Get the manual attack abilities used by this enemy
-	const FGameplayTagContainer AttackTags = FGameplayTagContainer(
-		FGameplayTag::RequestGameplayTag(FName("Ability.Attack.Manual")));
+	const FGameplayTagContainer AttackTags = FGameplayTagContainer(FAsteroidsGameplayTags::Get().Ability_Attack);
 	TArray<FGameplayAbilitySpec*> AttackAbilities;
 	AbilitySystemComponent->GetActivatableGameplayAbilitySpecsByAllMatchingTags(AttackTags, AttackAbilities);
 
@@ -174,9 +173,9 @@ void AEnemyBase::FaceTargetDirection(float DeltaTime)
 
 void AEnemyBase::Die()
 {
-	AbilitySystemComponent->AddLooseGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Dead")));
+	AbilitySystemComponent->AddLooseGameplayTag(FAsteroidsGameplayTags::Get().Ability_Attack);
 
-	MovementComp->Deactivate();
+	MovementComponent->Deactivate();
 	Mesh->SetPhysicsLinearVelocity(FVector::ZeroVector);
 	Mesh->SetPhysicsAngularVelocityInDegrees(FVector::ZeroVector);
 	Mesh->SetSimulatePhysics(false);

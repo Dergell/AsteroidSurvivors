@@ -3,6 +3,7 @@
 
 #include "GameplayAbilityBase.h"
 #include "AbilitySystemComponent.h"
+#include "AsteroidsGameplayTags.h"
 #include "GameplayTagContainer.h"
 
 UGameplayAbilityBase::UGameplayAbilityBase()
@@ -11,7 +12,7 @@ UGameplayAbilityBase::UGameplayAbilityBase()
 	InstancingPolicy = EGameplayAbilityInstancingPolicy::InstancedPerActor;
 
 	// Default tags that block this ability from activating
-	ActivationBlockedTags.AddTag(FGameplayTag::RequestGameplayTag(FName("State.Dead")));
+	ActivationBlockedTags.AddTag(FAsteroidsGameplayTags::Get().State_Dead);
 }
 
 const FGameplayTagContainer* UGameplayAbilityBase::GetCooldownTags() const
@@ -34,11 +35,9 @@ void UGameplayAbilityBase::ApplyCooldown(const FGameplayAbilitySpecHandle Handle
 	const UGameplayEffect* CooldownGE = GetCooldownGameplayEffect();
 	if (CooldownGE)
 	{
-		const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(
-			CooldownGE->GetClass(), 1);
+		const FGameplayEffectSpecHandle SpecHandle = MakeOutgoingGameplayEffectSpec(CooldownGE->GetClass(), 1);
 		SpecHandle.Data.Get()->DynamicGrantedTags.AppendTags(CooldownTags);
-		SpecHandle.Data.Get()->SetSetByCallerMagnitude(FGameplayTag::RequestGameplayTag(FName("Effect.Cooldown")),
-			CooldownDuration);
+		SpecHandle.Data.Get()->SetSetByCallerMagnitude(FAsteroidsGameplayTags::Get().Effect_Cooldown, CooldownDuration);
 		ApplyGameplayEffectSpecToOwner(Handle, ActorInfo, ActivationInfo, SpecHandle);
 	}
 }

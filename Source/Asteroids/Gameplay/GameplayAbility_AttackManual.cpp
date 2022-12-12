@@ -8,11 +8,6 @@
 #include "Asteroids/Items/ItemProjectile.h"
 #include "Components/ArrowComponent.h"
 
-UGameplayAbility_AttackManual::UGameplayAbility_AttackManual()
-{
-	AbilityInputID = EAbilityInputID::AttackManual;
-}
-
 void UGameplayAbility_AttackManual::InputReleased(const FGameplayAbilitySpecHandle Handle,
 	const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {

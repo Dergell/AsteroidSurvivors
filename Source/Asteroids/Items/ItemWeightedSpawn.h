@@ -14,7 +14,7 @@ struct FItemSpawnProbability
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ClampMax = "100", UIMax = "100"))
-	uint8 Probability;
+	uint8 Probability = 0;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AItemWeightedSpawn> Item;
 };

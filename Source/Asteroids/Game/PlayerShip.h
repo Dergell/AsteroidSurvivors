@@ -11,8 +11,12 @@
 
 class AItemProjectile;
 class UCameraComponent;
+class UFloatingPawnMovement;
 class UInputComponent;
+class UInputConfig;
 class USpringArmComponent;
+struct FGameplayTag;
+struct FInputActionValue;
 
 /**
  * Class which implements the player ships. Extended by blueprints and classes.
@@ -26,28 +30,37 @@ public:
 	APlayerShip();
 
 	virtual void Tick(float DeltaSeconds) override;
+
+	// Ability System
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	// Input Handling
+	UPROPERTY(EditDefaultsOnly, Category = "Input")
+	UInputConfig* InputConfig;
+
+	// Actions
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void Explode();
-	
-	UFUNCTION(BlueprintGetter)
-	FVector GetCameraLocation() const
-	{
-		return Camera->GetComponentLocation();
-	}
 
-	virtual void HitByProjectile_Implementation(APawn* ProjectileInstigator,
-		TSubclassOf<UGameplayEffect> ProjectileEffect) override;
+	// Getter
+	UFUNCTION(BlueprintGetter)
+	FVector GetCameraLocation() const { return Camera->GetComponentLocation(); }
+
+	// Interfaces
+	virtual void HitByProjectile_Implementation(APawn* ProjectileInstigator, TSubclassOf<UGameplayEffect> ProjectileEffect) override;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	virtual void PossessedBy(AController* NewController) override;
-	virtual void OnRep_PlayerState() override;
+
+	// Input Handling
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	void Input_AbilityInputTagPressed(FGameplayTag InputTag);
+	void Input_AbilityInputTagReleased(FGameplayTag InputTag);
+	void Input_Move(const FInputActionValue& InputActionValue);
+	void Input_AimMouse(const FInputActionValue& InputActionValue);
+	void Input_AimStick(const FInputActionValue& InputActionValue);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* Mesh;
@@ -55,12 +68,10 @@ protected:
 	USpringArmComponent* SpringArm;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UCameraComponent* Camera;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UFloatingPawnMovement* MovementComponent;
 
 	// Movement modifiers
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Acceleration = 500.f;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float SpeedLimit = 1000.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float TurnSpeed = 1.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -78,14 +89,10 @@ protected:
 	TSubclassOf<UCameraShakeBase> CameraShakeClass;
 
 private:
-	void MoveHorizontal(float Value);
-	void MoveVertical(float Value);
 	void RotatePawn();
 
 	UFUNCTION()
-	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
-	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-		FVector NormalImpulse, const FHitResult& Hit);
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 };

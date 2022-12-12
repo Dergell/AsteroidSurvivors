@@ -8,7 +8,6 @@
 #include "WidgetMain.h"
 #include "PlayerControllerMain.generated.h"
 
-class AStaticMeshActor;
 
 /**
  * Class which implements the main player controller. Extended by blueprints.
@@ -30,17 +29,15 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void GameOver() const;
-	
+	UFUNCTION(BlueprintCallable)
+	void MoveCursor() const;
+
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UWidgetMain> MainWidgetClass;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-	virtual void SetupInputComponent() override;
-
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<AStaticMeshActor> CursorClass;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool GamepadActive = false;
@@ -50,11 +47,9 @@ private:
 	virtual void OnPossess(APawn* aPawn) override;
 
 	void UpdateGamepad(FKey Key);
-	void MoveCursorMouse();
-	void MoveCursorGamepad(FVector AxisValue);
+	void MoveCursorMouse() const;
+	void MoveCursorGamepad(FVector2d AxisValue) const;
 
 	UPROPERTY()
 	UWidgetMain* MainWidget;
-	UPROPERTY()
-	AStaticMeshActor* CursorActor;
 };

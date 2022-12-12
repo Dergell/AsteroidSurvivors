@@ -9,6 +9,7 @@
 #include "GameplayEffectTypes.h"
 #include "EnemyBase.generated.h"
 
+class UFloatingPawnMovement;
 class AItemWeightedSpawn;
 class UFXSystemComponent;
 class UGameplayEffect;
@@ -17,7 +18,6 @@ class UGameplayAbilityBase;
 class UAbilitySystemComponent;
 class UNiagaraComponent;
 class AItemProjectile;
-class UAIMovementComponent;
 class UBehaviorTree;
 
 UCLASS()
@@ -54,7 +54,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* Mesh;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UAIMovementComponent* MovementComp;
+	UFloatingPawnMovement* MovementComponent;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UNiagaraComponent* ExplosionNiagaraComponent;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)

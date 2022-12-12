@@ -5,10 +5,10 @@
 
 #include "AbilitySystemComponent.h"
 #include "AIController.h"
+#include "AsteroidsGameplayTags.h"
 #include "EnemyBase.h"
 #include "Asteroids/Game/PlayerShip.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Kismet/GameplayStatics.h"
 
 UBTTask_AttackTarget::UBTTask_AttackTarget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -43,7 +43,7 @@ EBTNodeResult::Type UBTTask_AttackTarget::ExecuteTask(UBehaviorTreeComponent& Ow
 			}
 		}
 
-		const FGameplayTagContainer Tags = FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("Ability.Attack")));
+		const FGameplayTagContainer Tags = FGameplayTagContainer(FAsteroidsGameplayTags::Get().Ability_Attack);
 		TArray<FGameplayAbilitySpec*> Abilities;
 		AbilitySystemComponent->GetActivatableGameplayAbilitySpecsByAllMatchingTags(Tags, Abilities);
 

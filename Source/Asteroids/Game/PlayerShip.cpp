@@ -3,17 +3,17 @@
 #include "PlayerShip.h"
 
 #include "AbilitySystemComponent.h"
+#include "AsteroidsGameplayTags.h"
 #include "GameModeMain.h"
-#include "GameplayTask.h"
 #include "PlayerControllerMain.h"
 #include "PlayerStateMain.h"
-#include "Asteroids/Asteroids.h"
 #include "Asteroids/Interfaces/ItemInterface.h"
 #include "Asteroids/Items/ItemProjectile.h"
 #include "Camera/CameraComponent.h"
-#include "Components/ArrowComponent.h"
+#include "GameFramework/FloatingPawnMovement.h"
 #include "GameFramework/PlayerState.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Input/AsteroidsInputComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 APlayerShip::APlayerShip()
@@ -22,9 +22,10 @@ APlayerShip::APlayerShip()
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Create components
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
-	SpringArm = CreateDefaultSubobject<USpringArmComponent>("SpringArm");
-	Camera = CreateDefaultSubobject<UCameraComponent>("Camera");
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	MovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("MovementComponent"));
 
 	// Setup components
 	RootComponent = Mesh;
@@ -39,19 +40,13 @@ void APlayerShip::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	// Clamp velocity
-	if (GetVelocity().Length() > SpeedLimit)
-	{
-		Mesh->SetPhysicsLinearVelocity(GetVelocity().GetUnsafeNormal2D() * SpeedLimit);
-	}
-
 	// Change camera zoom by velocity
-	const float TargetLength = FMath::Lerp(BoomMinLength, BoomMaxLength, GetVelocity().Length() / SpeedLimit);
+	const float TargetLength = FMath::Lerp(BoomMinLength, BoomMaxLength, MovementComponent->Velocity.Length() / MovementComponent->MaxSpeed);
 	FMath::ExponentialSmoothingApprox(SpringArm->TargetArmLength, TargetLength, DeltaSeconds, BoomSmoothingTime);
 
 	// Change camera rotation by velocity
 	FRotator CamRotation = Camera->GetRelativeRotation();
-	FRotator TargetRotation = FRotator(GetVelocity().X / (SpeedLimit / 4), GetVelocity().Y / (SpeedLimit / 4), 0);
+	FRotator TargetRotation = FRotator(MovementComponent->Velocity.X / (MovementComponent->MaxSpeed / 4), MovementComponent->Velocity.Y / (MovementComponent->MaxSpeed / 4), 0);
 	FMath::ExponentialSmoothingApprox(CamRotation, TargetRotation, DeltaSeconds, BoomSmoothingTime);
 	Camera->SetRelativeRotation(CamRotation);
 
@@ -70,6 +65,7 @@ void APlayerShip::Explode_Implementation()
 	Mesh->SetVisibility(false, true);
 	Mesh->SetSimulatePhysics(false);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	MovementComponent->Deactivate();
 }
 
 void APlayerShip::HitByProjectile_Implementation(APawn* ProjectileInstigator,
@@ -102,28 +98,6 @@ void APlayerShip::BeginPlay()
 	Mesh->OnComponentHit.AddDynamic(this, &APlayerShip::OnHit);
 }
 
-void APlayerShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	// Setup axis
-	InputComponent->BindAxis("MoveVertical", this, &APlayerShip::MoveVertical);
-	InputComponent->BindAxis("MoveHorizontal", this, &APlayerShip::MoveHorizontal);
-
-	// Setup abilities
-	UAbilitySystemComponent* AbilitySystemComponent = GetAbilitySystemComponent();
-	if (AbilitySystemComponent && InputComponent)
-	{
-		const FGameplayAbilityInputBinds Binds(
-			FString("Confirm"), FString("Cancel"),
-			FString("EAbilityInputID"),
-			static_cast<int32>(EAbilityInputID::Confirm),
-			static_cast<int32>(EAbilityInputID::Cancel)
-		);
-		AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, Binds);
-	}
-}
-
 void APlayerShip::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
@@ -138,54 +112,82 @@ void APlayerShip::PossessedBy(AController* NewController)
 	}
 }
 
-void APlayerShip::OnRep_PlayerState()
+void APlayerShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
-	Super::OnRep_PlayerState();
+	UAsteroidsInputComponent* EnhancedInputComponent = Cast<UAsteroidsInputComponent>(InputComponent);
 
-	if (APlayerStateMain* State = GetPlayerState<APlayerStateMain>())
+	//Make sure to set your input component class in the InputSettings->DefaultClasses
+	check(EnhancedInputComponent);
+
+	const FAsteroidsGameplayTags& GameplayTags = FAsteroidsGameplayTags::Get();
+
+	EnhancedInputComponent->BindActionByTag(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Triggered, this, &APlayerShip::Input_Move);
+	EnhancedInputComponent->BindActionByTag(InputConfig, GameplayTags.InputTag_Aim_Mouse, ETriggerEvent::Triggered, this, &APlayerShip::Input_AimMouse);
+	EnhancedInputComponent->BindActionByTag(InputConfig, GameplayTags.InputTag_Aim_Stick, ETriggerEvent::Triggered, this, &APlayerShip::Input_AimStick);
+
+	TArray<uint32> BindHandles;
+	EnhancedInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::Input_AbilityInputTagPressed, &ThisClass::Input_AbilityInputTagReleased, BindHandles);
+}
+
+void APlayerShip::Input_AbilityInputTagPressed(FGameplayTag InputTag)
+{
+	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
 	{
-		UAbilitySystemComponent* AbilitySystemComponent = State->GetAbilitySystemComponent();
-		AbilitySystemComponent->InitAbilityActorInfo(this, this);
-		State->InitializeAttributes();
-
-		if (AbilitySystemComponent && InputComponent)
+		TArray<FGameplayAbilitySpec*> Abilities;
+		ASC->GetActivatableGameplayAbilitySpecsByAllMatchingTags(FGameplayTagContainer(InputTag), Abilities);
+		for (FGameplayAbilitySpec* Ability : Abilities)
 		{
-			const FGameplayAbilityInputBinds Binds(
-				FString("Confirm"), FString("Cancel"),
-				FString("EAbilityInputID"),
-				static_cast<int32>(EAbilityInputID::Confirm),
-				static_cast<int32>(EAbilityInputID::Cancel)
-			);
-			AbilitySystemComponent->BindAbilityActivationToInputComponent(InputComponent, Binds);
+			ASC->AbilityLocalInputPressed(Ability->InputID);
 		}
 	}
 }
 
-void APlayerShip::MoveHorizontal(float Value)
+void APlayerShip::Input_AbilityInputTagReleased(FGameplayTag InputTag)
 {
-	if (Mesh->GetCollisionEnabled() != ECollisionEnabled::QueryAndPhysics && Mesh->GetCollisionEnabled() != ECollisionEnabled::PhysicsOnly)
+	if (UAbilitySystemComponent* ASC = GetAbilitySystemComponent())
 	{
-		return;
+		TArray<FGameplayAbilitySpec*> Abilities;
+		ASC->GetActivatableGameplayAbilitySpecsByAllMatchingTags(FGameplayTagContainer(InputTag), Abilities);
+		for (FGameplayAbilitySpec* Ability : Abilities)
+		{
+			ASC->AbilityLocalInputReleased(Ability->InputID);
+		}
 	}
-
-	const FVector Horizontal = FVector::RightVector * Acceleration * Value;
-	Mesh->AddForce(Horizontal, NAME_None, true);
 }
 
-void APlayerShip::MoveVertical(float Value)
+void APlayerShip::Input_Move(const FInputActionValue& InputActionValue)
 {
-	if (Mesh->GetCollisionEnabled() != ECollisionEnabled::QueryAndPhysics && Mesh->GetCollisionEnabled() != ECollisionEnabled::PhysicsOnly)
+	const FVector2D MoveValue = InputActionValue.Get<FVector2D>();
+
+	if (MoveValue.X != 0.0f)
 	{
-		return;
+		AddMovementInput(FVector::RightVector, MoveValue.X);
 	}
 
-	const FVector Vertical = FVector::ForwardVector * Acceleration * Value;
-	Mesh->AddForce(Vertical, NAME_None, true);
+	if (MoveValue.Y != 0.0f)
+	{
+		AddMovementInput(FVector::ForwardVector, MoveValue.Y);
+	}
+}
+
+void APlayerShip::Input_AimMouse(const FInputActionValue& InputActionValue)
+{
+	const APlayerControllerMain* PlayerController = GetController<APlayerControllerMain>();
+	PlayerController->MoveCursor();
+}
+
+void APlayerShip::Input_AimStick(const FInputActionValue& InputActionValue)
+{
+	const APlayerControllerMain* PlayerController = GetController<APlayerControllerMain>();
+	const FVector2D AimValue = InputActionValue.Get<FVector2D>();
+	const FRotator CurrentRotation(0.0f, GetControlRotation().Yaw, 0.0f);
+
+	PlayerController->MoveCursor();
 }
 
 void APlayerShip::RotatePawn()
 {
-	const FRotator CurrentRotation = Mesh->GetComponentRotation();
+	const FRotator CurrentRotation = GetControlRotation();
 	FRotator TargetRotation = GetController<APlayerControllerMain>()->GetCursorVector().Rotation();
 
 	// Add some roll to the turn
@@ -200,7 +202,7 @@ void APlayerShip::RotatePawn()
 	NewRotation.Pitch = 0;
 
 	// Normalize and set to Mesh
-	Mesh->SetRelativeRotation(NewRotation);
+	Controller->SetControlRotation(NewRotation);
 }
 
 void APlayerShip::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
