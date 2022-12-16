@@ -2,8 +2,12 @@
 
 #include "PlayerControllerMain.h"
 
+#include "EnhancedInputSubsystems.h"
+#include "Blueprint/SlateBlueprintLibrary.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/CanvasPanelSlot.h"
+#include "Input/AsteroidsInputComponent.h"
 
 APlayerControllerMain::APlayerControllerMain()
 {
@@ -16,16 +20,29 @@ void APlayerControllerMain::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 }
 
-FVector APlayerControllerMain::GetCursorVector() const
+FVector APlayerControllerMain::GetCrosshairPositionOnPlane() const
 {
 	const UWidget* Crosshair = MainWidget->WidgetTree->FindWidget(FName("Crosshair"));
-	const UCanvasPanelSlot* Slot = Cast<UCanvasPanelSlot>(Crosshair->Slot);
+	UCanvasPanelSlot* Slot = Cast<UCanvasPanelSlot>(Crosshair->Slot);
 
+	// Translate widget local crosshair position into viewport mouse position
+	FVector2D PixelPosition, ViewportPosition;
+	USlateBlueprintLibrary::LocalToViewport(
+		GetWorld(), MainWidget->GetCachedGeometry(),
+		Slot->GetPosition(),
+		PixelPosition, ViewportPosition
+	);
+
+	// Translate viewport crosshair position into 3D space position
 	FVector TraceLocation, TraceDirection;
-	DeprojectScreenPositionToWorld(Slot->GetPosition().X, Slot->GetPosition().Y, TraceLocation, TraceDirection);
-	const FVector PlanePosition = FMath::LinePlaneIntersection(TraceLocation, TraceLocation + TraceDirection * 10000, FPlane(0, 0, 1, 0));
+	DeprojectScreenPositionToWorld(PixelPosition.X, PixelPosition.Y, TraceLocation, TraceDirection);
+	const FVector PlanePosition = FMath::LinePlaneIntersection(
+		TraceLocation,
+		TraceLocation + TraceDirection * 10000,
+		FPlane(0, 0, 1, 0)
+	);
 
-	return PlanePosition - GetPawn()->GetActorLocation();
+	return PlanePosition;
 }
 
 void APlayerControllerMain::UpdateScore_Implementation(int32 Points)
@@ -33,12 +50,12 @@ void APlayerControllerMain::UpdateScore_Implementation(int32 Points)
 	MainWidget->UpdateScore(Points);
 }
 
-void APlayerControllerMain::GameOver() const
+void APlayerControllerMain::GameOver()
 {
 	MainWidget->GameOver();
 }
 
-void APlayerControllerMain::MoveCursor() const
+void APlayerControllerMain::MoveCursor(FVector2D AxisValue) const
 {
 	if (!GamepadActive)
 	{
@@ -46,13 +63,21 @@ void APlayerControllerMain::MoveCursor() const
 	}
 	else
 	{
-		//MoveCursorGamepad();
+		MoveCursorGamepad(AxisValue);
 	}
 }
 
 void APlayerControllerMain::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void APlayerControllerMain::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+
+	FInputKeyBinding& AnyKey = InputComponent->BindKey(EKeys::AnyKey, IE_Pressed, this, &APlayerControllerMain::UpdateGamepad);
+	AnyKey.bConsumeInput = false;
 }
 
 void APlayerControllerMain::OnPossess(APawn* aPawn)
@@ -71,23 +96,23 @@ void APlayerControllerMain::UpdateGamepad(FKey Key)
 
 void APlayerControllerMain::MoveCursorMouse() const
 {
-	float MousePosX, MousePosY;
-	if (GetMousePosition(MousePosX, MousePosY))
-	{
-		const UWidget* Crosshair = MainWidget->WidgetTree->FindWidget(FName("Crosshair"));
-		UCanvasPanelSlot* Slot = Cast<UCanvasPanelSlot>(Crosshair->Slot);
-		Slot->SetPosition(FVector2d(MousePosX, MousePosY));
-	}
-}
-
-void APlayerControllerMain::MoveCursorGamepad(FVector2d AxisValue) const
-{
-	if (AxisValue.IsNearlyZero(.20f))
-	{
-		return;
-	}
+	const FVector2D MousePosition = UWidgetLayoutLibrary::GetMousePositionOnViewport(MainWidget);
 
 	const UWidget* Crosshair = MainWidget->WidgetTree->FindWidget(FName("Crosshair"));
 	UCanvasPanelSlot* Slot = Cast<UCanvasPanelSlot>(Crosshair->Slot);
-	Slot->SetPosition(AxisValue.ClampAxes(300, 800));
+	Slot->SetPosition(MousePosition);
+}
+
+void APlayerControllerMain::MoveCursorGamepad(FVector2D AxisValue) const
+{
+	int32 SizeX, SizeY;
+	GetViewportSize(SizeX, SizeY);
+	AxisValue = AxisValue.GetSafeNormal() * CrosshairDistance + FVector2D(SizeX / 2, SizeY / 2);
+
+	FVector2D LocalCoordinate;
+	USlateBlueprintLibrary::ScreenToWidgetLocal(GetWorld(), MainWidget->GetCachedGeometry(), AxisValue, LocalCoordinate);
+
+	const UWidget* Crosshair = MainWidget->WidgetTree->FindWidget(FName("Crosshair"));
+	UCanvasPanelSlot* Slot = Cast<UCanvasPanelSlot>(Crosshair->Slot);
+	Slot->SetPosition(LocalCoordinate);
 }

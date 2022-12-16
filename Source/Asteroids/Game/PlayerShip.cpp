@@ -7,8 +7,8 @@
 #include "GameModeMain.h"
 #include "PlayerControllerMain.h"
 #include "PlayerStateMain.h"
-#include "Asteroids/Interfaces/ItemInterface.h"
-#include "Asteroids/Items/ItemProjectile.h"
+#include "Interfaces/ItemInterface.h"
+#include "Items/ItemProjectile.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "GameFramework/PlayerState.h"
@@ -114,12 +114,9 @@ void APlayerShip::PossessedBy(AController* NewController)
 void APlayerShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	UAsteroidsInputComponent* EnhancedInputComponent = Cast<UAsteroidsInputComponent>(InputComponent);
-
-	//Make sure to set your input component class in the InputSettings->DefaultClasses
 	check(EnhancedInputComponent);
 
 	const FAsteroidsGameplayTags& GameplayTags = FAsteroidsGameplayTags::Get();
-
 	EnhancedInputComponent->BindActionByTag(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Triggered, this, &APlayerShip::Input_Move);
 	EnhancedInputComponent->BindActionByTag(InputConfig, GameplayTags.InputTag_Aim_Mouse, ETriggerEvent::Triggered, this, &APlayerShip::Input_AimMouse);
 	EnhancedInputComponent->BindActionByTag(InputConfig, GameplayTags.InputTag_Aim_Stick, ETriggerEvent::Triggered, this, &APlayerShip::Input_AimStick);
@@ -178,16 +175,15 @@ void APlayerShip::Input_AimMouse(const FInputActionValue& InputActionValue)
 void APlayerShip::Input_AimStick(const FInputActionValue& InputActionValue)
 {
 	const APlayerControllerMain* PlayerController = GetController<APlayerControllerMain>();
-	const FVector2D AimValue = InputActionValue.Get<FVector2D>();
-	const FRotator CurrentRotation(0.0f, GetControlRotation().Yaw, 0.0f);
-
-	PlayerController->MoveCursor();
+	const FVector2D AxisValue = InputActionValue.Get<FVector2D>();
+	PlayerController->MoveCursor(AxisValue);
 }
 
 void APlayerShip::RotatePawn()
 {
 	const FRotator CurrentRotation = GetControlRotation();
-	FRotator TargetRotation = GetController<APlayerControllerMain>()->GetCursorVector().Rotation();
+	const FVector TargetVector = GetController<APlayerControllerMain>()->GetCrosshairPositionOnPlane() - GetActorLocation();
+	FRotator TargetRotation = TargetVector.Rotation();
 
 	// Add some roll to the turn
 	TargetRotation.Roll = FMath::FindDeltaAngleDegrees(CurrentRotation.Yaw, TargetRotation.Yaw);
