@@ -29,6 +29,7 @@ class ASTEROIDS_API APlayerShip : public APawn, public IAbilitySystemInterface, 
 public:
 	APlayerShip();
 	virtual void Tick(float DeltaSeconds) override;
+	virtual FVector GetVelocity() const override;
 
 	// Getter & Setter
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;

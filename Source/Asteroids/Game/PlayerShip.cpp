@@ -54,6 +54,11 @@ void APlayerShip::Tick(float DeltaSeconds)
 	RotatePawn();
 }
 
+FVector APlayerShip::GetVelocity() const
+{
+	return MovementComponent->Velocity;
+}
+
 UAbilitySystemComponent* APlayerShip::GetAbilitySystemComponent() const
 {
 	const APlayerStateMain* State = GetPlayerState<APlayerStateMain>();
