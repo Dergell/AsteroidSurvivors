@@ -167,7 +167,7 @@ void AEnemyBase::FaceTargetDirection(float DeltaTime)
 
 void AEnemyBase::Die()
 {
-	AbilitySystemComponent->AddLooseGameplayTag(FAsteroidsGameplayTags::Get().Ability_Attack);
+	AbilitySystemComponent->AddLooseGameplayTag(FAsteroidsGameplayTags::Get().State_Dead);
 
 	MovementComponent->Deactivate();
 	Mesh->SetPhysicsLinearVelocity(FVector::ZeroVector);
