@@ -10,6 +10,8 @@ class UGameplayEffect;
 class AEnemyBase;
 class AItemAsteroid;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameOver);
+
 /**
  * Class which implements the main game mode. Extended by blueprints.
  */
@@ -22,6 +24,14 @@ public:
 	// Getter & Setter
 	TSubclassOf<UGameplayEffect> GetCollisionGameplayEffectClass() const;
 	float GetCollisionThreshold() const { return CollisionThreshold; }
+
+	// Actions
+	void GameOver() const;
+
+public:
+	// Delegates
+	UPROPERTY(BlueprintAssignable)
+	FOnGameOver OnGameOver;
 
 protected:
 	virtual void BeginPlay() override;

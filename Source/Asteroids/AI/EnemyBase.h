@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AbilitySystemInterface.h"
-#include "Asteroids/Interfaces/ProjectileInterface.h"
+#include "Interfaces/ProjectileInterface.h"
 #include "GameFramework/Pawn.h"
 #include "GameplayEffectTypes.h"
 #include "EnemyBase.generated.h"
@@ -87,9 +87,10 @@ protected:
 	TSubclassOf<UGameplayEffect> DefaultAttributeEffect;
 
 private:
+	// Actions
 	void FaceTargetDirection(float DeltaTime);
 	void Die();
 
-	UFUNCTION()
+	// Subscribers
 	void OnExplosionFinished(UNiagaraComponent* PSystem);
 };

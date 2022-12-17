@@ -5,11 +5,13 @@
 #include "AbilitySystemComponent.h"
 #include "AsteroidsGameplayTags.h"
 #include "GameModeMain.h"
+#include "NiagaraComponent.h"
 #include "PlayerControllerMain.h"
 #include "PlayerStateMain.h"
 #include "Interfaces/ItemInterface.h"
 #include "Items/ItemProjectile.h"
 #include "Camera/CameraComponent.h"
+#include "Components/AudioComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
 #include "GameFramework/PlayerState.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -26,11 +28,15 @@ APlayerShip::APlayerShip()
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	MovementComponent = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("MovementComponent"));
+	ExplosionNiagaraComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("ExplosionEffect"));
+	ExplosionAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("ExplosionSound"));
 
 	// Setup components
 	RootComponent = Mesh;
 	SpringArm->SetupAttachment(Mesh);
 	Camera->SetupAttachment(SpringArm);
+	ExplosionNiagaraComponent->SetupAttachment(Mesh);
+	ExplosionAudioComponent->SetupAttachment(ExplosionNiagaraComponent);
 
 	// Always simulate physics since we're floating
 	Mesh->SetSimulatePhysics(true);
@@ -71,6 +77,10 @@ void APlayerShip::Explode_Implementation()
 	Mesh->SetSimulatePhysics(false);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	MovementComponent->Deactivate();
+
+	ExplosionNiagaraComponent->SetVisibility(true);
+	ExplosionNiagaraComponent->ActivateSystem();
+	ExplosionAudioComponent->Play();
 }
 
 void APlayerShip::HitByProjectile_Implementation(APawn* ProjectileInstigator,

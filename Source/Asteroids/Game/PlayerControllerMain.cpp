@@ -2,12 +2,10 @@
 
 #include "PlayerControllerMain.h"
 
-#include "EnhancedInputSubsystems.h"
 #include "Blueprint/SlateBlueprintLibrary.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/CanvasPanelSlot.h"
-#include "Input/AsteroidsInputComponent.h"
 
 APlayerControllerMain::APlayerControllerMain()
 {
@@ -48,11 +46,6 @@ FVector APlayerControllerMain::GetCrosshairPositionOnPlane() const
 void APlayerControllerMain::UpdateScore_Implementation(int32 Points)
 {
 	MainWidget->UpdateScore(Points);
-}
-
-void APlayerControllerMain::GameOver()
-{
-	MainWidget->GameOver();
 }
 
 void APlayerControllerMain::MoveCursor(FVector2D AxisValue) const

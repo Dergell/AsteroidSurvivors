@@ -4,8 +4,11 @@
 
 #include "AbilitySystemComponent.h"
 #include "AsteroidsGameplayTags.h"
-#include "Asteroids/Gameplay/AttributeSetBase.h"
-#include "Asteroids/Gameplay/GameplayAbilityBase.h"
+#include "GameModeMain.h"
+#include "PlayerShip.h"
+#include "Gameplay/AttributeSetBase.h"
+#include "Gameplay/GameplayAbilityBase.h"
+#include "Kismet/GameplayStatics.h"
 
 APlayerStateMain::APlayerStateMain()
 {
@@ -71,6 +74,10 @@ void APlayerStateMain::Die_Implementation()
 	AbilitySystemComponent->AddLooseGameplayTag(FAsteroidsGameplayTags::Get().State_Dead);
 
 	DisableInput(GetPlayerController());
+	GetPawn<APlayerShip>()->Explode();
+	
+	const AGameModeMain* GameMode = Cast<AGameModeMain>(UGameplayStatics::GetGameMode(GetWorld()));
+	GameMode->GameOver();
 }
 
 void APlayerStateMain::HealthChanged(const FOnAttributeChangeData& Data)

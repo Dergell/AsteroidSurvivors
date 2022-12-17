@@ -18,6 +18,11 @@ TSubclassOf<UGameplayEffect> AGameModeMain::GetCollisionGameplayEffectClass() co
 	return UGameplayEffect::StaticClass();
 }
 
+void AGameModeMain::GameOver() const
+{
+	OnGameOver.Broadcast();
+}
+
 void AGameModeMain::BeginPlay()
 {
 	Super::BeginPlay();

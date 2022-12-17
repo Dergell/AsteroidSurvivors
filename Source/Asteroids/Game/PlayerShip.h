@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "AbilitySystemInterface.h"
-#include "Asteroids/Interfaces/ProjectileInterface.h"
+#include "Interfaces/ProjectileInterface.h"
 #include "Camera/CameraComponent.h"
 #include "PlayerShip.generated.h"
 
@@ -15,6 +15,8 @@ class UFloatingPawnMovement;
 class UInputComponent;
 class UInputConfig;
 class USpringArmComponent;
+class UNiagaraComponent;
+class UAudioComponent;
 struct FGameplayTag;
 struct FInputActionValue;
 
@@ -70,6 +72,10 @@ protected:
 	UCameraComponent* Camera;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UFloatingPawnMovement* MovementComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UNiagaraComponent* ExplosionNiagaraComponent;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UAudioComponent* ExplosionAudioComponent;
 
 	// Movement Settings
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -88,10 +94,10 @@ protected:
 	TSubclassOf<UCameraShakeBase> CameraShakeClass;
 
 private:
+	// Actions
 	void RotatePawn();
 
-	UFUNCTION()
+	// Subscribers
 	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 };

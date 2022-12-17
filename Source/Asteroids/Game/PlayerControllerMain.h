@@ -29,8 +29,6 @@ public:
 
 	// Actions
 	UFUNCTION(BlueprintCallable)
-	void GameOver();
-	UFUNCTION(BlueprintCallable)
 	void MoveCursor(FVector2D AxisValue = FVector2D::ZeroVector) const;
 
 protected:

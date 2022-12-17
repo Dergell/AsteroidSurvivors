@@ -15,8 +15,7 @@ class ASTEROIDS_API UWidgetMain : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	// Actions
 	UFUNCTION(BlueprintImplementableEvent)
 	void UpdateScore(int32 Score);
-	UFUNCTION(BlueprintImplementableEvent)
-	void GameOver();
 };
