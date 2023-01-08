@@ -6,7 +6,7 @@
 #include "GameFramework/PlayerState.h"
 #include "AbilitySystemInterface.h"
 #include "GameplayEffectTypes.h"
-#include "Asteroids/Interfaces/ItemInterface.h"
+#include "Interfaces/ItemInterface.h"
 #include "PlayerStateMain.generated.h"
 
 class UGameplayAbilityBase;

@@ -3,8 +3,8 @@
 #include "GameModeMain.h"
 
 #include "GameplayEffect.h"
-#include "Asteroids/AI/EnemyBase.h"
-#include "Asteroids/Items/ItemAsteroid.h"
+#include "AI/AIShip.h"
+#include "Items/ItemAsteroid.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 

@@ -7,7 +7,7 @@
 #include "AIController.h"
 #include "AsteroidsGameplayTags.h"
 #include "EnemyBase.h"
-#include "Asteroids/Game/PlayerShip.h"
+#include "Game/PlayerShip.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 UBTTask_AttackTarget::UBTTask_AttackTarget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)

@@ -5,7 +5,7 @@
 
 #include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_Repeat.h"
-#include "Asteroids/Items/ItemProjectile.h"
+#include "Items/ItemProjectile.h"
 #include "Components/ArrowComponent.h"
 
 void UGameplayAbility_AttackManual::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
