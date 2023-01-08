@@ -28,6 +28,7 @@ public:
 
 	// Effects
 	FGameplayTag Effect_Cooldown;
+	FGameplayTag Effect_Damage;
 
 	// Abilities
 	FGameplayTag Ability_Attack;
