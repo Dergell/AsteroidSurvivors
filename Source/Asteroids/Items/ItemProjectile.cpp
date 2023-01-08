@@ -1,7 +1,12 @@
 // Asteroid Survivors - Copyright (C) 2022 Tony Schmich
 
 #include "ItemProjectile.h"
+
+#include "AbilitySystemComponent.h"
+#include "AsteroidsGameplayTags.h"
+#include "GameplayEffect.h"
 #include "Components/SphereComponent.h"
+#include "Game/SpaceShip.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 
 AItemProjectile::AItemProjectile()
@@ -33,19 +38,33 @@ void AItemProjectile::BeginPlay()
 void AItemProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	// Ignore the actor that shot this projectile
-	if (Owner == OtherActor)
+	if (OtherActor == nullptr || OtherActor == Owner)
 	{
 		return;
 	}
 
-	if (OtherActor != nullptr)
+	const ASpaceShip* Ship = Cast<ASpaceShip>(OtherActor);
+	const IProjectileInterface* Interface = Cast<IProjectileInterface>(OtherActor);
+
+	// If OtherActor is a SpaceShip, we know we have an ASC and can add the gameplay effects
+	if (Ship)
 	{
-		// Tell the other actor it was hit
-		IProjectileInterface* Interface = Cast<IProjectileInterface>(OtherActor);
-		if (Interface)
-		{
-			Interface->Execute_HitByProjectile(OtherActor, GetInstigator(), GameplayEffect);
-		}
+		const UAbilitySystemComponent* ASC = Ship->GetAbilitySystemComponent();
+
+		FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
+		EffectContext.AddSourceObject(this);
+		EffectContext.AddInstigator(GetInstigator(), GetInstigator());
+		EffectContext.AddHitResult(SweepResult);
+
+		const FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(GameplayEffect->GetClass(), 1, EffectContext);
+		SpecHandle.Data.Get()->SetSetByCallerMagnitude(FAsteroidsGameplayTags::Get().Effect_Damage, EffectAmount);
+
+		Ship->Execute_HitByProjectile(OtherActor, GetInstigator(), SpecHandle);
+	}
+	// If OtherActor is NOT a SpaceShip, but implements the ProjectileInterface, we notify it without gameplay effects
+	else if (Interface)
+	{
+		Interface->Execute_HitByProjectile(OtherActor, GetInstigator(), FGameplayEffectSpecHandle());
 	}
 
 	// Destroy the projectile

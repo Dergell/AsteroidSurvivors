@@ -2,6 +2,7 @@
 
 #include "ItemBase.h"
 
+#include "GameplayEffectTypes.h"
 #include "Kismet/GameplayStatics.h"
 
 AItemBase::AItemBase()
@@ -43,7 +44,7 @@ void AItemBase::Collected_Implementation()
 	Destroy();
 }
 
-void AItemBase::HitByProjectile_Implementation(APawn* ProjectileInstigator, TSubclassOf<UGameplayEffect> ProjectileEffect)
+void AItemBase::HitByProjectile_Implementation(APawn* ProjectileInstigator, FGameplayEffectSpecHandle EffectSpec)
 {
 	Destroy();
 }

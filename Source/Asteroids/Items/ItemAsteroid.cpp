@@ -2,6 +2,7 @@
 
 #include "ItemAsteroid.h"
 
+#include "GameplayEffectTypes.h"
 #include "Interfaces/ItemInterface.h"
 #include "GameFramework/PlayerState.h"
 #include "GameFramework/RotatingMovementComponent.h"
@@ -49,8 +50,7 @@ void AItemAsteroid::OnExplosionFinished(UNiagaraComponent* PSystem)
 	Destroy();
 }
 
-void AItemAsteroid::HitByProjectile_Implementation(APawn* ProjectileInstigator,
-	TSubclassOf<UGameplayEffect> ProjectileEffect)
+void AItemAsteroid::HitByProjectile_Implementation(APawn* ProjectileInstigator, FGameplayEffectSpecHandle EffectSpec)
 {
 	APlayerState* State = ProjectileInstigator->GetPlayerState();
 

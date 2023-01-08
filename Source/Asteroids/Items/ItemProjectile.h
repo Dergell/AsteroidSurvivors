@@ -22,24 +22,33 @@ class ASTEROIDS_API AItemProjectile : public AItemBase
 public:
 	AItemProjectile();
 
-	// Getter & Setter
-	FORCEINLINE float GetInitialSpeed() const { return ProjectileMovementComponent->InitialSpeed; }
-
 protected:
+	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-protected:
-	// Components
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	USphereComponent* CollisionComponent;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	UProjectileMovementComponent* ProjectileMovementComponent;
-
-	// Gameplay Ability System
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<UGameplayEffect> GameplayEffect;
+public:
+	// Get the value of InitialSpeed
+	float GetInitialSpeed() const { return ProjectileMovementComponent->InitialSpeed; }
 
 private:
+	// Called on overlap with other actors
 	UFUNCTION()
 	void OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+private:
+	// SphereComponent used for collision detection
+	UPROPERTY(VisibleAnywhere)
+	USphereComponent* CollisionComponent;
+
+	// MovementComponent of this projectile
+	UPROPERTY(VisibleAnywhere)
+	UProjectileMovementComponent* ProjectileMovementComponent;
+
+	// GameplayEffect applied by this projectile
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UGameplayEffect> GameplayEffect;
+
+	// The amount should be applied by the GameplayEffect (ex. damage on a damage effect)
+	UPROPERTY(EditAnywhere)
+	float EffectAmount;
 };

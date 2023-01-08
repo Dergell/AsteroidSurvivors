@@ -25,7 +25,7 @@ public:
 	void InitRandomMovement() const;
 
 	// Interfaces
-	virtual void HitByProjectile_Implementation(APawn* ProjectileInstigator, TSubclassOf<UGameplayEffect> ProjectileEffect) override;
+	virtual void HitByProjectile_Implementation(APawn* ProjectileInstigator, FGameplayEffectSpecHandle EffectSpec) override;
 
 protected:
 	virtual void BeginPlay() override;

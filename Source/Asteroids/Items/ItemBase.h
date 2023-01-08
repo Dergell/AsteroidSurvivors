@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Asteroids/Interfaces/ProjectileInterface.h"
+#include "Interfaces/ProjectileInterface.h"
 #include "ItemBase.generated.h"
 
 /**
@@ -30,7 +30,7 @@ public:
 	void Collected();
 
 	// Interfaces
-	virtual void HitByProjectile_Implementation(APawn* ProjectileInstigator, TSubclassOf<UGameplayEffect> ProjectileEffect) override;
+	virtual void HitByProjectile_Implementation(APawn* ProjectileInstigator, FGameplayEffectSpecHandle EffectSpec) override;
 
 protected:
 	virtual void BeginPlay() override;
