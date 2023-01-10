@@ -92,7 +92,9 @@ void ASpaceShip::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 	if (SpecHandle.IsValid())
 	{
 		GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
-		TakeDamage(Damage, FPointDamageEvent(), OtherActor->GetInstigatorController(), OtherActor);
+
+		AController* OtherController = IsValid(OtherActor) ? OtherActor->GetInstigatorController() : nullptr;
+		TakeDamage(Damage, FPointDamageEvent(), OtherController, OtherActor);
 	}
 }
 
