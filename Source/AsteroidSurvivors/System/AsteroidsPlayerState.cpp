@@ -18,22 +18,21 @@ AAsteroidsPlayerState::AAsteroidsPlayerState()
 	Attributes = CreateDefaultSubobject<UAsteroidsAttributeSet>(TEXT("Attributes"));
 }
 
+void AAsteroidsPlayerState::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetHealthAttribute()).AddUObject(this, &AAsteroidsPlayerState::HealthChanged);
+
+	if (bIsInvincible)
+	{
+		AbilitySystemComponent->AddLooseGameplayTag(FAsteroidsGameplayTags::Get().Cheat_UnlimitedHealth);
+	}
+}
+
 UAbilitySystemComponent* AAsteroidsPlayerState::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
-}
-
-void AAsteroidsPlayerState::UpdateScore_Implementation(int32 Points)
-{
-	// Update the score
-	Score += Points;
-
-	// Tell the player controller to update everything that uses the current score
-	IItemInterface* Interface = Cast<IItemInterface>(GetPlayerController());
-	if (Interface)
-	{
-		Interface->Execute_UpdateScore(GetPlayerController(), Score);
-	}
 }
 
 void AAsteroidsPlayerState::InitializeAttributes()
@@ -62,11 +61,17 @@ void AAsteroidsPlayerState::GiveAbilities()
 	}
 }
 
-void AAsteroidsPlayerState::BeginPlay()
+void AAsteroidsPlayerState::UpdateScore_Implementation(int32 Points)
 {
-	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetHealthAttribute()).AddUObject(this, &AAsteroidsPlayerState::HealthChanged);
+	// Update the score
+	Score += Points;
 
-	Super::BeginPlay();
+	// Tell the player controller to update everything that uses the current score
+	IItemInterface* Interface = Cast<IItemInterface>(GetPlayerController());
+	if (Interface)
+	{
+		Interface->Execute_UpdateScore(GetPlayerController(), Score);
+	}
 }
 
 void AAsteroidsPlayerState::Die_Implementation()

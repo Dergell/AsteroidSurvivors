@@ -24,35 +24,53 @@ class ASTEROIDSURVIVORS_API AAsteroidsPlayerState : public APlayerState, public 
 public:
 	AAsteroidsPlayerState();
 
-	// Interfaces
-	virtual void UpdateScore_Implementation(int32 Points) override;
-
-	// Gameplay Ability System
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-	virtual void InitializeAttributes();
-	virtual void GiveAbilities();
-
 protected:
+	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	// Actions
+public:
+	// Get AbilitySystemComponent
+	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	// Initialize attribute values defined by DefaultAttributeEffect
+	virtual void InitializeAttributes();
+
+	// Grant abilities defined by DefaultAbilities
+	virtual void GiveAbilities();
+
+	// Updates the players score and trigger UI update
+	virtual void UpdateScore_Implementation(int32 Points) override;
+
+	// Called once health depletes
 	UFUNCTION(BlueprintNativeEvent)
 	void Die();
 
-	// Gameplay Ability System
+	// Callback when the Health attribute changed
 	void HealthChanged(const FOnAttributeChangeData& Data);
 
 protected:
-	// Gameplay Ability System
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
-	UAbilitySystemComponent* AbilitySystemComponent;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Abilities")
-	TArray<TSubclassOf<UAsteroidsGameplayAbility>> DefaultAbilities;
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
-	UAsteroidsAttributeSet* Attributes;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	// This will apply a default value to all attributes
+	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayEffect> DefaultAttributeEffect;
 
+	// Default abilities
+	UPROPERTY(EditDefaultsOnly)
+	TArray<TSubclassOf<UAsteroidsGameplayAbility>> DefaultAbilities;
+
+	// Used to implement gameplay abilities
+	UPROPERTY(BlueprintReadOnly)
+	UAbilitySystemComponent* AbilitySystemComponent;
+
 private:
+	// The attribute set of this ship
+	UPROPERTY()
+	UAsteroidsAttributeSet* Attributes;
+
+	// The current score of the player
+	UPROPERTY(VisibleInstanceOnly)
 	int32 Score = 0;
+
+	// Adds the tag Cheats.UnlimitedHealth
+	UPROPERTY(EditDefaultsOnly)
+	bool bIsInvincible = false;
 };
