@@ -16,6 +16,7 @@ void AAsteroidsAIController::OnPossess(APawn* InPawn)
 		AActor* Target = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 		if (Target)
 		{
+			SetFocus(Target);
 			GetBlackboardComponent()->SetValueAsObject("Target", Target);
 			GetBlackboardComponent()->SetValueAsFloat("DistanceToTarget", Target->GetDistanceTo(InPawn));
 		}
