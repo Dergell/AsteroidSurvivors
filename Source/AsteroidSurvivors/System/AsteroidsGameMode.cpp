@@ -18,6 +18,11 @@ TSubclassOf<UGameplayEffect> AAsteroidsGameMode::GetCollisionGameplayEffectClass
 	return UGameplayEffect::StaticClass();
 }
 
+float AAsteroidsGameMode::CalculateCollisionDamage(const float Impulse) const
+{
+	return FMath::RoundToZero(Impulse / CollisionDamageDivider);
+}
+
 void AAsteroidsGameMode::GameOver() const
 {
 	OnGameOver.Broadcast();

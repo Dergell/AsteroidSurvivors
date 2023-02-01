@@ -24,6 +24,9 @@ public:
 	// Get the CollisionGameplayEffectClass
 	TSubclassOf<UGameplayEffect> GetCollisionGameplayEffectClass() const;
 
+	// Calculate collision damage
+	float CalculateCollisionDamage(float Impulse) const;
+
 	// Broadcasts the GameOver event 
 	void GameOver() const;
 
@@ -51,6 +54,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<UGameplayEffect> CollisionGameplayEffectClass;
 
+	// Used to adjust the collision damage. Higher value = less damage.
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float CollisionDamageDivider = 100000.f;
+	
 	// Enable to spawn asteroids
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bShouldSpawnAsteroid = false;

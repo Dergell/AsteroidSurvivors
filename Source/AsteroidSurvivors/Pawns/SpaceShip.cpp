@@ -78,7 +78,7 @@ void ASpaceShip::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 {
 	const AAsteroidsGameMode* GameMode = Cast<AAsteroidsGameMode>(UGameplayStatics::GetGameMode(this));
 
-	const double Damage = FMath::RoundToZero(NormalImpulse.Size() / 10000.f);
+	const double Damage = GameMode->CalculateCollisionDamage(NormalImpulse.Size());
 	if (Damage <= 0.f)
 	{
 		return;
