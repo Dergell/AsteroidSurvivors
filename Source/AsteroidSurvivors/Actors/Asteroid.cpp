@@ -52,11 +52,13 @@ void AAsteroid::OnExplosionFinished(UNiagaraComponent* PSystem)
 
 void AAsteroid::HitByProjectile_Implementation(APawn* ProjectileInstigator, FGameplayEffectSpecHandle EffectSpec)
 {
-	APlayerState* State = ProjectileInstigator->GetPlayerState();
-
-	if (const IItemInterface* Interface = Cast<IItemInterface>(State))
+	if (IsValid(ProjectileInstigator))
 	{
-		Interface->Execute_UpdateScore(State, PointsValue);
+		APlayerState* State = ProjectileInstigator->GetPlayerState();
+		if (const IItemInterface* Interface = Cast<IItemInterface>(State))
+		{
+			Interface->Execute_UpdateScore(State, PointsValue);
+		}
 	}
 
 	RotatingMovement->RotationRate = FRotator::ZeroRotator;
