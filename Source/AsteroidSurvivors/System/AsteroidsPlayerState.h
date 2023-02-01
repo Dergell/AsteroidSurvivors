@@ -68,7 +68,7 @@ private:
 
 	// The current score of the player
 	UPROPERTY(VisibleInstanceOnly)
-	int32 Score = 0;
+	int32 PlayerScore = 0;
 
 	// Adds the tag Cheats.UnlimitedHealth
 	UPROPERTY(EditDefaultsOnly)
