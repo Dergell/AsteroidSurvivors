@@ -38,7 +38,7 @@ void AAsteroidsGameMode::BeginPlay()
 
 void AAsteroidsGameMode::SpawnAsteroid()
 {
-	if (ShouldSpawnAsteroid && AsteroidSpawnClass)
+	if (bShouldSpawnAsteroid && AsteroidSpawnClass)
 	{
 		// Get a random Location, Rotation and Scale
 		const FVector Location = GetRandomSpawnLocation();
@@ -60,7 +60,7 @@ void AAsteroidsGameMode::SpawnAsteroid()
 
 void AAsteroidsGameMode::SpawnEnemy()
 {
-	if (ShouldSpawnEnemies && EnemySpawnClass)
+	if (bShouldSpawnEnemies && EnemySpawnClass)
 	{
 		const FVector Location = GetRandomSpawnLocation();
 		GetWorld()->SpawnActor<AAIShip>(EnemySpawnClass, Location, FRotator::ZeroRotator);

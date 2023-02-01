@@ -21,56 +21,75 @@ class ASTEROIDSURVIVORS_API AAsteroidsGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
-	// Getter & Setter
+	// Get the CollisionGameplayEffectClass
 	TSubclassOf<UGameplayEffect> GetCollisionGameplayEffectClass() const;
 
-	// Actions
+	// Broadcasts the GameOver event 
 	void GameOver() const;
 
-public:
-	// Delegates
+	// Delegate for the GameOver event
 	UPROPERTY(BlueprintAssignable)
 	FOnGameOver OnGameOver;
 
 protected:
+	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	// Spawn Handling
+	// Handles spawning of asteroids
 	UFUNCTION(BlueprintCallable)
 	void SpawnAsteroid();
+
+	// Handles spawning of enemies
 	UFUNCTION(BlueprintCallable)
 	void SpawnEnemy();
 
-protected:
-	// Basic Settings
+	// Additional screen margin to prevent spawns at the edge of the viewport
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float SpawnScreenMargin = 200.f;
+
+	// Class of the gameplay effect for collisions
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<UGameplayEffect> CollisionGameplayEffectClass;
 
-	// Asteroid Settings
+	// Enable to spawn asteroids
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool ShouldSpawnAsteroid = false;
+	bool bShouldSpawnAsteroid = false;
+
+	// Minimum interval of asteroid spawns
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float AsteroidSpawnIntervalMin = 0.2f;
+
+	// Maximum interval of asteroid spawns
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float AsteroidSpawnIntervalMax = 2.f;
+
+	// Asteroid class to spawn
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<AAsteroid> AsteroidSpawnClass;
 
-	// Enemy Settings
+	// Enable to spawn enemies
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool ShouldSpawnEnemies = false;
+	bool bShouldSpawnEnemies = false;
+
+	// Minimum interval of enemy spawns
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float EnemySpawnIntervalMin = 1.f;
+
+	// Maximum interval of enemy spawns
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float EnemySpawnIntervalMax = 2.f;
+
+	// Enemy class to spawn
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	TSubclassOf<AAIShip> EnemySpawnClass;
 
 private:
+	// Calculate a random spawn location just outside the viewport
 	FVector GetRandomSpawnLocation() const;
 
+	// Timer for asteroid spawns
 	FTimerHandle SpawnAsteroidTimer;
+
+	// Timer for enemy spawns
 	FTimerHandle SpawnEnemyTimer;
 };
