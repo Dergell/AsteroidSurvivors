@@ -60,7 +60,7 @@ void APlayerShip::Tick(float DeltaSeconds)
 	CameraComponent->SetRelativeRotation(CamRotation);
 
 	const AAsteroidsPlayerController* PlayerController = Cast<AAsteroidsPlayerController>(Controller);
-	MovementComponent->RotateTowardsLocation(PlayerController->GetCrosshairPositionOnPlane());
+	MovementComponent->RotateTowardsLocation(PlayerController->GetCrosshairPositionOnPlane(), DeltaSeconds);
 }
 
 UAbilitySystemComponent* APlayerShip::GetAbilitySystemComponent() const

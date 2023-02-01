@@ -26,7 +26,7 @@ public:
 
 	// Sets the rotation target calculated towards a location
 	UFUNCTION(BlueprintCallable)
-	void RotateTowardsLocation(const FVector Location);
+	void RotateTowardsLocation(const FVector Location, const float DeltaTime);
 
 protected:
 	// Apply control input as force to pawn

@@ -52,12 +52,11 @@ float UAsteroidsMovementComponent::GetMaxSpeed() const
 	return MaxSpeed;
 }
 
-void UAsteroidsMovementComponent::RotateTowardsLocation(const FVector Location)
+void UAsteroidsMovementComponent::RotateTowardsLocation(const FVector Location, const float DeltaTime)
 {
-	const FRotator CurrentRotation = UpdatedPrimitive->GetComponentRotation();
+	const FRotator CurrentRotation = UpdatedPrimitive->GetRelativeRotation();
 	const FVector TargetVector = Location - GetOwner()->GetActorLocation();
 	const FRotator RotationTarget = TargetVector.Rotation();
-	const double DeltaTime = UGameplayStatics::GetWorldDeltaSeconds(this);
 
 	// For the actual turn, just add the direction to the existing yaw
 	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, RotationTarget, DeltaTime, RotationSpeed);
@@ -69,7 +68,7 @@ void UAsteroidsMovementComponent::RotateTowardsLocation(const FVector Location)
 	NewRotation.Pitch = 0;
 
 	// Normalize and set to primitive
-	UpdatedPrimitive->SetWorldRotation(NewRotation);
+	UpdatedPrimitive->SetRelativeRotation(NewRotation);
 }
 
 void UAsteroidsMovementComponent::ApplyControlInput()

@@ -124,7 +124,7 @@ void AAIShip::FaceTargetDirection(float DeltaTime)
 			TargetLocation = CalculateLeadLocation(GetActorLocation(), Target->GetActorLocation(), Target->GetVelocity(), ProjectileSpeed);
 		}
 
-		MovementComponent->RotateTowardsLocation(TargetLocation);
+		MovementComponent->RotateTowardsLocation(TargetLocation, DeltaTime);
 	}
 }
 
