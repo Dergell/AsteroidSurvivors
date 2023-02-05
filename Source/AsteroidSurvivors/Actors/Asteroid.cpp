@@ -8,6 +8,7 @@
 #include "GameplayEffectTypes.h"
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 AAsteroid::AAsteroid()
 {
@@ -16,23 +17,13 @@ AAsteroid::AAsteroid()
 	ExplosionComponent->SetupAttachment(Mesh);
 }
 
-void AAsteroid::InitRandomMovement() const
-{
-	const AActor* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-
-	// Aim in the movement direction of the player, then randomize in cone
-	FVector Direction = PlayerPawn->GetActorLocation() + PlayerPawn->GetVelocity() - GetActorLocation();
-	Direction = FMath::VRandCone(Direction, FMath::DegreesToRadians(InitConeRadius));
-
-	Mesh->AddImpulse(Direction * FMath::RandRange(InitVelocityMin, InitVelocityMax), NAME_None, true);
-	RotatingMovement->RotationRate = FRotator(FMath::RandRange(InitRotationRateMin, InitRotationRateMax), FMath::RandRange(InitRotationRateMin, InitRotationRateMax), FMath::RandRange(InitRotationRateMin, InitRotationRateMax));
-}
-
 void AAsteroid::BeginPlay()
 {
 	Super::BeginPlay();
 
 	ExplosionComponent->OnSystemFinished.AddDynamic(this, &AAsteroid::OnExplosionFinished);
+
+	InitRandomMovement();
 }
 
 void AAsteroid::PostActorCreated()
@@ -43,11 +34,9 @@ void AAsteroid::PostActorCreated()
 	{
 		Mesh->SetStaticMesh(AsteroidMeshes[RandomIndex]);
 	}
-}
 
-void AAsteroid::OnExplosionFinished(UNiagaraComponent* PSystem)
-{
-	Destroy();
+	SetActorScale3D(FVector(FMath::RandRange(SpawnScaleMin, SpawnScaleMax)));
+	SetActorRotation(UKismetMathLibrary::RandomRotator());
 }
 
 void AAsteroid::HitByProjectile_Implementation(APawn* ProjectileInstigator, FGameplayEffectSpecHandle EffectSpec)
@@ -69,4 +58,19 @@ void AAsteroid::HitByProjectile_Implementation(APawn* ProjectileInstigator, FGam
 	Mesh->SetVisibility(false);
 
 	ExplosionComponent->ActivateSystem();
+}
+
+void AAsteroid::InitRandomMovement() const
+{
+	Mesh->AddImpulse(FMath::VRand() * FMath::RandRange(InitVelocityMin, InitVelocityMax), NAME_None, true);
+	RotatingMovement->RotationRate = FRotator(
+		FMath::RandRange(InitRotationRateMin, InitRotationRateMax),
+		FMath::RandRange(InitRotationRateMin, InitRotationRateMax),
+		FMath::RandRange(InitRotationRateMin, InitRotationRateMax)
+	);
+}
+
+void AAsteroid::OnExplosionFinished(UNiagaraComponent* PSystem)
+{
+	Destroy();
 }

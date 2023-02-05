@@ -2,11 +2,29 @@
 
 #include "AsteroidsGameMode.h"
 
-#include "Actors/Asteroid.h"
 #include "GameplayEffect.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "Pawns/AIShip.h"
+
+AAsteroidsGameMode::AAsteroidsGameMode()
+{
+	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	PrimaryActorTick.bCanEverTick = true;
+}
+
+void AAsteroidsGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// Schedule regular enemy spawns
+	const float SpawnInterval = FMath::RandRange(EnemySpawnIntervalMin, EnemySpawnIntervalMax);
+	GetWorldTimerManager().SetTimer(SpawnEnemyTimer, this, &AAsteroidsGameMode::SpawnEnemy, SpawnInterval);
+}
+
+void AAsteroidsGameMode::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+}
 
 TSubclassOf<UGameplayEffect> AAsteroidsGameMode::GetCollisionGameplayEffectClass() const
 {
@@ -18,6 +36,11 @@ TSubclassOf<UGameplayEffect> AAsteroidsGameMode::GetCollisionGameplayEffectClass
 	return UGameplayEffect::StaticClass();
 }
 
+bool AAsteroidsGameMode::ShouldSpawnAsteroids() const
+{
+	return bShouldSpawnAsteroid;
+}
+
 float AAsteroidsGameMode::CalculateCollisionDamage(const float Impulse) const
 {
 	return FMath::RoundToZero(Impulse / CollisionDamageDivider);
@@ -26,41 +49,6 @@ float AAsteroidsGameMode::CalculateCollisionDamage(const float Impulse) const
 void AAsteroidsGameMode::GameOver() const
 {
 	OnGameOver.Broadcast();
-}
-
-void AAsteroidsGameMode::BeginPlay()
-{
-	Super::BeginPlay();
-
-	// Schedule regular asteroid spawns
-	float SpawnInterval = FMath::RandRange(AsteroidSpawnIntervalMin, AsteroidSpawnIntervalMax);
-	GetWorldTimerManager().SetTimer(SpawnAsteroidTimer, this, &AAsteroidsGameMode::SpawnAsteroid, SpawnInterval);
-
-	// Schedule regular enemy spawns
-	SpawnInterval = FMath::RandRange(EnemySpawnIntervalMin, EnemySpawnIntervalMax);
-	GetWorldTimerManager().SetTimer(SpawnEnemyTimer, this, &AAsteroidsGameMode::SpawnEnemy, SpawnInterval);
-}
-
-void AAsteroidsGameMode::SpawnAsteroid()
-{
-	if (bShouldSpawnAsteroid && AsteroidSpawnClass)
-	{
-		// Get a random Location, Rotation and Scale
-		const FVector Location = GetRandomSpawnLocation();
-		const FRotator Rotation = UKismetMathLibrary::RandomRotator(true);
-		const FVector Scale = FVector(FMath::RandRange(0.8f, 2.5f));
-
-		// Spawn the asteroid and init random movement
-		const FTransform* Transform = new FTransform(Rotation, Location, Scale);
-		if (const AAsteroid* Asteroid = Cast<AAsteroid>(GetWorld()->SpawnActor(AsteroidSpawnClass, Transform)))
-		{
-			Asteroid->InitRandomMovement();
-		}
-	}
-
-	// Reschedule next spawn
-	const float SpawnInterval = FMath::RandRange(AsteroidSpawnIntervalMin, AsteroidSpawnIntervalMax);
-	GetWorldTimerManager().SetTimer(SpawnAsteroidTimer, this, &AAsteroidsGameMode::SpawnAsteroid, SpawnInterval);
 }
 
 void AAsteroidsGameMode::SpawnEnemy()

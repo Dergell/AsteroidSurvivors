@@ -8,7 +8,6 @@
 
 class UGameplayEffect;
 class AAIShip;
-class AAsteroid;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameOver);
 
@@ -21,8 +20,21 @@ class ASTEROIDSURVIVORS_API AAsteroidsGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+	AAsteroidsGameMode();
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+public:
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
 	// Get the CollisionGameplayEffectClass
 	TSubclassOf<UGameplayEffect> GetCollisionGameplayEffectClass() const;
+
+	// Get bShouldSpawnAsteroid
+	bool ShouldSpawnAsteroids() const;
 
 	// Calculate collision damage
 	float CalculateCollisionDamage(float Impulse) const;
@@ -35,13 +47,6 @@ public:
 	FOnGameOver OnGameOver;
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-	// Handles spawning of asteroids
-	UFUNCTION(BlueprintCallable)
-	void SpawnAsteroid();
-
 	// Handles spawning of enemies
 	UFUNCTION(BlueprintCallable)
 	void SpawnEnemy();
@@ -57,22 +62,10 @@ protected:
 	// Used to adjust the collision damage. Higher value = less damage.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float CollisionDamageDivider = 100000.f;
-	
+
 	// Enable to spawn asteroids
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bShouldSpawnAsteroid = false;
-
-	// Minimum interval of asteroid spawns
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float AsteroidSpawnIntervalMin = 0.2f;
-
-	// Maximum interval of asteroid spawns
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float AsteroidSpawnIntervalMax = 2.f;
-
-	// Asteroid class to spawn
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TSubclassOf<AAsteroid> AsteroidSpawnClass;
 
 	// Enable to spawn enemies
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -93,9 +86,6 @@ protected:
 private:
 	// Calculate a random spawn location just outside the viewport
 	FVector GetRandomSpawnLocation() const;
-
-	// Timer for asteroid spawns
-	FTimerHandle SpawnAsteroidTimer;
 
 	// Timer for enemy spawns
 	FTimerHandle SpawnEnemyTimer;
