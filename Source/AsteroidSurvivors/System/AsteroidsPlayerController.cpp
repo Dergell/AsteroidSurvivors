@@ -13,6 +13,23 @@ AAsteroidsPlayerController::AAsteroidsPlayerController()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+void AAsteroidsPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// Create the MainWidget and add to viewport
+	MainWidget = CreateWidget<UPlayerWidget>(this, MainWidgetClass);
+	MainWidget->AddToViewport();
+}
+
+void AAsteroidsPlayerController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+
+	FInputKeyBinding& AnyKey = InputComponent->BindKey(EKeys::AnyKey, IE_Pressed, this, &AAsteroidsPlayerController::UpdateGamepad);
+	AnyKey.bConsumeInput = false;
+}
+
 void AAsteroidsPlayerController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
@@ -50,7 +67,7 @@ void AAsteroidsPlayerController::UpdateScore_Implementation(int32 Points)
 
 void AAsteroidsPlayerController::MoveCursor(FVector2D AxisValue) const
 {
-	if (!GamepadActive)
+	if (!bGamepadActive)
 	{
 		MoveCursorMouse();
 	}
@@ -60,31 +77,9 @@ void AAsteroidsPlayerController::MoveCursor(FVector2D AxisValue) const
 	}
 }
 
-void AAsteroidsPlayerController::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-void AAsteroidsPlayerController::SetupInputComponent()
-{
-	Super::SetupInputComponent();
-
-	FInputKeyBinding& AnyKey = InputComponent->BindKey(EKeys::AnyKey, IE_Pressed, this, &AAsteroidsPlayerController::UpdateGamepad);
-	AnyKey.bConsumeInput = false;
-}
-
-void AAsteroidsPlayerController::OnPossess(APawn* aPawn)
-{
-	Super::OnPossess(aPawn);
-
-	// Create the MainWidget and add to viewport
-	MainWidget = CreateWidget<UPlayerWidget>(this, MainWidgetClass);
-	MainWidget->AddToViewport();
-}
-
 void AAsteroidsPlayerController::UpdateGamepad(FKey Key)
 {
-	GamepadActive = Key.IsGamepadKey() ? true : false;
+	bGamepadActive = Key.IsGamepadKey() ? true : false;
 }
 
 void AAsteroidsPlayerController::MoveCursorMouse() const

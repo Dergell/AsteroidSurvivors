@@ -18,41 +18,53 @@ class ASTEROIDSURVIVORS_API AAsteroidsPlayerController : public APlayerControlle
 
 public:
 	AAsteroidsPlayerController();
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+	// Custom input bindings
+	virtual void SetupInputComponent() override;
+
+public:
+	// Called every frame
 	virtual void Tick(float DeltaSeconds) override;
 
-	// Getter & Setter
+	// Get the crosshair position from the MainWidget and translate it into a world position on the Z plane
 	UFUNCTION(BlueprintCallable)
 	FVector GetCrosshairPositionOnPlane() const;
 
-	// Interfaces
+	// Tells the MainWidget to update the player score
 	virtual void UpdateScore_Implementation(int32 Points) override;
 
-	// Actions
+	// Move cursor; delegates to MoveCursorMouse or MoveCursorGamepad
 	UFUNCTION(BlueprintCallable)
 	void MoveCursor(FVector2D AxisValue = FVector2D::ZeroVector) const;
 
-protected:
-	virtual void BeginPlay() override;
-	virtual void SetupInputComponent() override;
-
 private:
-	virtual void OnPossess(APawn* aPawn) override;
-
-	// Actions
+	// Checks the last input and switches between kbm/gamepad accordingly
 	void UpdateGamepad(FKey Key);
+
+	// Move cursor to mouse position in viewport
 	void MoveCursorMouse() const;
+
+	// Move cursor around player from gamepad input
 	void MoveCursorGamepad(FVector2D AxisValue) const;
 
 private:
-	// Members
+	// Main player HUD widget
 	UPROPERTY()
 	UPlayerWidget* MainWidget;
+
+	// Distance of crosshair from player using gamepad
 	UPROPERTY(EditAnywhere)
 	int32 CrosshairDistance = 200;
-	UPROPERTY(VisibleAnywhere)
-	bool GamepadActive = false;
 
-	// Settings
+	// Last input was from a gamepad
+	UPROPERTY(VisibleAnywhere)
+	bool bGamepadActive = false;
+
+	// Class to use as MainWidget
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UPlayerWidget> MainWidgetClass;
 };
