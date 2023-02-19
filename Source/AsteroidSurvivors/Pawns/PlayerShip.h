@@ -6,6 +6,7 @@
 #include "SpaceShip.h"
 #include "PlayerShip.generated.h"
 
+class ASpawnVolume;
 class UCameraComponent;
 class UInputComponent;
 class UInputConfig;
@@ -80,6 +81,10 @@ private:
 	// Determines camera shakes
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UCameraShakeBase> CameraShakeClass;
+
+	// Class that will handle asteroid spawns around the player
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<ASpawnVolume> SpawnVolumeClass;
 
 	// Configuration of player inputs
 	UPROPERTY(EditDefaultsOnly)

@@ -6,6 +6,7 @@
 #include "AbilitySystemComponent.h"
 #include "Actors/ItemInterface.h"
 #include "Actors/Projectile.h"
+#include "Actors/SpawnVolume.h"
 #include "Camera/CameraComponent.h"
 #include "Components/AsteroidsMovementComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -43,6 +44,18 @@ void APlayerShip::BeginPlay()
 	// Add event listeners
 	CapsuleComponent->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnBeginOverlap);
 	OnTakeAnyDamage.AddDynamic(this, &ThisClass::OnTakeAnyDamageCallback);
+
+	// Spawn SpawnVolume
+	if (SpawnVolumeClass)
+	{
+		const FTransform Transform = FTransform(GetActorLocation() + FVector(0, 8000, 0));
+		ASpawnVolume* SpawnVolume = GetWorld()->SpawnActorDeferred<ASpawnVolume>(SpawnVolumeClass, Transform);
+		if (SpawnVolume)
+		{
+			SpawnVolume->AttachToActor(this);
+			SpawnVolume->FinishSpawning(Transform);
+		}
+	}
 }
 
 void APlayerShip::Tick(float DeltaSeconds)

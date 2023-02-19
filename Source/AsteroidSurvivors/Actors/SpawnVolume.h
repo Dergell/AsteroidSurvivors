@@ -29,6 +29,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// Attach this SpawnVolume to an actor
+	void AttachToActor(AActor* AttachToActor);
+	
 private:
 	// Get the number of missing SpawnActorClass in the volume
 	int8 GetMissingActorsCount() const;
