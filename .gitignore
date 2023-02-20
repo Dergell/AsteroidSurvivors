@@ -75,5 +75,4 @@ DerivedDataCache/*
 
 # Custom additions
 .idea
-/Plugins/Developer/RiderLink/
 /*.sln.DotSettings.user

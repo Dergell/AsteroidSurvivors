@@ -7,6 +7,7 @@ public class AsteroidSurvivors : ModuleRules
 	public AsteroidSurvivors(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+		bUseUnity = false;
 
 		PublicIncludePaths.AddRange(new string[]
 		{
