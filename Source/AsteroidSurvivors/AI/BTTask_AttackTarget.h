@@ -12,10 +12,12 @@
 UCLASS()
 class ASTEROIDSURVIVORS_API UBTTask_AttackTarget : public UBTTaskNode
 {
-	GENERATED_UCLASS_BODY()
+	GENERATED_BODY()
+
+	UBTTask_AttackTarget(const FObjectInitializer& ObjectInitializer);
 	
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere)
 	FBlackboardKeySelector TargetKey;
 };
