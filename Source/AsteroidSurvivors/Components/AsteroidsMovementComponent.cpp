@@ -56,16 +56,17 @@ void UAsteroidsMovementComponent::RotateTowardsLocation(const FVector Location, 
 {
 	const FRotator CurrentRotation = UpdatedPrimitive->GetRelativeRotation();
 	const FVector TargetVector = Location - GetOwner()->GetActorLocation();
-	const FRotator RotationTarget = TargetVector.Rotation();
+	FRotator RotationTarget = TargetVector.Rotation();
+
+	// Add some roll to the turn
+	RotationTarget.Roll = FMath::FindDeltaAngleDegrees(CurrentRotation.Yaw, RotationTarget.Yaw);
+	// Clamp roll so we don't overshoot
+	RotationTarget.Roll = FMath::Clamp(RotationTarget.Roll, -RollLimit, RollLimit);
+	// Cancel any pitch by physics
+	RotationTarget.Pitch = 0;
 
 	// For the actual turn, just add the direction to the existing yaw
-	FRotator NewRotation = FMath::RInterpTo(CurrentRotation, RotationTarget, DeltaTime, RotationSpeed);
-	// Add some roll to the turn
-	NewRotation.Roll = FMath::FindDeltaAngleDegrees(CurrentRotation.Yaw, RotationTarget.Yaw);
-	// Clamp roll so we don't overshoot
-	NewRotation.Roll = FMath::Clamp(NewRotation.Roll, -RollLimit, RollLimit);
-	// Cancel any pitch by physics
-	NewRotation.Pitch = 0;
+	const FRotator NewRotation = FMath::RInterpTo(CurrentRotation, RotationTarget, DeltaTime, RotationSpeed);
 
 	// Normalize and set to primitive
 	UpdatedPrimitive->SetRelativeRotation(NewRotation);
