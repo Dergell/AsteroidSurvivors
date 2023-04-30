@@ -13,47 +13,51 @@ UBTTask_AttackTarget::UBTTask_AttackTarget(const FObjectInitializer& ObjectIniti
 {
 	TargetKey.AddObjectFilter(this, GET_MEMBER_NAME_CHECKED(UBTTask_AttackTarget, TargetKey), APawn::StaticClass());
 	TargetKey.SelectedKeyName = TEXT("Target");
-	INIT_TASK_NODE_NOTIFY_FLAGS();
 }
 
 EBTNodeResult::Type UBTTask_AttackTarget::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	EBTNodeResult::Type Result = EBTNodeResult::Failed;
-
-	if (const AAIShip* Owner = OwnerComp.GetAIOwner()->GetPawn<AAIShip>())
+	const AAIShip* Owner = OwnerComp.GetAIOwner()->GetPawn<AAIShip>();
+	if (Owner == nullptr)
 	{
-		UAbilitySystemComponent* AbilitySystemComponent = Owner->GetAbilitySystemComponent();
-		UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
+		return EBTNodeResult::Failed;
+	}
 
-		APlayerShip* Target = Cast<APlayerShip>(Blackboard->GetValueAsObject(TargetKey.SelectedKeyName));
-		if (Target)
+	UAbilitySystemComponent* AbilitySystemComponent = Owner->GetAbilitySystemComponent();
+	UBlackboardComponent* Blackboard = OwnerComp.GetBlackboardComponent();
+	APlayerShip* Target = Cast<APlayerShip>(Blackboard->GetValueAsObject(TargetKey.SelectedKeyName));
+	if (Target)
+	{
+		FHitResult Hit;
+		FCollisionQueryParams Params;
+		Params.AddIgnoredActor(Target);
+		Params.AddIgnoredActor(Owner);
+
+		bool TraceResult = GetWorld()->LineTraceSingleByChannel(Hit, Owner->GetActorLocation(),
+			Target->GetActorLocation(), ECC_PhysicsBody, Params);
+
+		if (TraceResult)
 		{
-			FHitResult Hit;
-			FCollisionQueryParams Params;
-			Params.AddIgnoredActor(Target);
-			Params.AddIgnoredActor(Owner);
-
-			bool TraceResult = GetWorld()->LineTraceSingleByChannel(Hit, Owner->GetActorLocation(),
-				Target->GetActorLocation(), ECC_PhysicsBody, Params);
-
-			if (TraceResult)
-			{
-				return Result;
-			}
+			return EBTNodeResult::Failed;
 		}
 
-		const FGameplayTagContainer Tags = FGameplayTagContainer(FAsteroidsGameplayTags::Get().Ability_Attack);
-		TArray<FGameplayAbilitySpec*> Abilities;
-		AbilitySystemComponent->GetActivatableGameplayAbilitySpecsByAllMatchingTags(Tags, Abilities);
-
-		for (const FGameplayAbilitySpec* Ability : Abilities)
+		UAbilitySystemComponent* TargetASC = Target->GetAbilitySystemComponent();
+		if (TargetASC->HasMatchingGameplayTag(FAsteroidsGameplayTags::Get().State_Dead))
 		{
-			if (AbilitySystemComponent->TryActivateAbility(Ability->Handle))
-			{
-				Result = EBTNodeResult::Succeeded;
-			}
+			return EBTNodeResult::Failed;
 		}
 	}
 
-	return Result;
+	const FGameplayTagContainer Tags = FGameplayTagContainer(FAsteroidsGameplayTags::Get().Ability_Attack);
+	TArray<FGameplayAbilitySpec*> Abilities;
+	AbilitySystemComponent->GetActivatableGameplayAbilitySpecsByAllMatchingTags(Tags, Abilities);
+	for (const FGameplayAbilitySpec* Ability : Abilities)
+	{
+		if (!AbilitySystemComponent->TryActivateAbility(Ability->Handle))
+		{
+			return EBTNodeResult::Failed;
+		}
+	}
+
+	return EBTNodeResult::Succeeded;
 }
