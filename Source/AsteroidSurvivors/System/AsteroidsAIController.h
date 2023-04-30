@@ -20,6 +20,9 @@ public:
 	AAsteroidsAIController(const FObjectInitializer& ObjectInitializer);
 	virtual void Tick(float DeltaTime) override;
 
+	// IGenericTeamAgentInterface overrides
+	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
@@ -43,4 +46,8 @@ private:
 	UBehaviorTree* BehaviorTree;
 
 	FTimerHandle TargetRememberTimerHandle;
+
+	// Used to determine affiliation
+	UPROPERTY(EditAnywhere)
+	FGenericTeamId TeamId = FGenericTeamId(0);
 };

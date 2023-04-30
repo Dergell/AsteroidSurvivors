@@ -25,6 +25,18 @@ void AAsteroidsAIController::Tick(float DeltaTime)
 	}
 }
 
+ETeamAttitude::Type AAsteroidsAIController::GetTeamAttitudeTowards(const AActor& Other) const
+{
+	const AController* Controller = Other.GetInstigatorController();
+	const IGenericTeamAgentInterface* OtherTeamAgent = Cast<const IGenericTeamAgentInterface>(Controller);
+	if (OtherTeamAgent && GetGenericTeamId() != OtherTeamAgent->GetGenericTeamId())
+	{
+		return ETeamAttitude::Hostile;
+	}
+
+	return Super::GetTeamAttitudeTowards(Other);
+}
+
 void AAsteroidsAIController::BeginPlay()
 {
 	Super::BeginPlay();

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GenericTeamAgentInterface.h"
 #include "Actors/ItemInterface.h"
 #include "GameFramework/PlayerController.h"
 #include "UI/PlayerWidget.h"
@@ -12,7 +13,7 @@
  * Class which implements the main player controller. Extended by blueprints.
  */
 UCLASS()
-class ASTEROIDSURVIVORS_API AAsteroidsPlayerController : public APlayerController, public IItemInterface
+class ASTEROIDSURVIVORS_API AAsteroidsPlayerController : public APlayerController, public IItemInterface, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -29,6 +30,9 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaSeconds) override;
+
+	// Return the TeamId
+	virtual FGenericTeamId GetGenericTeamId() const override;
 
 	// Get the crosshair position from the MainWidget and translate it into a world position on the Z plane
 	UFUNCTION(BlueprintCallable)
@@ -67,4 +71,8 @@ private:
 	// Class to use as MainWidget
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UPlayerWidget> MainWidgetClass;
+
+	// Used to determine affiliation
+	UPROPERTY(EditAnywhere)
+	FGenericTeamId TeamId = FGenericTeamId(0);
 };

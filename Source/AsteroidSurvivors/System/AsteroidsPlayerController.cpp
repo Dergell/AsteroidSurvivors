@@ -35,6 +35,11 @@ void AAsteroidsPlayerController::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 }
 
+FGenericTeamId AAsteroidsPlayerController::GetGenericTeamId() const
+{
+	return TeamId;
+}
+
 FVector AAsteroidsPlayerController::GetCrosshairPositionOnPlane() const
 {
 	const UWidget* Crosshair = MainWidget->WidgetTree->FindWidget(FName("Crosshair"));
