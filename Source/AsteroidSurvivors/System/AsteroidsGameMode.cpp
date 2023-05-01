@@ -56,7 +56,8 @@ void AAsteroidsGameMode::SpawnEnemy()
 	if (bShouldSpawnEnemies && EnemySpawnClass)
 	{
 		const FVector Location = GetRandomSpawnLocation();
-		GetWorld()->SpawnActor<AAIShip>(EnemySpawnClass, Location, FRotator::ZeroRotator);
+		const FRotator Rotation = GetRotatorTowardsPlayer(Location);
+		GetWorld()->SpawnActor<AAIShip>(EnemySpawnClass, Location, Rotation);
 	}
 
 	// Reschedule next spawn
@@ -113,4 +114,11 @@ FVector AAsteroidsGameMode::GetRandomSpawnLocation() const
 	}
 
 	return Location;
+}
+
+FRotator AAsteroidsGameMode::GetRotatorTowardsPlayer(const FVector& SourceLocation) const
+{
+	const APawn* Pawn = UGameplayStatics::GetPlayerPawn(this, 0);
+	const FVector Direction = Pawn->GetActorLocation() - SourceLocation;
+	return Direction.Rotation();
 }

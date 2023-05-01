@@ -51,6 +51,14 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void SpawnEnemy();
 
+private:
+	// Calculate a random spawn location just outside the viewport
+	FVector GetRandomSpawnLocation() const;
+
+	// Returns rotator from SourceLocation towards player
+	FRotator GetRotatorTowardsPlayer(const FVector& SourceLocation) const;
+
+protected:
 	// Additional screen margin to prevent spawns at the edge of the viewport
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float SpawnScreenMargin = 200.f;
@@ -84,9 +92,6 @@ protected:
 	TSubclassOf<AAIShip> EnemySpawnClass;
 
 private:
-	// Calculate a random spawn location just outside the viewport
-	FVector GetRandomSpawnLocation() const;
-
 	// Timer for enemy spawns
 	FTimerHandle SpawnEnemyTimer;
 };

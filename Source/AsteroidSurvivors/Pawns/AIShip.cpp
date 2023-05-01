@@ -125,7 +125,8 @@ void AAIShip::FaceTargetDirection(float DeltaTime)
 		}
 
 		MovementComponent->RotateTowardsLocation(TargetLocation, DeltaTime);
-	} else
+	}
+	else if (GetVelocity().Length() >= 1)
 	{
 		const FVector VelocityNormal = GetActorLocation() + GetVelocity().GetSafeNormal();
 		MovementComponent->RotateTowardsLocation(VelocityNormal, DeltaTime);
