@@ -65,7 +65,7 @@ void ASpaceShip::HitByProjectile_Implementation(APawn* ProjectileInstigator, FGa
 		if (ActiveEffectHandle.WasSuccessfullyApplied())
 		{
 			TakeDamage(
-				FMath::Abs(EffectSpec.Data.Get()->GetSetByCallerMagnitude(FAsteroidsGameplayTags::Get().Effect_Damage)),
+				FMath::Abs(EffectSpec.Data.Get()->GetSetByCallerMagnitude(FAsteroidsGameplayTags::Get().Effect_Value)),
 				FPointDamageEvent(),
 				ProjectileInstigator->GetController(),
 				ProjectileInstigator
@@ -88,7 +88,7 @@ void ASpaceShip::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 	EffectContext.AddSourceObject(OtherActor);
 
 	const FGameplayEffectSpecHandle SpecHandle = GetAbilitySystemComponent()->MakeOutgoingSpec(GameMode->GetCollisionGameplayEffectClass(), 1, EffectContext);
-	SpecHandle.Data.Get()->SetSetByCallerMagnitude(FAsteroidsGameplayTags::Get().Effect_Damage, -Damage);
+	SpecHandle.Data.Get()->SetSetByCallerMagnitude(FAsteroidsGameplayTags::Get().Effect_Value, -Damage);
 	if (SpecHandle.IsValid())
 	{
 		GetAbilitySystemComponent()->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());

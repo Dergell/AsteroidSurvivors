@@ -43,12 +43,4 @@ private:
 	// MovementComponent of this projectile
 	UPROPERTY(VisibleAnywhere)
 	UProjectileMovementComponent* ProjectileMovementComponent;
-
-	// GameplayEffect applied by this projectile
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UGameplayEffect> GameplayEffect;
-
-	// The amount should be applied by the GameplayEffect (ex. damage on a damage effect)
-	UPROPERTY(EditAnywhere)
-	float EffectAmount;
 };

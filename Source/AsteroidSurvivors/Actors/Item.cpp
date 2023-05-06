@@ -34,14 +34,14 @@ bool AItem::GetIsCollectable() const
 	return IsCollectable;
 }
 
-int32 AItem::GetPointsValue() const
-{
-	return PointsValue;
-}
-
-void AItem::Collected_Implementation()
+int32 AItem::Collect_Implementation(TSubclassOf<UGameplayEffect>& OutGameplayEffect, float& OutEffectAmount)
 {
 	Destroy();
+
+	OutGameplayEffect = GameplayEffect;
+	OutEffectAmount = EffectAmount;
+	
+	return PointsValue;
 }
 
 void AItem::HitByProjectile_Implementation(APawn* ProjectileInstigator, FGameplayEffectSpecHandle EffectSpec)

@@ -57,7 +57,7 @@ void AProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedCompone
 		EffectContext.AddHitResult(SweepResult);
 
 		const FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(GameplayEffect, 1, EffectContext);
-		SpecHandle.Data.Get()->SetSetByCallerMagnitude(FAsteroidsGameplayTags::Get().Effect_Damage, EffectAmount);
+		SpecHandle.Data.Get()->SetSetByCallerMagnitude(FAsteroidsGameplayTags::Get().Effect_Value, EffectAmount);
 
 		Ship->Execute_HitByProjectile(OtherActor, GetInstigator(), SpecHandle);
 	}

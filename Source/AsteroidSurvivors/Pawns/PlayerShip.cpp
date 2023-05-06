@@ -174,13 +174,31 @@ void APlayerShip::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActo
 	AItem* ItemActor = Cast<AItem>(OtherActor);
 	if (ItemActor && ItemActor->GetIsCollectable())
 	{
-		IItemInterface* Interface = Cast<IItemInterface>(GetPlayerState());
-		if (Interface)
+		// Collect item
+		TSubclassOf<UGameplayEffect> GameplayEffect;
+		float EffectValue;
+		const int32 Points = ItemActor->Collect(GameplayEffect, EffectValue);
+
+		// Update score
+		const IItemInterface* Interface = Cast<IItemInterface>(GetPlayerState());
+		if (Interface && Points)
 		{
-			Interface->Execute_UpdateScore(GetPlayerState(), ItemActor->GetPointsValue());
+			Interface->Execute_UpdateScore(GetPlayerState(), Points);
 		}
 
-		ItemActor->Collected();
+		// Apply gameplay effect
+		UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+		if (ASC && GameplayEffect && EffectValue)
+		{
+			const FGameplayEffectContextHandle EffectContext = ASC->MakeEffectContext();
+			const FGameplayEffectSpecHandle SpecHandle = ASC->MakeOutgoingSpec(GameplayEffect, 1, EffectContext);
+			SpecHandle.Data.Get()->SetSetByCallerMagnitude(FAsteroidsGameplayTags::Get().Effect_Value, EffectValue);
+
+			if (SpecHandle.IsValid())
+			{
+				ASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+			}
+		}
 	}
 }
 
