@@ -21,7 +21,7 @@ AAsteroidsPlayerState::AAsteroidsPlayerState()
 void AAsteroidsPlayerState::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(Attributes->GetHealthAttribute()).AddUObject(this, &AAsteroidsPlayerState::HealthChanged);
 
 	if (bIsInvincible)
@@ -87,6 +87,12 @@ void AAsteroidsPlayerState::Die_Implementation()
 
 void AAsteroidsPlayerState::HealthChanged(const FOnAttributeChangeData& Data)
 {
+	if (Data.NewValue > Attributes->GetMaxHealth())
+	{
+		Attributes->SetHealth(Attributes->GetMaxHealth());
+		return;
+	}
+
 	if (Data.NewValue <= 0)
 	{
 		Die();
