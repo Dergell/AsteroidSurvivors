@@ -24,8 +24,12 @@ public:
 	bool GetIsCollectable() const;
 
 	// Actions
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintCallable)
 	int32 Collect(TSubclassOf<UGameplayEffect>& OutGameplayEffect, float& OutEffectAmount);
+
+	// Events
+	UFUNCTION(BlueprintNativeEvent)
+	void Collected();
 
 	// Interfaces
 	virtual void HitByProjectile_Implementation(APawn* ProjectileInstigator, FGameplayEffectSpecHandle EffectSpec) override;
