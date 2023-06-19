@@ -17,8 +17,13 @@ void AAsteroidsGameMode::BeginPlay()
 	Super::BeginPlay();
 
 	// Schedule regular enemy spawns
-	const float SpawnInterval = FMath::RandRange(EnemySpawnIntervalMin, EnemySpawnIntervalMax);
-	GetWorldTimerManager().SetTimer(SpawnEnemyTimer, this, &AAsteroidsGameMode::SpawnEnemy, SpawnInterval);
+	for (const FEnemySpawnConfig SpawnConfig : EnemySpawnConfig)
+	{
+		FTimerHandle SpawnEnemyTimer;
+		FTimerDelegate TimerDelegate;
+		TimerDelegate.BindUFunction(this, FName("SpawnEnemy"), SpawnConfig);
+		GetWorldTimerManager().SetTimer(SpawnEnemyTimer, TimerDelegate, SpawnConfig.SecondsUntilFirstSpawn, false);
+	}
 }
 
 void AAsteroidsGameMode::Tick(float DeltaTime)
@@ -51,18 +56,24 @@ void AAsteroidsGameMode::GameOver() const
 	OnGameOver.Broadcast();
 }
 
-void AAsteroidsGameMode::SpawnEnemy()
+void AAsteroidsGameMode::SpawnEnemy(FEnemySpawnConfig SpawnConfig)
 {
-	if (bShouldSpawnEnemies && EnemySpawnClass)
+	if (!bShouldSpawnEnemies || EnemySpawnConfig.IsEmpty())
 	{
-		const FVector Location = GetRandomSpawnLocation();
-		const FRotator Rotation = GetRotatorTowardsPlayer(Location);
-		GetWorld()->SpawnActor<AAIShip>(EnemySpawnClass, Location, Rotation);
+		return;
 	}
 
+	// Spawn enemy
+	const FVector Location = GetRandomSpawnLocation();
+	const FRotator Rotation = GetRotatorTowardsPlayer(Location);
+	GetWorld()->SpawnActor<AAIShip>(SpawnConfig.SpawnClass, Location, Rotation);
+
 	// Reschedule next spawn
-	const float SpawnInterval = FMath::RandRange(EnemySpawnIntervalMin, EnemySpawnIntervalMax);
-	GetWorldTimerManager().SetTimer(SpawnEnemyTimer, this, &AAsteroidsGameMode::SpawnEnemy, SpawnInterval);
+	FTimerHandle SpawnEnemyTimer;
+	FTimerDelegate TimerDelegate;
+	TimerDelegate.BindUFunction(this, FName("SpawnEnemy"), SpawnConfig);
+	const float SpawnInterval = FMath::RandRange(SpawnConfig.SpawnIntervalMin, SpawnConfig.SpawnIntervalMax);
+	GetWorldTimerManager().SetTimer(SpawnEnemyTimer, TimerDelegate, SpawnInterval, false);
 }
 
 FVector AAsteroidsGameMode::GetRandomSpawnLocation() const

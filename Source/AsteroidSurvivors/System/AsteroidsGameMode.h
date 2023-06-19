@@ -11,6 +11,28 @@ class AAIShip;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameOver);
 
+USTRUCT(BlueprintType)
+struct FEnemySpawnConfig
+{
+	GENERATED_BODY()
+
+	// Start spawning after this much time has passed
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float SecondsUntilFirstSpawn = 0.f;
+
+	// Minimum interval between spawns
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float SpawnIntervalMin = 1.f;
+
+	// Maximum interval between spawns
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float SpawnIntervalMax = 2.f;
+
+	// Enemy class to spawn
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<AAIShip> SpawnClass;
+};
+
 /**
  * Class which implements the main game mode. Extended by blueprints.
  */
@@ -49,7 +71,7 @@ public:
 protected:
 	// Handles spawning of enemies
 	UFUNCTION(BlueprintCallable)
-	void SpawnEnemy();
+	void SpawnEnemy(FEnemySpawnConfig SpawnConfig);
 
 private:
 	// Calculate a random spawn location just outside the viewport
@@ -79,19 +101,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bShouldSpawnEnemies = false;
 
-	// Minimum interval of enemy spawns
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float EnemySpawnIntervalMin = 1.f;
-
-	// Maximum interval of enemy spawns
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float EnemySpawnIntervalMax = 2.f;
-
-	// Enemy class to spawn
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	TSubclassOf<AAIShip> EnemySpawnClass;
-
-private:
-	// Timer for enemy spawns
-	FTimerHandle SpawnEnemyTimer;
+	// Configuration for enemy spawns
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<FEnemySpawnConfig> EnemySpawnConfig;
 };
