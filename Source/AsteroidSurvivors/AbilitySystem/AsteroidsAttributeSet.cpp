@@ -10,6 +10,7 @@ void UAsteroidsAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 
 	DOREPLIFETIME_CONDITION_NOTIFY(UAsteroidsAttributeSet, Health, COND_None, REPNOTIFY_Always);
 	DOREPLIFETIME_CONDITION_NOTIFY(UAsteroidsAttributeSet, MaxHealth, COND_None, REPNOTIFY_Always);
+	DOREPLIFETIME_CONDITION_NOTIFY(UAsteroidsAttributeSet, DamageMultiplier, COND_None, REPNOTIFY_Always);
 }
 
 void UAsteroidsAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealth)
@@ -20,4 +21,9 @@ void UAsteroidsAttributeSet::OnRep_Health(const FGameplayAttributeData& OldHealt
 void UAsteroidsAttributeSet::OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth)
 {
 	GAMEPLAYATTRIBUTE_REPNOTIFY(UAsteroidsAttributeSet, MaxHealth, OldMaxHealth);
+}
+
+void UAsteroidsAttributeSet::OnRep_DamageMultiplier(const FGameplayAttributeData& OldDamageMultiplier)
+{
+	GAMEPLAYATTRIBUTE_REPNOTIFY(UAsteroidsAttributeSet, DamageMultiplier, OldDamageMultiplier);
 }

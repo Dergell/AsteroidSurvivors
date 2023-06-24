@@ -34,6 +34,11 @@ bool AItem::GetIsCollectable() const
 	return IsCollectable;
 }
 
+void AItem::MultiplyEffectAmount(float Multiplier)
+{
+	EffectAmount *= Multiplier;
+}
+
 void AItem::Collected_Implementation()
 {
 	Destroy();
@@ -42,10 +47,10 @@ void AItem::Collected_Implementation()
 int32 AItem::Collect(TSubclassOf<UGameplayEffect>& OutGameplayEffect, float& OutEffectAmount)
 {
 	Collected();
-	
+
 	OutGameplayEffect = GameplayEffect;
 	OutEffectAmount = EffectAmount;
-	
+
 	return PointsValue;
 }
 

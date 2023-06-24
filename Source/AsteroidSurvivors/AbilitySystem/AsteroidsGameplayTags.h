@@ -25,6 +25,7 @@ public:
 
 	// States
 	FGameplayTag State_Dead;
+	FGameplayTag State_DamageMultiplied;
 
 	// Effects
 	FGameplayTag Effect_Cooldown;

@@ -25,6 +25,8 @@ public:
 
 	// Actions
 	UFUNCTION(BlueprintCallable)
+	void MultiplyEffectAmount(float Multiplier);
+	UFUNCTION(BlueprintCallable)
 	int32 Collect(TSubclassOf<UGameplayEffect>& OutGameplayEffect, float& OutEffectAmount);
 
 	// Events

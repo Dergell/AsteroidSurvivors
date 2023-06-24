@@ -23,6 +23,7 @@ void FAsteroidsGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(InputTag_Attack, "InputTag.Attack", "Attack input.");
 
 	AddTag(State_Dead, "State.Dead", "State Dead.");
+	AddTag(State_DamageMultiplied, "State.DamageMultiplied", "State DamageMultiplied.");
 
 	AddTag(Effect_Cooldown, "Effect.Cooldown", "Cooldown of the effect.");
 	AddTag(Effect_Value, "Effect.Value", "Value of the effect.");

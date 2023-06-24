@@ -4,8 +4,10 @@
 
 #include "Abilities/Tasks/AbilityTask_Repeat.h"
 #include "AbilitySystemComponent.h"
+#include "AsteroidsAttributeSet.h"
 #include "Actors/Projectile.h"
 #include "Components/ArrowComponent.h"
+#include "Pawns/SpaceShip.h"
 
 void UGameplayAbility_AttackManual::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
@@ -54,6 +56,14 @@ void UGameplayAbility_AttackManual::OnPerformAction(int32 ActionNumber)
 		FVector MuzzleLocation = Muzzle->GetComponentLocation();
 		FRotator MuzzleRotation = Muzzle->GetComponentRotation();
 
-		GetWorld()->SpawnActor<AProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
+		AProjectile* Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
+
+		const ASpaceShip* OwnerShip = Cast<ASpaceShip>(Pawn);
+		if (IsValid(Projectile) && IsValid(OwnerShip))
+		{
+			const UAbilitySystemComponent* OwnerASC = OwnerShip->GetAbilitySystemComponent();
+			const UAsteroidsAttributeSet* Attributes = Cast<UAsteroidsAttributeSet>(OwnerASC->GetAttributeSet(UAsteroidsAttributeSet::StaticClass()));
+			Projectile->MultiplyEffectAmount(Attributes->GetDamageMultiplier());
+		}
 	}
 }

@@ -33,10 +33,17 @@ public:
 	FGameplayAttributeData MaxHealth;
 	ATTRIBUTE_ACCESSORS(UAsteroidsAttributeSet, MaxHealth);
 
+	UPROPERTY(BlueprintReadOnly, Category = "Attributes")
+	FGameplayAttributeData DamageMultiplier;
+	ATTRIBUTE_ACCESSORS(UAsteroidsAttributeSet, DamageMultiplier);
+
 protected:
 	UFUNCTION()
 	virtual void OnRep_Health(const FGameplayAttributeData& OldHealth);
 
 	UFUNCTION()
 	virtual void OnRep_MaxHealth(const FGameplayAttributeData& OldMaxHealth);
+	
+	UFUNCTION()
+	virtual void OnRep_DamageMultiplier(const FGameplayAttributeData& OldDamageMultiplier);
 };
