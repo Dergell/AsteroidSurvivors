@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "5.1",
+	"EngineAssociation": "5.2",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -39,6 +39,16 @@
 		{
 			"Name": "EnhancedInput",
 			"Enabled": true
+		},
+		{
+			"Name": "CleanProject",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/13d45e838b954d67b9d5d01fa82635d9"
+		},
+		{
+			"Name": "QuickActions",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/01e9d950f52648ee96e9b01711df283e"
 		}
 	]
 }

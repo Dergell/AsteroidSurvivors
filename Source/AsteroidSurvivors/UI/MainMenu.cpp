@@ -4,11 +4,10 @@
 
 #include "MainMenuInterface.h"
 #include "Components/Button.h"
-#include "Kismet/KismetSystemLibrary.h"
 
 UMainMenu::UMainMenu(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
-	this->bIsFocusable = true;
+	this->SetIsFocusable(true);
 }
 
 bool UMainMenu::Initialize()
