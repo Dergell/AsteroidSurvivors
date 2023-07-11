@@ -34,6 +34,9 @@ public:
 	// Abilities
 	FGameplayTag Ability_Attack;
 
+	// Cues
+	FGameplayTag GameplayCue_Effect_DamageMultiplier;
+
 	// Cheats
 	FGameplayTag Cheat_UnlimitedHealth;
 
