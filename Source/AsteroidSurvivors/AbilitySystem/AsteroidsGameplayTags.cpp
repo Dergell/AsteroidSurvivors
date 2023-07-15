@@ -31,6 +31,8 @@ void FAsteroidsGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(Ability_Attack, "Ability.Attack", "Attack ability.");
 	
 	AddTag(GameplayCue_Effect_DamageMultiplier, "GameplayCue.Effect.DamageMultiplier", "GameplayCue Effect DamageMultiplier.");
+	AddTag(GameplayCue_Effect_Healing, "GameplayCue.Effect.Healing", "GameplayCue Effect Healing.");
+	AddTag(GameplayCue_Effect_Shield, "GameplayCue.Effect.Shield", "GameplayCue Effect Shield.");
 
 	AddTag(Cheat_UnlimitedHealth, "Cheat.UnlimitedHealth", "God mode.");
 }

@@ -36,6 +36,8 @@ public:
 
 	// Cues
 	FGameplayTag GameplayCue_Effect_DamageMultiplier;
+	FGameplayTag GameplayCue_Effect_Healing;
+	FGameplayTag GameplayCue_Effect_Shield;
 
 	// Cheats
 	FGameplayTag Cheat_UnlimitedHealth;
