@@ -11,6 +11,9 @@
 #include "Actors/WeightedSpawn.h"
 #include "Components/AsteroidsMovementComponent.h"
 #include "NiagaraComponent.h"
+#include "Actors/ItemInterface.h"
+#include "GameFramework/PlayerState.h"
+#include "Kismet/GameplayStatics.h"
 #include "System/AsteroidsAIController.h"
 
 // Sets default values
@@ -136,6 +139,12 @@ void AAIShip::FaceTargetDirection(float DeltaTime)
 void AAIShip::Die()
 {
 	AbilitySystemComponent->AddLooseGameplayTag(FAsteroidsGameplayTags::Get().State_Dead);
+
+	APlayerState* State = UGameplayStatics::GetPlayerState(this, 0);
+	if (const IItemInterface* Interface = Cast<IItemInterface>(State))
+	{
+		Interface->Execute_UpdateScore(State, PointsValue);
+	}
 
 	const FVector Location = GetActorLocation();
 	GetWorld()->SpawnActor(LootItemClass, &Location);

@@ -75,6 +75,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly)
 	UAbilitySystemComponent* AbilitySystemComponent;
 
+	// The points value of this ship
+	UPROPERTY(EditDefaultsOnly)
+	int32 PointsValue = 100;
+
 private:
 	// The attribute set of this ship
 	UPROPERTY()
