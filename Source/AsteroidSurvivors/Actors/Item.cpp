@@ -41,7 +41,14 @@ void AItem::MultiplyEffectAmount(float Multiplier)
 
 void AItem::Collected_Implementation()
 {
-	Destroy();
+	if (IsChildActor())
+	{
+		GetParentActor()->Destroy();
+	}
+	else
+	{
+		Destroy();
+	}
 }
 
 int32 AItem::Collect(TSubclassOf<UGameplayEffect>& OutGameplayEffect, float& OutEffectAmount)

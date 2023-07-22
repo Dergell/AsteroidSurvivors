@@ -33,4 +33,9 @@ void AWeightedSpawn::BeginPlay()
 
 		RandomValue -= Element.Probability;
 	}
+
+	if (!IsValid(ChildActor->GetChildActorClass()))
+	{
+		Destroy();
+	}
 }
