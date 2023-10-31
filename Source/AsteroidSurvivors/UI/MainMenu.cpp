@@ -4,6 +4,7 @@
 
 #include "MainMenuInterface.h"
 #include "Components/Button.h"
+#include "Components/TextBlock.h"
 
 UMainMenu::UMainMenu(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -34,6 +35,22 @@ bool UMainMenu::Initialize()
 void UMainMenu::SetInterface(IMainMenuInterface* Interface)
 {
 	MenuInterface = Interface;
+}
+
+void UMainMenu::UpdateHighScore(int32 InHighScore)
+{
+	if (HighScore != nullptr)
+	{
+		HighScore->SetText(FText::AsNumber(InHighScore));
+	}
+}
+
+void UMainMenu::UpdateHighTime(int32 InHighTime)
+{
+	if (HighTime != nullptr)
+	{
+		HighTime->SetText(FText::AsTimespan(FTimespan(0, 0, InHighTime)));
+	}
 }
 
 void UMainMenu::Setup()

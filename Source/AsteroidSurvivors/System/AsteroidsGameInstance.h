@@ -7,6 +7,7 @@
 #include "UI/MainMenuInterface.h"
 #include "AsteroidsGameInstance.generated.h"
 
+class UAsteroidsSaveGame;
 class UMainMenu;
 
 UCLASS()
@@ -16,9 +17,12 @@ class ASTEROIDSURVIVORS_API UAsteroidsGameInstance : public UGameInstance, publi
 
 public:
 	virtual void Init() override;
-	
+	virtual void Shutdown() override;
+
 	virtual void HostGame() override;
 	virtual void JoinGame(const FString& Address) override;
+
+	void UpdateSaveGame(int32 Score, int32 Time) const;
 
 	UFUNCTION(BlueprintCallable)
 	void LoadMenu();
@@ -31,5 +35,9 @@ protected:
 	TSoftObjectPtr<UWorld> MainGameLevel;
 
 private:
+	UPROPERTY()
 	TObjectPtr<UMainMenu> MainMenu;
+
+	UPROPERTY()
+	TObjectPtr<UAsteroidsSaveGame> SaveGame;
 };

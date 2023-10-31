@@ -6,6 +6,7 @@
 #include "AbilitySystem/AsteroidsAttributeSet.h"
 #include "AbilitySystem/AsteroidsGameplayAbility.h"
 #include "AbilitySystemComponent.h"
+#include "AsteroidsGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include "Pawns/PlayerShip.h"
 #include "System/AsteroidsGameMode.h"
@@ -81,6 +82,9 @@ void AAsteroidsPlayerState::Die_Implementation()
 	DisableInput(GetPlayerController());
 	GetPawn<APlayerShip>()->Explode();
 
+	const UAsteroidsGameInstance* GameInstance = GetGameInstance<UAsteroidsGameInstance>();
+	GameInstance->UpdateSaveGame(PlayerScore, GetWorld()->GetTimeSeconds());
+	
 	const AAsteroidsGameMode* GameMode = Cast<AAsteroidsGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 	GameMode->GameOver();
 }

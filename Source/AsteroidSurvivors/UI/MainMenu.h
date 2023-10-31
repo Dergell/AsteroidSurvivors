@@ -8,6 +8,7 @@
 
 class IMainMenuInterface;
 class UButton;
+class UTextBlock;
 
 /**
  * Asteroid Survivors Main Menu Widget
@@ -25,6 +26,8 @@ public:
 
 	// Setter
 	void SetInterface(IMainMenuInterface* Interface);
+	void UpdateHighScore(int32 InHighScore);
+	void UpdateHighTime(int32 InHighTime);
 
 	void Setup();
 	void Shutdown();
@@ -43,6 +46,13 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UButton> QuitGameButton;
+
+	// Main Menu - TextBlocks
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UTextBlock> HighScore;
+
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UTextBlock> HighTime;
 
 private:
 	IMainMenuInterface* MenuInterface;
