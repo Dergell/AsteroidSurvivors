@@ -7,7 +7,9 @@
 #include "AsteroidsAttributeSet.h"
 #include "Actors/Projectile.h"
 #include "Components/ArrowComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Pawns/SpaceShip.h"
+#include "Sound/SoundCue.h"
 
 void UGameplayAbility_AttackManual::InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo)
 {
@@ -57,13 +59,18 @@ void UGameplayAbility_AttackManual::OnPerformAction(int32 ActionNumber)
 		FRotator MuzzleRotation = Muzzle->GetComponentRotation();
 
 		AProjectile* Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
-
+		
 		const ASpaceShip* OwnerShip = Cast<ASpaceShip>(Pawn);
 		if (IsValid(Projectile) && IsValid(OwnerShip))
 		{
 			const UAbilitySystemComponent* OwnerASC = OwnerShip->GetAbilitySystemComponent();
 			const UAsteroidsAttributeSet* Attributes = Cast<UAsteroidsAttributeSet>(OwnerASC->GetAttributeSet(UAsteroidsAttributeSet::StaticClass()));
 			Projectile->MultiplyEffectAmount(Attributes->GetDamageMultiplier());
+		}
+
+		if (IsValid(SoundCue))
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, SoundCue, OwnerShip->GetActorLocation(), FRotator::ZeroRotator);
 		}
 	}
 }

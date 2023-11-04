@@ -6,6 +6,7 @@
 #include "AsteroidsGameplayAbility.h"
 #include "GameplayAbility_AttackManual.generated.h"
 
+class USoundCue;
 class UAbilityTask_Repeat;
 class AProjectile;
 
@@ -32,6 +33,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Ability: Attack Manual")
 	TSubclassOf<AProjectile> ProjectileClass;
+	UPROPERTY(EditDefaultsOnly, Category = "Ability: Attack Manual")
+	TObjectPtr<USoundCue> SoundCue;
 	UPROPERTY(EditDefaultsOnly, Category = "Ability: Attack Manual")
 	float TimeBetweenShots = 0.2f;
 	UPROPERTY(EditDefaultsOnly, Category = "Ability: Attack Manual")
