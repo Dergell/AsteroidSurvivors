@@ -8,25 +8,27 @@
 AItem::AItem()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	// Create components
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>("Mesh");
 	RootComponent = Mesh;
 }
 
-void AItem::Tick(float DeltaSeconds)
+void AItem::BeginPlay()
+{
+	Super::BeginPlay();
+
+	GetWorldTimerManager().SetTimer(KillCheckTimer, this, &AItem::KillCheck, 5, true);
+}
+
+void AItem::KillCheck()
 {
 	const AActor* PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 	if (GetDistanceTo(PlayerPawn) > KillDistance)
 	{
 		Destroy();
 	}
-}
-
-void AItem::BeginPlay()
-{
-	Super::BeginPlay();
 }
 
 bool AItem::GetIsCollectable() const

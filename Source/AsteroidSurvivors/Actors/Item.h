@@ -17,7 +17,6 @@ class ASTEROIDSURVIVORS_API AItem : public AActor, public IProjectileInterface
 
 public:
 	AItem();
-	virtual void Tick(float DeltaSeconds) override;
 
 	// Getters & Setters
 	UFUNCTION(BlueprintPure)
@@ -39,6 +38,9 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	UFUNCTION()
+	void KillCheck();
+
 protected:
 	// Components
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -57,4 +59,8 @@ protected:
 	TSubclassOf<UGameplayEffect> GameplayEffect;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Asteroids)
 	float EffectAmount;
+
+private:
+	UPROPERTY()
+	FTimerHandle KillCheckTimer;
 };
