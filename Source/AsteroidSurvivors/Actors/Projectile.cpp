@@ -7,7 +7,9 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GameplayEffect.h"
+#include "Kismet/GameplayStatics.h"
 #include "Pawns/SpaceShip.h"
+#include "Sound/SoundCue.h"
 
 AProjectile::AProjectile()
 {
@@ -67,6 +69,12 @@ void AProjectile::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedCompone
 		Interface->Execute_HitByProjectile(OtherActor, GetInstigator(), FGameplayEffectSpecHandle());
 	}
 
+	// Play impact sound
+	if (IsValid(ImpactSound))
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, ImpactSound, GetActorLocation(), FRotator::ZeroRotator);
+	}
+	
 	// Destroy the projectile
 	Destroy();
 }

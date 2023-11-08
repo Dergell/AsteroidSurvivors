@@ -12,6 +12,7 @@ class UAsteroidsMovementComponent;
 class UCapsuleComponent;
 class UNiagaraSystem;
 class USoundBase;
+class USoundCue;
 
 /**
  * Base class for all spaceship pawns. Extended by blueprints and classes.
@@ -68,4 +69,7 @@ private:
 	// The explosion sound effect to be spawned on death
 	UPROPERTY(EditDefaultsOnly)
 	USoundBase* ExplosionSoundEffect;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<USoundCue> CollisionSound;
 };

@@ -7,6 +7,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Projectile.generated.h"
 
+class USoundCue;
 class UGameplayEffect;
 class UProjectileMovementComponent;
 class USphereComponent;
@@ -43,4 +44,7 @@ private:
 	// MovementComponent of this projectile
 	UPROPERTY(VisibleAnywhere)
 	UProjectileMovementComponent* ProjectileMovementComponent;
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<USoundCue> ImpactSound;
 };

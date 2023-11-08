@@ -11,6 +11,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
 #include "System/AsteroidsGameMode.h"
+#include "Sound/SoundCue.h"
 
 // Sets default values
 ASpaceShip::ASpaceShip()
@@ -95,6 +96,11 @@ void ASpaceShip::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 
 		AController* OtherController = IsValid(OtherActor) ? OtherActor->GetInstigatorController() : nullptr;
 		TakeDamage(Damage, FPointDamageEvent(), OtherController, OtherActor);
+	}
+
+	if (IsValid(CollisionSound))
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, CollisionSound, GetActorLocation(), FRotator::ZeroRotator);
 	}
 }
 
