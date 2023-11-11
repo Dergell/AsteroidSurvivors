@@ -6,6 +6,8 @@
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/CanvasPanelSlot.h"
+#include "Components/WidgetComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 AAsteroidsPlayerController::AAsteroidsPlayerController()
 {
@@ -84,7 +86,24 @@ void AAsteroidsPlayerController::MoveCursor(FVector2D AxisValue) const
 
 void AAsteroidsPlayerController::UpdateGamepad(FKey Key)
 {
+	if (bGamepadActive == Key.IsGamepadKey())
+	{
+		return;
+	}
+	
 	bGamepadActive = Key.IsGamepadKey() ? true : false;
+
+	TArray<AActor*> WidgetActors;
+	UGameplayStatics::GetAllActorsWithTag(this, TEXT("TutorialWidget"), WidgetActors);
+	for (const AActor* WidgetActor : WidgetActors)
+	{
+		TArray<UWidgetComponent*> WidgetComponents;
+		WidgetActor->GetComponents<UWidgetComponent>(WidgetComponents);
+		for (UWidgetComponent* WidgetComponent : WidgetComponents)
+		{
+			WidgetComponent->ToggleVisibility();
+		}
+	}
 }
 
 void AAsteroidsPlayerController::MoveCursorMouse() const
