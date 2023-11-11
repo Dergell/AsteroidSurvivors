@@ -70,7 +70,7 @@ void UGameplayAbility_AttackManual::OnPerformAction(int32 ActionNumber)
 
 		if (IsValid(SoundCue))
 		{
-			UGameplayStatics::PlaySoundAtLocation(this, SoundCue, OwnerShip->GetActorLocation(), FRotator::ZeroRotator);
+			UGameplayStatics::PlaySound2D(this, SoundCue);
 		}
 	}
 }
