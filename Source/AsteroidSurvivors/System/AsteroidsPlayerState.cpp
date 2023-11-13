@@ -83,8 +83,8 @@ void AAsteroidsPlayerState::Die_Implementation()
 	GetPawn<APlayerShip>()->Explode();
 
 	const UAsteroidsGameInstance* GameInstance = GetGameInstance<UAsteroidsGameInstance>();
-	GameInstance->UpdateSaveGame(PlayerScore, GetWorld()->GetTimeSeconds());
-	
+	GameInstance->SaveStats(PlayerScore, GetWorld()->GetTimeSeconds());
+
 	const AAsteroidsGameMode* GameMode = Cast<AAsteroidsGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 	GameMode->GameOver();
 }

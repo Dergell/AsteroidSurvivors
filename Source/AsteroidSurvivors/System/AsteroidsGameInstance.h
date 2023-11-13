@@ -22,10 +22,18 @@ public:
 	virtual void HostGame() override;
 	virtual void JoinGame(const FString& Address) override;
 
-	void UpdateSaveGame(int32 Score, int32 Time) const;
+	UFUNCTION(BlueprintCallable)
+	float GetVolumeMusic();
+	UFUNCTION(BlueprintCallable)
+	float GetVolumeEffects();
+
+	void SaveStats(int32 Score, int32 Time) const;
+	void SaveVolumeSettings(int32 Music, int32 Effects);
 
 	UFUNCTION(BlueprintCallable)
 	void LoadMenu();
+	UFUNCTION(BlueprintCallable)
+	void LoadVolumeSettings();
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
@@ -40,4 +48,9 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UAsteroidsSaveGame> SaveGame;
+
+	UPROPERTY()
+	int32 VolumeMusic;
+	UPROPERTY()
+	int32 VolumeEffects;
 };

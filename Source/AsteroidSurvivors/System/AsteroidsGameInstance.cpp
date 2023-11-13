@@ -48,7 +48,17 @@ void UAsteroidsGameInstance::JoinGame(const FString& Address)
 	GetFirstLocalPlayerController()->ClientTravel(Address, TRAVEL_Absolute);
 }
 
-void UAsteroidsGameInstance::UpdateSaveGame(int32 Score, int32 Time) const
+float UAsteroidsGameInstance::GetVolumeMusic()
+{
+	return VolumeMusic / 100.0;
+}
+
+float UAsteroidsGameInstance::GetVolumeEffects()
+{
+	return VolumeEffects / 100.0;
+}
+
+void UAsteroidsGameInstance::SaveStats(int32 Score, int32 Time) const
 {
 	if (!IsValid(SaveGame))
 	{
@@ -56,15 +66,21 @@ void UAsteroidsGameInstance::UpdateSaveGame(int32 Score, int32 Time) const
 		return;
 	}
 
-	if (Score > SaveGame->GetHighScore())
+	SaveGame->SetHighScore(Score);
+	SaveGame->SetHighTime(Time);
+}
+
+void UAsteroidsGameInstance::SaveVolumeSettings(int32 Music, int32 Effects)
+{
+	if (!IsValid(SaveGame))
 	{
-		SaveGame->SetHighScore(Score);
+		UE_LOG(LogClass, Warning, TEXT("SaveGame not valid."));
+		return;
 	}
 
-	if (Time > SaveGame->GetHighTime())
-	{
-		SaveGame->SetHighTime(Time);
-	}
+	SaveGame->SetVolumeSettings(Music, Effects);
+	VolumeMusic = Music;
+	VolumeEffects = Effects;
 }
 
 void UAsteroidsGameInstance::LoadMenu()
@@ -81,10 +97,28 @@ void UAsteroidsGameInstance::LoadMenu()
 		MainMenu->Setup();
 		MainMenu->SetInterface(this);
 
+		LoadVolumeSettings();
+
 		if (IsValid(SaveGame))
 		{
 			MainMenu->UpdateHighScore(SaveGame->GetHighScore());
 			MainMenu->UpdateHighTime(SaveGame->GetHighTime());
 		}
 	}
+}
+
+void UAsteroidsGameInstance::LoadVolumeSettings()
+{
+	if (!IsValid(SaveGame))
+	{
+		UE_LOG(LogClass, Warning, TEXT("SaveGame not valid."));
+		return;
+	}
+
+	int32 Music, Effects;
+	SaveGame->GetVolumeSettings(Music, Effects);
+	MainMenu->UpdateVolumeMusic(Music);
+	MainMenu->UpdateVolumeEffects(Effects);
+	VolumeMusic = Music;
+	VolumeEffects = Effects;
 }

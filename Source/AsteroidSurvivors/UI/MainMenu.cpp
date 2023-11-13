@@ -4,7 +4,10 @@
 
 #include "MainMenuInterface.h"
 #include "Components/Button.h"
+#include "Components/Slider.h"
 #include "Components/TextBlock.h"
+#include "Components/WidgetSwitcher.h"
+#include "System/AsteroidsGameInstance.h"
 
 UMainMenu::UMainMenu(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -29,6 +32,11 @@ bool UMainMenu::Initialize()
 		QuitGameButton->OnClicked.AddDynamic(this, &UMainMenu::OnQuitGameClicked);
 	}
 
+	if (IsValid(SaveOptionsButton))
+	{
+		SaveOptionsButton->OnClicked.AddDynamic(this, &UMainMenu::OnSaveOptionsClicked);
+	}
+
 	return Result;
 }
 
@@ -50,6 +58,22 @@ void UMainMenu::UpdateHighTime(int32 InHighTime)
 	if (HighTime != nullptr)
 	{
 		HighTime->SetText(FText::AsTimespan(FTimespan(0, 0, InHighTime)));
+	}
+}
+
+void UMainMenu::UpdateVolumeMusic(int32 InMusic)
+{
+	if (IsValid(VolumeMusic))
+	{
+		VolumeMusic->SetValue(InMusic);
+	}
+}
+
+void UMainMenu::UpdateVolumeEffects(int32 InEffects)
+{
+	if (IsValid(VolumeEffects))
+	{
+		VolumeEffects->SetValue(InEffects);
 	}
 }
 
@@ -78,6 +102,14 @@ void UMainMenu::Shutdown()
 	PlayerController->bShowMouseCursor = false;
 }
 
+void UMainMenu::SwitchLevel(int32 Index)
+{
+	if (IsValid(MenuSwitcher))
+	{
+		MenuSwitcher->SetActiveWidgetIndex(Index);
+	}
+}
+
 void UMainMenu::OnStartGameClicked()
 {
 	if (ensure(MenuInterface != nullptr))
@@ -90,4 +122,18 @@ void UMainMenu::OnQuitGameClicked()
 {
 	// Seems like this is how to do it, according to UKismetSystemLibrary::QuitGame
 	GetOwningLocalPlayer()->ConsoleCommand("quit");
+}
+
+void UMainMenu::OnSaveOptionsClicked()
+{
+	UAsteroidsGameInstance* GameInstance = GetGameInstance<UAsteroidsGameInstance>();
+	if (IsValid(GameInstance))
+	{
+		GameInstance->SaveVolumeSettings(VolumeMusic->GetValue(), VolumeEffects->GetValue());
+	}
+
+	if (IsValid(MenuSwitcher))
+	{
+		MenuSwitcher->SetActiveWidgetIndex(0);
+	}
 }

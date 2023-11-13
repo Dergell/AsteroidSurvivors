@@ -20,12 +20,19 @@ public:
 	int32 GetHighTime() const;
 	void SetHighTime(int32 InHighTime);
 
+	void GetVolumeSettings(int32 &OutMusic, int32 &OutEffects);
+	void SetVolumeSettings(int32 InMusic, int32 InEffects);
+
 private:
-	// The best score achieved on this local computer
+	// Statistics
 	UPROPERTY()
 	int32 HighScore = 0;
-
-	// The best time achieved on this local computer
 	UPROPERTY()
 	int32 HighTime = 0;
+
+	// Volume settings
+	UPROPERTY()
+	int32 VolumeMusic = 80;
+	UPROPERTY()
+	int32 VolumeEffects = 80;
 };
