@@ -59,7 +59,7 @@ void UGameplayAbility_AttackManual::OnPerformAction(int32 ActionNumber)
 		FRotator MuzzleRotation = Muzzle->GetComponentRotation();
 
 		AProjectile* Projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams);
-		
+
 		const ASpaceShip* OwnerShip = Cast<ASpaceShip>(Pawn);
 		if (IsValid(Projectile) && IsValid(OwnerShip))
 		{
@@ -70,7 +70,14 @@ void UGameplayAbility_AttackManual::OnPerformAction(int32 ActionNumber)
 
 		if (IsValid(SoundCue))
 		{
-			UGameplayStatics::PlaySound2D(this, SoundCue);
+			if (SoundCue->bOverrideAttenuation)
+			{
+				UGameplayStatics::PlaySoundAtLocation(this, SoundCue, OwnerShip->GetActorLocation(), FRotator::ZeroRotator);
+			}
+			else
+			{
+				UGameplayStatics::PlaySound2D(this, SoundCue);
+			}
 		}
 	}
 }
