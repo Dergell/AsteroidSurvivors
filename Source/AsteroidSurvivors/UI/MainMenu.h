@@ -72,6 +72,9 @@ protected:
 
 	// Main Menu - TextBlocks
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
+	TObjectPtr<UTextBlock> StartGameText;
+	
+	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UTextBlock> HighScore;
 
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))

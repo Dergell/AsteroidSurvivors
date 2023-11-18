@@ -2,11 +2,15 @@
 
 #include "AsteroidsPlayerController.h"
 
+#include "AsteroidsGameInstance.h"
+#include "AbilitySystem/AsteroidsGameplayTags.h"
 #include "Blueprint/SlateBlueprintLibrary.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Blueprint/WidgetTree.h"
 #include "Components/CanvasPanelSlot.h"
 #include "Components/WidgetComponent.h"
+#include "Input/AsteroidsInputComponent.h"
+#include "Input/InputConfig.h"
 #include "Kismet/GameplayStatics.h"
 
 AAsteroidsPlayerController::AAsteroidsPlayerController()
@@ -30,6 +34,13 @@ void AAsteroidsPlayerController::SetupInputComponent()
 
 	FInputKeyBinding& AnyKey = InputComponent->BindKey(EKeys::AnyKey, IE_Pressed, this, &AAsteroidsPlayerController::UpdateGamepad);
 	AnyKey.bConsumeInput = false;
+
+	UAsteroidsInputComponent* EnhancedInputComponent = Cast<UAsteroidsInputComponent>(InputComponent);
+	if (EnhancedInputComponent && InputConfig)
+	{
+		const FAsteroidsGameplayTags& GameplayTags = FAsteroidsGameplayTags::Get();
+		EnhancedInputComponent->BindActionByTag(InputConfig, GameplayTags.InputTag_Pause, ETriggerEvent::Triggered, this, &ThisClass::TriggerPause);
+	}
 }
 
 void AAsteroidsPlayerController::Tick(float DeltaSeconds)
@@ -65,6 +76,11 @@ FVector AAsteroidsPlayerController::GetCrosshairPositionOnPlane() const
 	);
 
 	return PlanePosition;
+}
+
+UInputConfig* AAsteroidsPlayerController::GetInputConfig() const
+{
+	return InputConfig;
 }
 
 void AAsteroidsPlayerController::UpdateScore_Implementation(int32 Points)
@@ -127,4 +143,17 @@ void AAsteroidsPlayerController::MoveCursorGamepad(FVector2D AxisValue) const
 	const UWidget* Crosshair = MainWidget->WidgetTree->FindWidget(FName("Crosshair"));
 	UCanvasPanelSlot* Slot = Cast<UCanvasPanelSlot>(Crosshair->Slot);
 	Slot->SetPosition(LocalCoordinate);
+}
+
+void AAsteroidsPlayerController::TriggerPause()
+{
+	Pause();
+
+	UAsteroidsGameInstance* Instance = GetGameInstance<UAsteroidsGameInstance>();
+	if (Instance == nullptr)
+	{
+		return;
+	}
+
+	Instance->LoadMenu();
 }

@@ -22,6 +22,7 @@ public:
 	FGameplayTag InputTag_Aim_Mouse;
 	FGameplayTag InputTag_Aim_Stick;
 	FGameplayTag InputTag_Attack;
+	FGameplayTag InputTag_Pause;
 
 	// States
 	FGameplayTag State_Dead;

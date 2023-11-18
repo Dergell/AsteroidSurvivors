@@ -21,6 +21,7 @@ void FAsteroidsGameplayTags::AddAllTags(UGameplayTagsManager& Manager)
 	AddTag(InputTag_Aim_Mouse, "InputTag.Aim.Mouse", "Aim (mouse) input.");
 	AddTag(InputTag_Aim_Stick, "InputTag.Aim.Stick", "Aim (stick) input.");
 	AddTag(InputTag_Attack, "InputTag.Attack", "Attack input.");
+	AddTag(InputTag_Pause, "InputTag.Pause", "Pause input.");
 
 	AddTag(State_Dead, "State.Dead", "State Dead.");
 	AddTag(State_DamageMultiplied, "State.DamageMultiplied", "State DamageMultiplied.");

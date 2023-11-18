@@ -9,7 +9,6 @@
 class ASpawnVolume;
 class UCameraComponent;
 class UInputComponent;
-class UInputConfig;
 class USpringArmComponent;
 struct FGameplayTag;
 struct FInputActionValue;
@@ -85,10 +84,6 @@ private:
 	// Class that will handle asteroid spawns around the player
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<ASpawnVolume> SpawnVolumeClass;
-
-	// Configuration of player inputs
-	UPROPERTY(EditDefaultsOnly)
-	UInputConfig* InputConfig;
 
 	// Minimum length of spring arm
 	UPROPERTY(EditAnywhere)

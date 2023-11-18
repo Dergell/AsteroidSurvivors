@@ -106,6 +106,10 @@ void APlayerShip::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	UAsteroidsInputComponent* EnhancedInputComponent = Cast<UAsteroidsInputComponent>(InputComponent);
 	check(EnhancedInputComponent);
 
+	const AAsteroidsPlayerController* PlayerController = GetController<AAsteroidsPlayerController>();
+	const UInputConfig* InputConfig = PlayerController->GetInputConfig();
+	check(InputConfig);
+
 	const FAsteroidsGameplayTags& GameplayTags = FAsteroidsGameplayTags::Get();
 	EnhancedInputComponent->BindActionByTag(InputConfig, GameplayTags.InputTag_Move, ETriggerEvent::Triggered, this, &ThisClass::Input_Move);
 	EnhancedInputComponent->BindActionByTag(InputConfig, GameplayTags.InputTag_Aim_Mouse, ETriggerEvent::Triggered, this, &ThisClass::Input_AimMouse);

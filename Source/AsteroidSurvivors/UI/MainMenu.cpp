@@ -90,6 +90,11 @@ void UMainMenu::Setup()
 	{
 		PlayerController->SetInputMode(InputModeData);
 		PlayerController->bShowMouseCursor = true;
+
+		if (StartGameText && PlayerController->IsPaused())
+		{
+			StartGameText->SetText(FText::FromString(TEXT("Continue")));
+		}
 	}
 }
 
@@ -112,9 +117,18 @@ void UMainMenu::SwitchLevel(int32 Index)
 
 void UMainMenu::OnStartGameClicked()
 {
-	if (ensure(MenuInterface != nullptr))
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (!PlayerController->IsPaused())
 	{
-		MenuInterface->HostGame();
+		if (ensure(MenuInterface != nullptr))
+		{
+			MenuInterface->HostGame();
+		}
+	}
+	else
+	{
+		PlayerController->Pause();
+		Shutdown();
 	}
 }
 

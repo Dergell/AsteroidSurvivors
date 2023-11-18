@@ -9,6 +9,8 @@
 #include "UI/PlayerWidget.h"
 #include "AsteroidsPlayerController.generated.h"
 
+class UInputConfig;
+
 /**
  * Class which implements the main player controller. Extended by blueprints.
  */
@@ -38,6 +40,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	FVector GetCrosshairPositionOnPlane() const;
 
+	// Get the InputConfig
+	UInputConfig* GetInputConfig() const;
+
 	// Tells the MainWidget to update the player score
 	virtual void UpdateScore_Implementation(int32 Points) override;
 
@@ -55,11 +60,18 @@ private:
 	// Move cursor around player from gamepad input
 	void MoveCursorGamepad(FVector2D AxisValue) const;
 
+	// Pause the game and show menu
+	void TriggerPause();
+
 private:
 	// Main player HUD widget
 	UPROPERTY()
 	UPlayerWidget* MainWidget;
 
+	// Configuration of player inputs
+	UPROPERTY(EditDefaultsOnly)
+	UInputConfig* InputConfig;
+	
 	// Distance of crosshair from player using gamepad
 	UPROPERTY(EditAnywhere)
 	int32 CrosshairDistance = 200;
