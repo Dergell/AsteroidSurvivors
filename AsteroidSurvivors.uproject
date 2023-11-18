@@ -13,11 +13,6 @@
 				"UMG",
 				"CoreUObject"
 			]
-		},
-		{
-			"Name": "AsteroidSurvivorsEditor",
-			"Type": "Runtime",
-			"LoadingPhase": "PostEngineInit"
 		}
 	],
 	"Plugins": [

@@ -4,6 +4,7 @@
 
 #include "AsteroidsSaveGame.h"
 #include "Blueprint/UserWidget.h"
+#include "GameFramework/GameUserSettings.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI/MainMenu.h"
 
@@ -18,6 +19,14 @@ void UAsteroidsGameInstance::Init()
 	else
 	{
 		SaveGame = Cast<UAsteroidsSaveGame>(UGameplayStatics::CreateSaveGameObject(UAsteroidsSaveGame::StaticClass()));
+	}
+
+	if (GEngine)
+	{
+		GEngine->GameUserSettings->SetFullscreenMode(EWindowMode::WindowedFullscreen);
+		GEngine->GameUserSettings->SetScreenResolution(GEngine->GameUserSettings->GetDesktopResolution());
+		GEngine->GameUserSettings->ApplySettings(true);
+		GEngine->GameUserSettings->SaveSettings();
 	}
 }
 

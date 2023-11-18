@@ -11,6 +11,6 @@ public class AsteroidSurvivorsEditorTarget : TargetRules
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
 
-		ExtraModuleNames.AddRange( new string[] { "AsteroidSurvivors", "AsteroidSurvivorsEditor" } );
+		ExtraModuleNames.AddRange( new string[] { "AsteroidSurvivors" } );
 	}
 }
