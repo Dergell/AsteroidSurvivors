@@ -83,6 +83,11 @@ UInputConfig* AAsteroidsPlayerController::GetInputConfig() const
 	return InputConfig;
 }
 
+bool AAsteroidsPlayerController::GetGamepadActive()
+{
+	return bGamepadActive;
+}
+
 void AAsteroidsPlayerController::UpdateScore_Implementation(int32 Points)
 {
 	MainWidget->UpdateScore(Points);

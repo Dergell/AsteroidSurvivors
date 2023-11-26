@@ -80,6 +80,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
 	TObjectPtr<UTextBlock> HighTime;
 
+	UPROPERTY(BlueprintReadWrite)
+	bool UsePointerNavigation = true;
+
 private:
 	IMainMenuInterface* MenuInterface;
 };

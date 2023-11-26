@@ -39,9 +39,10 @@ public:
 	// Get the crosshair position from the MainWidget and translate it into a world position on the Z plane
 	UFUNCTION(BlueprintCallable)
 	FVector GetCrosshairPositionOnPlane() const;
-
-	// Get the InputConfig
+	
+	// Getter
 	UInputConfig* GetInputConfig() const;
+	bool GetGamepadActive();
 
 	// Tells the MainWidget to update the player score
 	virtual void UpdateScore_Implementation(int32 Points) override;
@@ -63,6 +64,11 @@ private:
 	// Pause the game and show menu
 	void TriggerPause();
 
+protected:
+	// Last input was from a gamepad
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
+	bool bGamepadActive = false;
+	
 private:
 	// Main player HUD widget
 	UPROPERTY()
@@ -75,10 +81,6 @@ private:
 	// Distance of crosshair from player using gamepad
 	UPROPERTY(EditAnywhere)
 	int32 CrosshairDistance = 200;
-
-	// Last input was from a gamepad
-	UPROPERTY(VisibleAnywhere)
-	bool bGamepadActive = false;
 
 	// Class to use as MainWidget
 	UPROPERTY(EditDefaultsOnly)

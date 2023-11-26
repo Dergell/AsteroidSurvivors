@@ -8,6 +8,7 @@
 #include "Components/TextBlock.h"
 #include "Components/WidgetSwitcher.h"
 #include "System/AsteroidsGameInstance.h"
+#include "System/AsteroidsPlayerController.h"
 
 UMainMenu::UMainMenu(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -82,14 +83,25 @@ void UMainMenu::Setup()
 	this->AddToViewport();
 
 	FInputModeUIOnly InputModeData;
-	InputModeData.SetWidgetToFocus(this->TakeWidget());
+	InputModeData.SetWidgetToFocus(TakeWidget());
 	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
 	if (IsValid(PlayerController))
 	{
+		AAsteroidsPlayerController* AsteroidsPlayerController = Cast<AAsteroidsPlayerController>(PlayerController);
+		if (IsValid(AsteroidsPlayerController))
+		{
+			UsePointerNavigation = !AsteroidsPlayerController->GetGamepadActive();
+		}
+
+		if (!UsePointerNavigation)
+		{
+			InputModeData.SetWidgetToFocus(StartGameButton->TakeWidget());
+		}
+		
 		PlayerController->SetInputMode(InputModeData);
-		PlayerController->bShowMouseCursor = true;
+		PlayerController->bShowMouseCursor = UsePointerNavigation;
 
 		if (StartGameText && PlayerController->IsPaused())
 		{
